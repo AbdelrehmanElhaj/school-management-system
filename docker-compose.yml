@@ -1,0 +1,62 @@
+services:
+  db:
+    image: postgres:15
+    container_name: odoo17-db
+    environment:
+      - POSTGRES_USER=odoo17
+      - POSTGRES_PASSWORD=odoo17
+      - POSTGRES_DB=postgres
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo17"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    image: odoo:17.0
+    container_name: odoo17
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - HOST=db
+      - USER=odoo17
+      - PASSWORD=odoo17
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./addons:/mnt/extra-addons
+      - ./logs:/var/log/odoo
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: odoo17-nginx
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./config/certs:/etc/nginx/certs:ro
+      - ./config/certbot/www:/var/www/certbot:ro
+    restart: unless-stopped
+
+  certbot:
+    image: certbot/certbot
+    container_name: odoo17-certbot
+    volumes:
+      - ./config/certbot/www:/var/www/certbot
+      - ./config/certbot/certs:/etc/letsencrypt
+    entrypoint: /bin/sh -c "trap exit TERM; while :; do certbot renew --quiet; sleep 12h & wait $${!}; done"
+
+volumes:
+  odoo-web-data:
+    driver: local
+  odoo-db-data:
+    driver: local
