@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Fee Statement per Student -->
+        <template id="report_fee_statement_document">
+            <t t-foreach="docs" t-as="student">
+                <t t-set="fees" t-value="env['school.fee'].search(
+                    [('student_id','=',student.id),('state','!=','cancelled')],
+                    order='due_date')"/>
+                <t t-set="total_amount" t-value="sum(fees.mapped('amount'))"/>
+                <t t-set="total_paid" t-value="sum(fees.mapped('paid_amount'))"/>
+                <t t-set="total_balance" t-value="sum(fees.mapped('balance'))"/>
+
+                <div class="page" style="font-family: Arial, sans-serif; padding: 20px;">
+                    <div style="text-align:center; border-bottom:2px solid #2c3e50; padding-bottom:15px; margin-bottom:20px;">
+                        <h2 style="color:#2c3e50; margin:0;">Fee Statement</h2>
+                        <p style="margin:4px 0; color:#555;">
+                            Academic Year: <strong><t t-esc="student.academic_year_id.name or 'N/A'"/></strong>
+                        </p>
+                    </div>
+
+                    <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
+                        <tr>
+                            <td style="padding:4px; width:50%;"><strong>Student:</strong> <t t-esc="student.name"/></td>
+                            <td style="padding:4px;"><strong>Student ID:</strong> <t t-esc="student.student_code"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:4px;"><strong>Class:</strong> <t t-esc="student.class_id.display_name or ''"/></td>
+                            <td style="padding:4px;"><strong>Guardian:</strong> <t t-esc="student.guardian_id.name or ''"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:4px;"><strong>Guardian Phone:</strong> <t t-esc="student.guardian_phone or ''"/></td>
+                            <td style="padding:4px;"><strong>Print Date:</strong>
+                                <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d')"/>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <t t-if="fees">
+                        <table style="width:100%; border-collapse:collapse; font-size:12px;">
+                            <thead>
+                                <tr style="background-color:#2c3e50; color:white;">
+                                    <th style="padding:8px; border:1px solid #ddd;">Fee ID</th>
+                                    <th style="padding:8px; border:1px solid #ddd;">Type</th>
+                                    <th style="padding:8px; border:1px solid #ddd;">Term</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:right;">Amount</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:right;">Paid</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:right;">Balance</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:center;">Due Date</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:center;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="fees" t-as="fee">
+                                    <tr t-attf-style="background-color: #{
+                                        '#ffe6e6' if fee.state == 'overdue' else
+                                        '#fff9e6' if fee.state == 'partial' else
+                                        '#e6f9e6' if fee.state == 'paid' else 'white'
+                                    };">
+                                        <td style="padding:6px; border:1px solid #ddd;"><t t-esc="fee.fee_code"/></td>
+                                        <td style="padding:6px; border:1px solid #ddd;"><t t-esc="fee.fee_type_id.name"/></td>
+                                        <td style="padding:6px; border:1px solid #ddd;"><t t-esc="fee.term or ''"/></td>
+                                        <td style="padding:6px; border:1px solid #ddd; text-align:right;">
+                                            <t t-esc="'%.2f' % fee.amount"/> <t t-esc="fee.currency_id.symbol"/>
+                                        </td>
+                                        <td style="padding:6px; border:1px solid #ddd; text-align:right; color:green;">
+                                            <t t-esc="'%.2f' % fee.paid_amount"/>
+                                        </td>
+                                        <td style="padding:6px; border:1px solid #ddd; text-align:right; font-weight:bold; color:#c0392b;">
+                                            <t t-esc="'%.2f' % fee.balance"/>
+                                        </td>
+                                        <td style="padding:6px; border:1px solid #ddd; text-align:center;"><t t-esc="str(fee.due_date)"/></td>
+                                        <td style="padding:6px; border:1px solid #ddd; text-align:center; font-weight:bold;">
+                                            <t t-esc="fee.state.upper()"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr style="background-color:#ecf0f1; font-weight:bold;">
+                                    <td colspan="3" style="padding:8px; border:1px solid #ddd; text-align:right;">TOTAL</td>
+                                    <td style="padding:8px; border:1px solid #ddd; text-align:right;">
+                                        <t t-esc="'%.2f' % total_amount"/>
+                                    </td>
+                                    <td style="padding:8px; border:1px solid #ddd; text-align:right; color:green;">
+                                        <t t-esc="'%.2f' % total_paid"/>
+                                    </td>
+                                    <td style="padding:8px; border:1px solid #ddd; text-align:right; color:#c0392b;">
+                                        <t t-esc="'%.2f' % total_balance"/>
+                                    </td>
+                                    <td colspan="2" style="padding:8px; border:1px solid #ddd;"/>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </t>
+                    <t t-else="">
+                        <p style="color:#888; font-style:italic;">No fee records found.</p>
+                    </t>
+
+                    <div style="margin-top:40px; display:flex; justify-content:space-between;">
+                        <div style="text-align:center; width:30%;">
+                            <div style="border-top:1px solid #333; padding-top:5px;">Accountant</div>
+                        </div>
+                        <div style="text-align:center; width:30%;">
+                            <div style="border-top:1px solid #333; padding-top:5px;">Principal</div>
+                        </div>
+                        <div style="text-align:center; width:30%;">
+                            <div style="border-top:1px solid #333; padding-top:5px;">School Stamp</div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <template id="report_fee_statement">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <t t-call="school_management.report_fee_statement_document"
+                            t-lang="o.env.lang"/>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

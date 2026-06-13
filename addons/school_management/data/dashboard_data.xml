@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <record id="school_dashboard_default" model="school.dashboard">
+        <field name="name">School Dashboard</field>
+    </record>
+</data>
+</odoo>

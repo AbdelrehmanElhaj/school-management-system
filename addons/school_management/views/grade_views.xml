@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Grade Tree View -->
+        <record id="view_grade_tree" model="ir.ui.view">
+            <field name="name">school.grade.tree</field>
+            <field name="model">school.grade</field>
+            <field name="arch" type="xml">
+                <tree string="Grades"
+                    decoration-danger="not passed"
+                    decoration-success="passed and percentage &gt;= 90">
+                    <field name="student_id"/>
+                    <field name="exam_id"/>
+                    <field name="subject_id"/>
+                    <field name="class_id"/>
+                    <field name="term"/>
+                    <field name="score"/>
+                    <field name="max_score"/>
+                    <field name="percentage" widget="percentage"/>
+                    <field name="grade_letter"/>
+                    <field name="rank"/>
+                    <field name="passed" widget="boolean"/>
+                    <field name="passed" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Grade Form View -->
+        <record id="view_grade_form" model="ir.ui.view">
+            <field name="name">school.grade.form</field>
+            <field name="model">school.grade</field>
+            <field name="arch" type="xml">
+                <form string="Grade">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="display_name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group string="Student &amp; Exam">
+                                <field name="student_id"/>
+                                <field name="exam_id"/>
+                                <field name="subject_id" readonly="1"/>
+                                <field name="class_id" readonly="1"/>
+                                <field name="term" readonly="1"/>
+                                <field name="academic_year_id" readonly="1"/>
+                            </group>
+                            <group string="Score">
+                                <field name="score"/>
+                                <field name="max_score" readonly="1"/>
+                                <field name="pass_score" readonly="1"/>
+                                <field name="percentage" readonly="1"/>
+                                <field name="grade_letter" readonly="1"/>
+                                <field name="rank" readonly="1"/>
+                                <field name="passed" readonly="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="notes" placeholder="Comments..."/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Grade Pivot View -->
+        <record id="view_grade_pivot" model="ir.ui.view">
+            <field name="name">school.grade.pivot</field>
+            <field name="model">school.grade</field>
+            <field name="arch" type="xml">
+                <pivot string="Grades Analysis">
+                    <field name="class_id" type="row"/>
+                    <field name="subject_id" type="col"/>
+                    <field name="percentage" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Grade Graph View -->
+        <record id="view_grade_graph" model="ir.ui.view">
+            <field name="name">school.grade.graph</field>
+            <field name="model">school.grade</field>
+            <field name="arch" type="xml">
+                <graph string="Grade Distribution" type="bar">
+                    <field name="grade_letter" type="row"/>
+                    <field name="student_id" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Grade Search View -->
+        <record id="view_grade_search" model="ir.ui.view">
+            <field name="name">school.grade.search</field>
+            <field name="model">school.grade</field>
+            <field name="arch" type="xml">
+                <search string="Search Grades">
+                    <field name="student_id"/>
+                    <field name="exam_id"/>
+                    <field name="subject_id"/>
+                    <field name="class_id"/>
+                    <filter string="Passed" name="passed" domain="[('passed','=',True)]"/>
+                    <filter string="Failed" name="failed" domain="[('passed','=',False)]"/>
+                    <separator/>
+                    <filter string="First Term" name="first" domain="[('term','=','first')]"/>
+                    <filter string="Second Term" name="second" domain="[('term','=','second')]"/>
+                    <filter string="Third Term" name="third" domain="[('term','=','third')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Student" name="group_student" context="{'group_by': 'student_id'}"/>
+                        <filter string="Subject" name="group_subject" context="{'group_by': 'subject_id'}"/>
+                        <filter string="Class" name="group_class" context="{'group_by': 'class_id'}"/>
+                        <filter string="Term" name="group_term" context="{'group_by': 'term'}"/>
+                        <filter string="Grade Letter" name="group_letter" context="{'group_by': 'grade_letter'}"/>
+                        <filter string="Academic Year" name="group_year" context="{'group_by': 'academic_year_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Grade Action -->
+        <record id="action_grade" model="ir.actions.act_window">
+            <field name="name">Grades</field>
+            <field name="res_model">school.grade</field>
+            <field name="view_mode">tree,form,pivot,graph</field>
+            <field name="search_view_id" ref="view_grade_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No grades recorded yet
+                </p>
+            </field>
+        </record>
+
+        <!-- Bulk Grade Entry Wizard View -->
+        <record id="view_grade_bulk_form" model="ir.ui.view">
+            <field name="name">school.grade.bulk.form</field>
+            <field name="model">school.grade.bulk</field>
+            <field name="arch" type="xml">
+                <form string="Enter Grades">
+                    <sheet>
+                        <group>
+                            <field name="exam_id"/>
+                            <field name="class_id" readonly="1"/>
+                        </group>
+                        <field name="line_ids">
+                            <tree editable="bottom">
+                                <field name="student_id" readonly="1"/>
+                                <field name="score"/>
+                                <field name="notes"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                    <footer>
+                        <button name="action_confirm" string="Save Grades"
+                            type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

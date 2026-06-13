@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- Portal: Announcements List -->
+    <template id="portal_announcements" name="School Announcements">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Announcements</t>
+            </t>
+            <div class="o_portal_docs">
+                <t t-if="announcements">
+                    <t t-foreach="announcements" t-as="ann">
+                        <div class="card mb-3 shadow-sm">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <a t-attf-href="/announcements/#{ann.id}">
+                                        <t t-esc="ann.name"/>
+                                    </a>
+                                </h5>
+                                <small class="text-muted">
+                                    <t t-esc="ann.date_publish"/>
+                                </small>
+                            </div>
+                            <div class="card-body">
+                                <t t-out="ann.body[:300] if ann.body else ''"/>
+                                <a t-attf-href="/announcements/#{ann.id}" class="btn btn-sm btn-outline-primary mt-2">
+                                    Read More
+                                </a>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+                <t t-else="">
+                    <div class="alert alert-info">
+                        No announcements at this time.
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- Portal: Single Announcement -->
+    <template id="portal_announcement_detail" name="Announcement Detail">
+        <t t-call="portal.portal_layout">
+            <div class="o_portal_docs">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h3 class="mb-0"><t t-esc="announcement.name"/></h3>
+                        <small class="text-muted">
+                            Published: <t t-esc="announcement.date_publish"/>
+                            <t t-if="announcement.date_expire">
+                                · Expires: <t t-esc="announcement.date_expire"/>
+                            </t>
+                        </small>
+                    </div>
+                    <div class="card-body">
+                        <t t-out="announcement.body"/>
+                    </div>
+                    <div class="card-footer">
+                        <a href="/announcements" class="btn btn-sm btn-secondary">
+                            ← Back to Announcements
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</data>
+</odoo>

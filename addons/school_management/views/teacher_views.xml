@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Subject List View -->
+        <record id="view_subject_list" model="ir.ui.view">
+            <field name="name">school.subject.list</field>
+            <field name="model">school.subject</field>
+            <field name="arch" type="xml">
+                <tree string="Subjects">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Subject Form View -->
+        <record id="view_subject_form" model="ir.ui.view">
+            <field name="name">school.subject.form</field>
+            <field name="model">school.subject</field>
+            <field name="arch" type="xml">
+                <form string="Subject">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="code"/>
+                            <h6><field name="code" placeholder="Subject Code"/></h6>
+                            <h1><field name="name" placeholder="Subject Name"/></h1>
+                        </div>
+                        <group>
+                            <field name="description"/>
+                        </group>
+                        <notebook>
+                            <page string="Teachers">
+                                <field name="teacher_ids">
+                                    <tree>
+                                        <field name="employee_code"/>
+                                        <field name="name"/>
+                                        <field name="specialization"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Subject Action -->
+        <record id="action_subject" model="ir.actions.act_window">
+            <field name="name">Subjects</field>
+            <field name="res_model">school.subject</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Teacher List View -->
+        <record id="view_teacher_list" model="ir.ui.view">
+            <field name="name">school.teacher.list</field>
+            <field name="model">school.teacher</field>
+            <field name="arch" type="xml">
+                <tree string="Teachers" decoration-muted="status == 'inactive'">
+                    <field name="employee_code"/>
+                    <field name="name"/>
+                    <field name="gender"/>
+                    <field name="specialization"/>
+                    <field name="qualification"/>
+                    <field name="hire_date"/>
+                    <field name="class_count"/>
+                    <field name="status"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Teacher Form View -->
+        <record id="view_teacher_form" model="ir.ui.view">
+            <field name="name">school.teacher.form</field>
+            <field name="model">school.teacher</field>
+            <field name="arch" type="xml">
+                <form string="Teacher">
+                    <header>
+                        <field name="status" widget="statusbar"
+                            statusbar_visible="active,inactive"/>
+                    </header>
+                    <sheet>
+                        <field name="photo" widget="image" class="oe_avatar"/>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_classes" type="object"
+                                class="oe_stat_button" icon="fa-university">
+                                <field name="class_count" widget="statinfo" string="Classes"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <label for="employee_code" class="oe_edit_only"/>
+                            <h6><field name="employee_code" readonly="1"/></h6>
+                            <h1><field name="name" placeholder="Teacher Full Name"/></h1>
+                        </div>
+                        <group>
+                            <group string="Personal Information">
+                                <field name="gender"/>
+                                <field name="birth_date"/>
+                                <field name="nationality"/>
+                                <field name="national_id"/>
+                            </group>
+                            <group string="Professional Information">
+                                <field name="school_id"/>
+                                <field name="specialization"/>
+                                <field name="qualification"/>
+                                <field name="hire_date"/>
+                                <field name="user_id"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Subjects &amp; Classes">
+                                <group>
+                                    <group string="Subjects Taught">
+                                        <field name="subject_ids" widget="many2many_tags"/>
+                                    </group>
+                                    <group string="Assigned Classes">
+                                        <field name="class_ids" widget="many2many_tags"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Contact">
+                                <group>
+                                    <field name="email"/>
+                                    <field name="phone"/>
+                                    <field name="mobile"/>
+                                    <field name="address"/>
+                                </group>
+                            </page>
+                            <page string="Notes">
+                                <field name="notes"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Teacher Search View -->
+        <record id="view_teacher_search" model="ir.ui.view">
+            <field name="name">school.teacher.search</field>
+            <field name="model">school.teacher</field>
+            <field name="arch" type="xml">
+                <search string="Search Teachers">
+                    <field name="name"/>
+                    <field name="employee_code"/>
+                    <field name="specialization"/>
+                    <field name="subject_ids"/>
+                    <field name="school_id"/>
+                    <filter string="Active" name="active" domain="[('status','=','active')]"/>
+                    <filter string="Inactive" name="inactive" domain="[('status','=','inactive')]"/>
+                    <filter string="Male" name="male" domain="[('gender','=','male')]"/>
+                    <filter string="Female" name="female" domain="[('gender','=','female')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="School" name="group_school" context="{'group_by': 'school_id'}"/>
+                        <filter string="Specialization" name="group_spec" context="{'group_by': 'specialization'}"/>
+                        <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Teacher Action -->
+        <record id="action_teacher" model="ir.actions.act_window">
+            <field name="name">Teachers</field>
+            <field name="res_model">school.teacher</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_teacher_search"/>
+            <field name="context">{'search_default_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add your first teacher
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

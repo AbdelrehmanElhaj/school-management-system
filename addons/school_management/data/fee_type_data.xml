@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="fee_type_tuition" model="school.fee.type">
+            <field name="name">Tuition Fee</field>
+            <field name="code">TUITION</field>
+            <field name="description">Regular academic term tuition fee</field>
+        </record>
+
+        <record id="fee_type_registration" model="school.fee.type">
+            <field name="name">Registration Fee</field>
+            <field name="code">REGISTRATION</field>
+            <field name="description">Annual registration and enrollment fee</field>
+        </record>
+
+        <record id="fee_type_activity" model="school.fee.type">
+            <field name="name">Activity Fee</field>
+            <field name="code">ACTIVITY</field>
+            <field name="description">Extracurricular and school activities fee</field>
+        </record>
+
+        <record id="fee_type_transport" model="school.fee.type">
+            <field name="name">Transport Fee</field>
+            <field name="code">TRANSPORT</field>
+            <field name="description">School bus and transportation fee</field>
+        </record>
+
+        <record id="fee_type_books" model="school.fee.type">
+            <field name="name">Books &amp; Materials</field>
+            <field name="code">BOOKS</field>
+            <field name="description">Textbooks and study materials fee</field>
+        </record>
+
+        <record id="fee_type_exam" model="school.fee.type">
+            <field name="name">Exam Fee</field>
+            <field name="code">EXAM</field>
+            <field name="description">Examination and assessment fee</field>
+        </record>
+
+    </data>
+</odoo>

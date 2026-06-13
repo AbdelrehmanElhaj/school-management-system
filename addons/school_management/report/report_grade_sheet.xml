@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="report_grade_sheet_document">
+            <t t-foreach="docs" t-as="student">
+                <t t-set="grades_by_term" t-value="{}"/>
+                <t t-foreach="student.class_id.academic_year_id and
+                    env['school.grade'].search([('student_id','=',student.id)], order='term,subject_id') or []"
+                    t-as="g">
+                    <t t-set="term_key" t-value="g.term or 'unknown'"/>
+                </t>
+
+                <div class="page" style="font-family: Arial, sans-serif; padding: 20px;">
+                    <!-- Header -->
+                    <div style="text-align:center; border-bottom: 2px solid #2c3e50; padding-bottom: 15px; margin-bottom: 20px;">
+                        <h2 style="color: #2c3e50; margin:0;">Academic Grade Report</h2>
+                        <p style="margin:4px 0; color:#555;">
+                            Academic Year: <strong><t t-esc="student.academic_year_id.name or ''"/></strong>
+                        </p>
+                    </div>
+
+                    <!-- Student Info -->
+                    <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
+                        <tr>
+                            <td style="width:50%; padding:4px;"><strong>Student Name:</strong>
+                                <t t-esc="student.name"/>
+                            </td>
+                            <td style="width:50%; padding:4px;"><strong>Student ID:</strong>
+                                <t t-esc="student.student_code"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:4px;"><strong>Class:</strong>
+                                <t t-esc="student.class_id.display_name or ''"/>
+                            </td>
+                            <td style="padding:4px;"><strong>Grade Level:</strong>
+                                <t t-esc="student.grade_level or ''"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:4px;"><strong>Teacher:</strong>
+                                <t t-esc="student.class_id.teacher_id.name or ''"/>
+                            </td>
+                            <td style="padding:4px;"><strong>Print Date:</strong>
+                                <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d')"/>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Grades Table -->
+                    <t t-set="all_grades" t-value="env['school.grade'].search([('student_id','=',student.id)], order='term,subject_id,exam_id')"/>
+
+                    <t t-if="all_grades">
+                        <table style="width:100%; border-collapse:collapse; font-size:12px;">
+                            <thead>
+                                <tr style="background-color:#2c3e50; color:white;">
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:left;">Subject</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:left;">Exam</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:left;">Type</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:center;">Term</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:center;">Score</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:center;">Max</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:center;">%</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:center;">Grade</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:center;">Rank</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:center;">Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="all_grades" t-as="grade">
+                                    <tr t-attf-style="background-color: #{
+                                        '#ffe6e6' if not grade.passed else
+                                        '#e6f9e6' if grade.percentage >= 90 else 'white'
+                                    };">
+                                        <td style="padding:7px; border:1px solid #ddd;">
+                                            <t t-esc="grade.subject_id.name"/>
+                                        </td>
+                                        <td style="padding:7px; border:1px solid #ddd;">
+                                            <t t-esc="grade.exam_id.name"/>
+                                        </td>
+                                        <td style="padding:7px; border:1px solid #ddd;">
+                                            <t t-esc="grade.exam_id.exam_type or ''"/>
+                                        </td>
+                                        <td style="padding:7px; border:1px solid #ddd; text-align:center;">
+                                            <t t-esc="grade.term or ''"/>
+                                        </td>
+                                        <td style="padding:7px; border:1px solid #ddd; text-align:center;">
+                                            <t t-esc="'%.1f' % grade.score"/>
+                                        </td>
+                                        <td style="padding:7px; border:1px solid #ddd; text-align:center;">
+                                            <t t-esc="'%.0f' % grade.max_score"/>
+                                        </td>
+                                        <td style="padding:7px; border:1px solid #ddd; text-align:center;">
+                                            <t t-esc="'%.1f%%' % grade.percentage"/>
+                                        </td>
+                                        <td style="padding:7px; border:1px solid #ddd; text-align:center; font-weight:bold;">
+                                            <t t-esc="grade.grade_letter"/>
+                                        </td>
+                                        <td style="padding:7px; border:1px solid #ddd; text-align:center;">
+                                            <t t-esc="grade.rank or ''"/>
+                                        </td>
+                                        <td style="padding:7px; border:1px solid #ddd; text-align:center;">
+                                            <span t-attf-style="color: #{'green' if grade.passed else 'red'}; font-weight:bold;">
+                                                <t t-esc="'PASS' if grade.passed else 'FAIL'"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!-- Summary -->
+                        <t t-set="pass_count" t-value="len(all_grades.filtered(lambda g: g.passed))"/>
+                        <t t-set="total_count" t-value="len(all_grades)"/>
+                        <t t-set="avg_pct" t-value="sum(all_grades.mapped('percentage')) / total_count if total_count else 0"/>
+                        <div style="margin-top:15px; padding:10px; background:#f8f9fa; border:1px solid #dee2e6; border-radius:4px;">
+                            <strong>Summary:</strong>
+                            Passed: <t t-esc="pass_count"/>/<t t-esc="total_count"/> exams |
+                            Average: <t t-esc="'%.1f%%' % avg_pct"/>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <p style="color:#888; font-style:italic;">No grades recorded for this student.</p>
+                    </t>
+
+                    <!-- Signature Area -->
+                    <div style="margin-top:50px; display:flex; justify-content:space-between;">
+                        <div style="text-align:center; width:30%;">
+                            <div style="border-top:1px solid #333; padding-top:5px;">Class Teacher</div>
+                        </div>
+                        <div style="text-align:center; width:30%;">
+                            <div style="border-top:1px solid #333; padding-top:5px;">Principal</div>
+                        </div>
+                        <div style="text-align:center; width:30%;">
+                            <div style="border-top:1px solid #333; padding-top:5px;">School Stamp</div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <template id="report_grade_sheet">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <t t-call="school_management.report_grade_sheet_document"
+                            t-lang="o.env.lang"/>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

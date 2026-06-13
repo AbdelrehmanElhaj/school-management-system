@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Root Menu -->
+        <menuitem id="menu_school_root"
+            name="School Management"
+            sequence="10"
+            web_icon="school_management,static/src/img/icon.png"/>
+
+        <!-- Dashboard -->
+        <menuitem id="menu_school_dashboard"
+            name="Dashboard"
+            parent="menu_school_root"
+            action="school_management.action_school_dashboard"
+            sequence="1"/>
+
+        <!-- Students Menu -->
+        <menuitem id="menu_school_students"
+            name="Students"
+            parent="menu_school_root"
+            sequence="10"/>
+
+        <menuitem id="menu_student_list"
+            name="All Students"
+            parent="menu_school_students"
+            action="action_student"
+            sequence="10"/>
+
+        <menuitem id="menu_guardian_list"
+            name="Guardians"
+            parent="menu_school_students"
+            action="action_guardian"
+            sequence="20"/>
+
+        <!-- Teachers Menu -->
+        <menuitem id="menu_school_teachers"
+            name="Teachers"
+            parent="menu_school_root"
+            sequence="20"/>
+
+        <menuitem id="menu_teacher_list"
+            name="All Teachers"
+            parent="menu_school_teachers"
+            action="action_teacher"
+            sequence="10"/>
+
+        <menuitem id="menu_subject_list"
+            name="Subjects"
+            parent="menu_school_teachers"
+            action="action_subject"
+            sequence="20"/>
+
+        <!-- Classes Menu -->
+        <menuitem id="menu_school_classes"
+            name="Classes"
+            parent="menu_school_root"
+            sequence="30"/>
+
+        <menuitem id="menu_class_list"
+            name="All Classes"
+            parent="menu_school_classes"
+            action="action_class"
+            sequence="10"/>
+
+        <!-- Attendance Menu -->
+        <menuitem id="menu_school_attendance"
+            name="Attendance"
+            parent="menu_school_root"
+            sequence="40"/>
+
+        <menuitem id="menu_attendance_take"
+            name="Take Attendance"
+            parent="menu_school_attendance"
+            action="action_attendance_bulk"
+            sequence="10"
+            groups="group_school_admin,group_school_principal,group_school_affairs,group_school_teacher"/>
+
+        <menuitem id="menu_attendance_list"
+            name="Attendance Records"
+            parent="menu_school_attendance"
+            action="action_attendance"
+            sequence="20"/>
+
+        <!-- Grades Menu -->
+        <menuitem id="menu_school_grades"
+            name="Grades &amp; Exams"
+            parent="menu_school_root"
+            sequence="50"/>
+
+        <menuitem id="menu_exam_list"
+            name="Exams"
+            parent="menu_school_grades"
+            action="action_exam"
+            sequence="10"/>
+
+        <menuitem id="menu_grade_list"
+            name="Grades"
+            parent="menu_school_grades"
+            action="action_grade"
+            sequence="20"/>
+
+        <!-- Fees Menu -->
+        <menuitem id="menu_school_fees"
+            name="Fees"
+            parent="menu_school_root"
+            sequence="60"
+            groups="group_school_admin,group_school_principal,group_school_accountant,group_school_affairs"/>
+
+        <menuitem id="menu_fee_list"
+            name="Student Fees"
+            parent="menu_school_fees"
+            action="action_fee"
+            sequence="10"/>
+
+        <menuitem id="menu_payment_list"
+            name="Payments"
+            parent="menu_school_fees"
+            action="action_payment"
+            sequence="20"/>
+
+        <!-- Communication Menu -->
+        <menuitem id="menu_school_communication"
+            name="Communication"
+            parent="menu_school_root"
+            sequence="65"
+            groups="group_school_admin,group_school_principal,group_school_affairs"/>
+
+        <menuitem id="menu_announcements"
+            name="Announcements"
+            parent="menu_school_communication"
+            action="school_management.action_announcement"
+            sequence="10"/>
+
+        <menuitem id="menu_bulk_email"
+            name="Send Parent Email"
+            parent="menu_school_communication"
+            action="school_management.action_communication_wizard"
+            sequence="20"/>
+
+        <!-- Timetable Menu -->
+        <menuitem id="menu_school_timetable"
+            name="Timetables"
+            parent="menu_school_root"
+            sequence="35"/>
+
+        <menuitem id="menu_timetable_list"
+            name="Class Timetables"
+            parent="menu_school_timetable"
+            action="school_management.action_timetable"
+            sequence="10"/>
+
+        <menuitem id="menu_teacher_schedule"
+            name="Teacher Schedules"
+            parent="menu_school_timetable"
+            action="school_management.action_teacher_schedule"
+            sequence="20"/>
+
+        <!-- Analytics Menu -->
+        <menuitem id="menu_school_analytics"
+            name="Analytics"
+            parent="menu_school_root"
+            sequence="70"
+            groups="group_school_admin,group_school_principal,group_school_affairs,group_school_accountant"/>
+
+        <menuitem id="menu_student_analysis"
+            name="Student Analysis"
+            parent="menu_school_analytics"
+            action="school_management.action_student_analysis"
+            sequence="10"/>
+
+        <menuitem id="menu_attendance_analysis"
+            name="Attendance Analysis"
+            parent="menu_school_analytics"
+            action="school_management.action_attendance_analysis"
+            sequence="20"/>
+
+        <menuitem id="menu_grade_analysis"
+            name="Grade Analysis"
+            parent="menu_school_analytics"
+            action="school_management.action_grade_analysis"
+            sequence="30"/>
+
+        <menuitem id="menu_fee_analysis"
+            name="Fee Analysis"
+            parent="menu_school_analytics"
+            action="school_management.action_fee_analysis"
+            sequence="40"/>
+
+        <!-- Configuration Menu -->
+        <menuitem id="menu_school_config"
+            name="Configuration"
+            parent="menu_school_root"
+            sequence="100"
+            groups="group_school_admin"/>
+
+        <menuitem id="menu_academic_year"
+            name="Academic Years"
+            parent="menu_school_config"
+            action="action_academic_year"
+            sequence="10"/>
+
+        <menuitem id="menu_fee_type"
+            name="Fee Types"
+            parent="menu_school_config"
+            action="action_fee_type"
+            sequence="20"/>
+
+        <menuitem id="menu_school_periods"
+            name="School Periods"
+            parent="menu_school_config"
+            action="school_management.action_school_period"
+            sequence="30"/>
+
+        <menuitem id="menu_school_branches"
+            name="School Branches"
+            parent="menu_school_config"
+            action="school_management.action_school_branch"
+            sequence="5"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Module Category -->
+        <record id="module_category_school" model="ir.module.category">
+            <field name="name">School Management</field>
+            <field name="sequence">1</field>
+        </record>
+
+        <!-- Security Groups -->
+        <record id="group_school_admin" model="res.groups">
+            <field name="name">Administrator</field>
+            <field name="category_id" ref="module_category_school"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Full access to all school data, users, and configuration.</field>
+        </record>
+
+        <record id="group_school_principal" model="res.groups">
+            <field name="name">Principal</field>
+            <field name="category_id" ref="module_category_school"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Manage daily operations, approve schedules and results, monitor attendance.</field>
+        </record>
+
+        <record id="group_school_affairs" model="res.groups">
+            <field name="name">Student Affairs</field>
+            <field name="category_id" ref="module_category_school"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Register students, manage transfers, issue files.</field>
+        </record>
+
+        <record id="group_school_teacher" model="res.groups">
+            <field name="name">Teacher</field>
+            <field name="category_id" ref="module_category_school"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Record attendance and grades for own classes.</field>
+        </record>
+
+        <record id="group_school_accountant" model="res.groups">
+            <field name="name">Accountant</field>
+            <field name="category_id" ref="module_category_school"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Manage fees, payments, and financial reports.</field>
+        </record>
+
+        <record id="group_school_student" model="res.groups">
+            <field name="name">Student</field>
+            <field name="category_id" ref="module_category_school"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">View own schedule, grades, and assignments.</field>
+        </record>
+
+        <record id="group_school_parent" model="res.groups">
+            <field name="name">Parent / Guardian</field>
+            <field name="category_id" ref="module_category_school"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">View children's attendance, fees, and notifications.</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- School Branch List View -->
+        <record id="view_school_branch_list" model="ir.ui.view">
+            <field name="name">school.branch.list</field>
+            <field name="model">school.branch</field>
+            <field name="arch" type="xml">
+                <tree string="School Branches" decoration-muted="active == False">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="phone"/>
+                    <field name="email"/>
+                    <field name="principal_id"/>
+                    <field name="student_count" string="Students"/>
+                    <field name="teacher_count" string="Teachers"/>
+                    <field name="class_count" string="Classes"/>
+                    <field name="active" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- School Branch Form View -->
+        <record id="view_school_branch_form" model="ir.ui.view">
+            <field name="name">school.branch.form</field>
+            <field name="model">school.branch</field>
+            <field name="arch" type="xml">
+                <form string="School Branch">
+                    <sheet>
+                        <field name="logo" widget="image" class="oe_avatar"/>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_students" type="object"
+                                class="oe_stat_button" icon="fa-users">
+                                <field name="student_count" widget="statinfo" string="Students"/>
+                            </button>
+                            <button name="action_view_teachers" type="object"
+                                class="oe_stat_button" icon="fa-chalkboard-teacher">
+                                <field name="teacher_count" widget="statinfo" string="Teachers"/>
+                            </button>
+                            <button name="action_view_classes" type="object"
+                                class="oe_stat_button" icon="fa-graduation-cap">
+                                <field name="class_count" widget="statinfo" string="Classes"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <label for="code" class="oe_edit_only"/>
+                            <h6><field name="code" placeholder="Branch Code"/></h6>
+                            <h1><field name="name" placeholder="School / Campus Name"/></h1>
+                        </div>
+                        <group>
+                            <group string="Details">
+                                <field name="principal_id"/>
+                                <field name="active"/>
+                            </group>
+                            <group string="Contact">
+                                <field name="phone"/>
+                                <field name="email"/>
+                                <field name="website"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Address">
+                                <field name="address" placeholder="Full address..."/>
+                            </page>
+                            <page string="Notes">
+                                <field name="notes" placeholder="Internal notes..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- School Branch Kanban View -->
+        <record id="view_school_branch_kanban" model="ir.ui.view">
+            <field name="name">school.branch.kanban</field>
+            <field name="model">school.branch</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="principal_id"/>
+                    <field name="student_count"/>
+                    <field name="teacher_count"/>
+                    <field name="class_count"/>
+                    <field name="logo"/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="oe_kanban_global_click">
+                                <div class="d-flex align-items-center mb-2">
+                                    <img t-if="record.logo.raw_value"
+                                        t-att-src="kanban_image('school.branch', 'logo', record.id.raw_value)"
+                                        class="me-2 rounded" style="width:40px;height:40px;object-fit:cover;"
+                                        alt="School Logo"/>
+                                    <div>
+                                        <strong><field name="name"/></strong>
+                                        <div class="text-muted small"><field name="code"/></div>
+                                    </div>
+                                </div>
+                                <div class="text-muted small">
+                                    <i class="fa fa-user-tie" title="Principal"/> <field name="principal_id"/>
+                                </div>
+                                <div class="d-flex justify-content-between mt-2 text-center">
+                                    <div>
+                                        <div class="fw-bold"><field name="student_count"/></div>
+                                        <div class="text-muted" style="font-size:0.75em;">Students</div>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold"><field name="teacher_count"/></div>
+                                        <div class="text-muted" style="font-size:0.75em;">Teachers</div>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold"><field name="class_count"/></div>
+                                        <div class="text-muted" style="font-size:0.75em;">Classes</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- School Branch Search View -->
+        <record id="view_school_branch_search" model="ir.ui.view">
+            <field name="name">school.branch.search</field>
+            <field name="model">school.branch</field>
+            <field name="arch" type="xml">
+                <search string="Search Branches">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="principal_id"/>
+                    <filter string="Active" name="active" domain="[('active','=',True)]"/>
+                    <filter string="Archived" name="archived" domain="[('active','=',False)]"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- School Branch Action -->
+        <record id="action_school_branch" model="ir.actions.act_window">
+            <field name="name">School Branches</field>
+            <field name="res_model">school.branch</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="search_view_id" ref="view_school_branch_search"/>
+            <field name="context">{'search_default_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add your first school branch or campus
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

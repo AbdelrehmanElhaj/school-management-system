@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Class List View -->
+        <record id="view_class_list" model="ir.ui.view">
+            <field name="name">school.class.list</field>
+            <field name="model">school.class</field>
+            <field name="arch" type="xml">
+                <tree string="Classes" decoration-muted="state == 'closed'">
+                    <field name="display_name"/>
+                    <field name="grade_level"/>
+                    <field name="school_id"/>
+                    <field name="academic_year_id"/>
+                    <field name="teacher_id"/>
+                    <field name="student_count"/>
+                    <field name="capacity"/>
+                    <field name="room"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Class Form View -->
+        <record id="view_class_form" model="ir.ui.view">
+            <field name="name">school.class.form</field>
+            <field name="model">school.class</field>
+            <field name="arch" type="xml">
+                <form string="Classroom">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="open,closed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_students" type="object"
+                                class="oe_stat_button" icon="fa-users">
+                                <field name="student_count" widget="statinfo" string="Students"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1><field name="display_name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group string="Class Details">
+                                <field name="grade_level"/>
+                                <field name="name" string="Section"/>
+                                <field name="academic_year_id"/>
+                                <field name="teacher_id"/>
+                            </group>
+                            <group string="Room Information">
+                                <field name="room"/>
+                                <field name="capacity"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Subjects">
+                                <field name="subject_ids" widget="many2many_tags"/>
+                            </page>
+                            <page string="Students">
+                                <field name="student_ids" readonly="1">
+                                    <tree>
+                                        <field name="student_code"/>
+                                        <field name="name"/>
+                                        <field name="gender"/>
+                                        <field name="status"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Notes">
+                                <field name="notes"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Class Kanban View -->
+        <record id="view_class_kanban" model="ir.ui.view">
+            <field name="name">school.class.kanban</field>
+            <field name="model">school.class</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="grade_level">
+                    <field name="display_name"/>
+                    <field name="teacher_id"/>
+                    <field name="student_count"/>
+                    <field name="capacity"/>
+                    <field name="state"/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="oe_kanban_global_click">
+                                <strong><field name="display_name"/></strong>
+                                <div class="text-muted">
+                                    <i class="fa fa-chalkboard-teacher"/> <field name="teacher_id"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-users"/>
+                                    <field name="student_count"/> / <field name="capacity"/> students
+                                </div>
+                                <field name="state" widget="badge"/>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Class Search View -->
+        <record id="view_class_search" model="ir.ui.view">
+            <field name="name">school.class.search</field>
+            <field name="model">school.class</field>
+            <field name="arch" type="xml">
+                <search string="Search Classes">
+                    <field name="display_name"/>
+                    <field name="teacher_id"/>
+                    <field name="academic_year_id"/>
+                    <field name="school_id"/>
+                    <filter string="Open" name="open" domain="[('state','=','open')]"/>
+                    <filter string="Closed" name="closed" domain="[('state','=','closed')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="School" name="group_school" context="{'group_by': 'school_id'}"/>
+                        <filter string="Grade Level" name="group_grade" context="{'group_by': 'grade_level'}"/>
+                        <filter string="Academic Year" name="group_year" context="{'group_by': 'academic_year_id'}"/>
+                        <filter string="Teacher" name="group_teacher" context="{'group_by': 'teacher_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Class Action -->
+        <record id="action_class" model="ir.actions.act_window">
+            <field name="name">Classes</field>
+            <field name="res_model">school.class</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="search_view_id" ref="view_class_search"/>
+            <field name="context">{'search_default_open': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first classroom
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

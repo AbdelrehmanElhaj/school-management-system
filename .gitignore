@@ -1,0 +1,9 @@
+logs/*.log
+logs/odoo.log
+backups/*.sql
+backups/*.gz
+__pycache__/
+*.pyc
+*.pyo
+.env
+config/certs/

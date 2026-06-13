@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Portal Home: add School tiles -->
+        <template id="portal_my_home_school" name="School Portal Home"
+            inherit_id="portal.portal_my_home">
+            <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">My Children</t>
+                    <t t-set="url">/my/students</t>
+                    <t t-set="count" t-value="student_count"/>
+                    <t t-set="icon">/web/static/img/avatars/avatar_10.png</t>
+                </t>
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">School Fees</t>
+                    <t t-set="url">/my/fees</t>
+                    <t t-set="count" t-value="fee_count"/>
+                    <t t-set="icon">/web/static/img/avatars/avatar_1.png</t>
+                </t>
+            </xpath>
+        </template>
+
+        <!-- My Children List -->
+        <template id="portal_my_students" name="My Children">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">My Children</t>
+                </t>
+                <div class="o_portal_wrap">
+                    <div class="container mt-4">
+                        <t t-if="not students">
+                            <div class="alert alert-info">
+                                No students linked to your account.
+                            </div>
+                        </t>
+                        <div class="row" t-if="students">
+                            <t t-foreach="students" t-as="student">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100 shadow-sm">
+                                        <div class="card-body">
+                                            <h5 class="card-title">
+                                                <a t-attf-href="/my/students/#{student.id}">
+                                                    <t t-esc="student.name"/>
+                                                </a>
+                                            </h5>
+                                            <p class="card-text text-muted mb-1">
+                                                <strong>ID:</strong> <t t-esc="student.student_code"/>
+                                            </p>
+                                            <p class="card-text text-muted mb-1">
+                                                <strong>Class:</strong> <t t-esc="student.class_id.display_name"/>
+                                            </p>
+                                            <p class="card-text mb-2">
+                                                <span t-attf-class="badge #{
+                                                    'bg-success' if student.status == 'active' else
+                                                    'bg-danger' if student.status == 'withdrawn' else 'bg-secondary'
+                                                }">
+                                                    <t t-esc="student.status.capitalize()"/>
+                                                </span>
+                                            </p>
+                                            <a t-attf-href="/my/students/#{student.id}"
+                                                class="btn btn-sm btn-primary">View Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Student Detail Page -->
+        <template id="portal_student_detail" name="Student Detail">
+            <t t-call="portal.portal_layout">
+                <t t-set="o_portal_fullwidth_alert" t-value="True"/>
+                <div class="o_portal_wrap">
+                    <div class="container mt-4">
+                        <!-- Breadcrumb -->
+                        <ol class="breadcrumb mb-3">
+                            <li class="breadcrumb-item"><a href="/my/students">My Children</a></li>
+                            <li class="breadcrumb-item active"><t t-esc="student.name"/></li>
+                        </ol>
+
+                        <div class="row">
+                            <!-- Student Info Card -->
+                            <div class="col-md-4">
+                                <div class="card shadow-sm mb-4">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">Student Profile</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>Name:</strong> <t t-esc="student.name"/></p>
+                                        <p><strong>ID:</strong> <t t-esc="student.student_code"/></p>
+                                        <p><strong>Class:</strong> <t t-esc="student.class_id.display_name"/></p>
+                                        <p><strong>Academic Year:</strong> <t t-esc="student.academic_year_id.name"/></p>
+                                        <p><strong>Enrollment Date:</strong>
+                                            <t t-esc="student.enrollment_date"/>
+                                        </p>
+                                        <p><strong>Status:</strong>
+                                            <span t-attf-class="badge #{
+                                                'bg-success' if student.status == 'active' else 'bg-danger'
+                                            }">
+                                                <t t-esc="student.status.capitalize()"/>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tabs: Attendance / Grades / Fees -->
+                            <div class="col-md-8">
+                                <ul class="nav nav-tabs" id="studentTabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-bs-toggle="tab"
+                                            href="#attendance">Attendance</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-bs-toggle="tab"
+                                            href="#grades">Grades</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-bs-toggle="tab"
+                                            href="#fees">Fees</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content border border-top-0 p-3">
+
+                                    <!-- Attendance Tab -->
+                                    <div class="tab-pane fade show active" id="attendance">
+                                        <h6>Last 30 Attendance Records</h6>
+                                        <t t-if="not attendance">
+                                            <p class="text-muted">No attendance records found.</p>
+                                        </t>
+                                        <table class="table table-sm table-hover" t-if="attendance">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Status</th>
+                                                    <th>Notes</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="attendance" t-as="att">
+                                                    <tr t-attf-class="#{
+                                                        'table-danger' if att.status == 'absent' else
+                                                        'table-warning' if att.status == 'late' else
+                                                        'table-info' if att.status == 'excused' else ''
+                                                    }">
+                                                        <td><t t-esc="att.date"/></td>
+                                                        <td><t t-esc="att.status.capitalize()"/></td>
+                                                        <td><t t-esc="att.notes or ''"/></td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- Grades Tab -->
+                                    <div class="tab-pane fade" id="grades">
+                                        <h6>Grades</h6>
+                                        <t t-if="not grades">
+                                            <p class="text-muted">No grades recorded yet.</p>
+                                        </t>
+                                        <table class="table table-sm table-hover" t-if="grades">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Exam</th>
+                                                    <th>Subject</th>
+                                                    <th>Term</th>
+                                                    <th>Score</th>
+                                                    <th>Grade</th>
+                                                    <th>Result</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="grades" t-as="grade">
+                                                    <tr>
+                                                        <td><t t-esc="grade.exam_id.name"/></td>
+                                                        <td><t t-esc="grade.subject_id.name"/></td>
+                                                        <td><t t-esc="grade.term"/></td>
+                                                        <td>
+                                                            <t t-esc="grade.score"/> /
+                                                            <t t-esc="grade.max_score"/>
+                                                            (<t t-esc="'%.1f' % grade.percentage"/>%)
+                                                        </td>
+                                                        <td><strong><t t-esc="grade.grade_letter"/></strong></td>
+                                                        <td>
+                                                            <span t-attf-class="badge #{
+                                                                'bg-success' if grade.passed else 'bg-danger'
+                                                            }">
+                                                                <t t-esc="'Pass' if grade.passed else 'Fail'"/>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- Fees Tab -->
+                                    <div class="tab-pane fade" id="fees">
+                                        <h6>Fees</h6>
+                                        <t t-if="not fees">
+                                            <p class="text-muted">No fees found.</p>
+                                        </t>
+                                        <table class="table table-sm table-hover" t-if="fees">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Fee Type</th>
+                                                    <th>Term</th>
+                                                    <th>Amount</th>
+                                                    <th>Paid</th>
+                                                    <th>Balance</th>
+                                                    <th>Due Date</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="fees" t-as="fee">
+                                                    <tr t-attf-class="#{
+                                                        'table-danger' if fee.state == 'overdue' else
+                                                        'table-warning' if fee.state == 'partial' else
+                                                        'table-success' if fee.state == 'paid' else ''
+                                                    }">
+                                                        <td><t t-esc="fee.fee_type_id.name"/></td>
+                                                        <td><t t-esc="fee.term"/></td>
+                                                        <td><t t-esc="fee.amount"/></td>
+                                                        <td><t t-esc="fee.paid_amount"/></td>
+                                                        <td><t t-esc="fee.balance"/></td>
+                                                        <td><t t-esc="fee.due_date"/></td>
+                                                        <td>
+                                                            <span t-attf-class="badge #{
+                                                                'bg-success' if fee.state == 'paid' else
+                                                                'bg-danger' if fee.state == 'overdue' else
+                                                                'bg-warning text-dark' if fee.state == 'partial' else
+                                                                'bg-secondary'
+                                                            }">
+                                                                <t t-esc="fee.state.capitalize()"/>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- My Fees Page -->
+        <template id="portal_my_fees" name="My Fees">
+            <t t-call="portal.portal_layout">
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">School Fees</t>
+                </t>
+                <div class="o_portal_wrap">
+                    <div class="container mt-4">
+                        <t t-if="not fees">
+                            <div class="alert alert-info">No fees found.</div>
+                        </t>
+                        <table class="table table-hover" t-if="fees">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Fee Type</th>
+                                    <th>Term</th>
+                                    <th>Amount</th>
+                                    <th>Paid</th>
+                                    <th>Balance</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="fees" t-as="fee">
+                                    <tr t-attf-class="#{
+                                        'table-danger' if fee.state == 'overdue' else
+                                        'table-warning' if fee.state == 'partial' else
+                                        'table-success' if fee.state == 'paid' else ''
+                                    }">
+                                        <td><t t-esc="fee.student_id.name"/></td>
+                                        <td><t t-esc="fee.fee_type_id.name"/></td>
+                                        <td><t t-esc="fee.term"/></td>
+                                        <td><t t-esc="fee.amount"/> <t t-esc="fee.currency_id.symbol"/></td>
+                                        <td><t t-esc="fee.paid_amount"/> <t t-esc="fee.currency_id.symbol"/></td>
+                                        <td><strong><t t-esc="fee.balance"/> <t t-esc="fee.currency_id.symbol"/></strong></td>
+                                        <td><t t-esc="fee.due_date"/></td>
+                                        <td>
+                                            <span t-attf-class="badge #{
+                                                'bg-success' if fee.state == 'paid' else
+                                                'bg-danger' if fee.state == 'overdue' else
+                                                'bg-warning text-dark' if fee.state == 'partial' else
+                                                'bg-secondary'
+                                            }">
+                                                <t t-esc="fee.state.capitalize()"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+    </data>
+</odoo>

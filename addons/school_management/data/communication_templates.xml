@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- Absence Alert Email Template -->
+    <record id="email_template_absence_alert" model="mail.template">
+        <field name="name">School: Student Absence Alert</field>
+        <field name="model_id" ref="school_management.model_school_attendance"/>
+        <field name="subject">Absence Notice: {{ object.student_id.name }} — {{ object.date }}</field>
+        <field name="email_to">{{ object.student_id.guardian_id.email }}</field>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <div style="background-color: #e74c3c; padding: 20px; text-align: center;">
+        <h2 style="color: white; margin: 0;">Absence Notification</h2>
+    </div>
+    <div style="padding: 20px; border: 1px solid #ddd;">
+        <p>Dear {{ object.student_id.guardian_id.name or 'Parent/Guardian' }},</p>
+        <p>We would like to inform you that <strong>{{ object.student_id.name }}</strong>
+           was marked <strong style="color:#e74c3c;">absent</strong> on
+           <strong>{{ object.date }}</strong>.</p>
+        <table style="width:100%; border-collapse:collapse; margin:15px 0;">
+            <tr style="background:#f2f2f2;">
+                <td style="padding:8px; border:1px solid #ddd;"><strong>Student</strong></td>
+                <td style="padding:8px; border:1px solid #ddd;">{{ object.student_id.name }}</td>
+            </tr>
+            <tr>
+                <td style="padding:8px; border:1px solid #ddd;"><strong>Student ID</strong></td>
+                <td style="padding:8px; border:1px solid #ddd;">{{ object.student_id.student_code }}</td>
+            </tr>
+            <tr style="background:#f2f2f2;">
+                <td style="padding:8px; border:1px solid #ddd;"><strong>Class</strong></td>
+                <td style="padding:8px; border:1px solid #ddd;">{{ object.class_id.display_name }}</td>
+            </tr>
+            <tr>
+                <td style="padding:8px; border:1px solid #ddd;"><strong>Date</strong></td>
+                <td style="padding:8px; border:1px solid #ddd;">{{ object.date }}</td>
+            </tr>
+            {% if object.notes %}
+            <tr style="background:#f2f2f2;">
+                <td style="padding:8px; border:1px solid #ddd;"><strong>Notes</strong></td>
+                <td style="padding:8px; border:1px solid #ddd;">{{ object.notes }}</td>
+            </tr>
+            {% endif %}
+        </table>
+        <p>If this absence was planned, please contact the school administration with an excuse note.</p>
+        <p>Thank you,<br/><strong>School Administration</strong></p>
+    </div>
+</div>
+        ]]></field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- Fee Overdue + Email Reminder Cron -->
+    <record id="cron_fee_overdue_reminder" model="ir.cron">
+        <field name="name">School: Fee Overdue Reminder Emails</field>
+        <field name="model_id" ref="school_management.model_school_fee"/>
+        <field name="state">code</field>
+        <field name="code">env['school.fee'].cron_mark_overdue_and_remind()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</data>
+</odoo>

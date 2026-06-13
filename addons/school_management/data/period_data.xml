@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- Default school periods (Saudi school day: 7 periods, Sun-Thu) -->
+
+    <record id="period_1" model="school.period">
+        <field name="name">Period 1</field>
+        <field name="sequence">10</field>
+        <field name="time_start">7.5</field>   <!-- 07:30 -->
+        <field name="time_end">8.25</field>    <!-- 08:15 -->
+        <field name="is_break">False</field>
+    </record>
+
+    <record id="period_2" model="school.period">
+        <field name="name">Period 2</field>
+        <field name="sequence">20</field>
+        <field name="time_start">8.25</field>  <!-- 08:15 -->
+        <field name="time_end">9.0</field>     <!-- 09:00 -->
+        <field name="is_break">False</field>
+    </record>
+
+    <record id="period_break_1" model="school.period">
+        <field name="name">Break</field>
+        <field name="sequence">25</field>
+        <field name="time_start">9.0</field>   <!-- 09:00 -->
+        <field name="time_end">9.25</field>    <!-- 09:15 -->
+        <field name="is_break">True</field>
+    </record>
+
+    <record id="period_3" model="school.period">
+        <field name="name">Period 3</field>
+        <field name="sequence">30</field>
+        <field name="time_start">9.25</field>  <!-- 09:15 -->
+        <field name="time_end">10.0</field>    <!-- 10:00 -->
+        <field name="is_break">False</field>
+    </record>
+
+    <record id="period_4" model="school.period">
+        <field name="name">Period 4</field>
+        <field name="sequence">40</field>
+        <field name="time_start">10.0</field>  <!-- 10:00 -->
+        <field name="time_end">10.75</field>   <!-- 10:45 -->
+        <field name="is_break">False</field>
+    </record>
+
+    <record id="period_break_2" model="school.period">
+        <field name="name">Long Break</field>
+        <field name="sequence">45</field>
+        <field name="time_start">10.75</field> <!-- 10:45 -->
+        <field name="time_end">11.0</field>    <!-- 11:00 -->
+        <field name="is_break">True</field>
+    </record>
+
+    <record id="period_5" model="school.period">
+        <field name="name">Period 5</field>
+        <field name="sequence">50</field>
+        <field name="time_start">11.0</field>  <!-- 11:00 -->
+        <field name="time_end">11.75</field>   <!-- 11:45 -->
+        <field name="is_break">False</field>
+    </record>
+
+    <record id="period_6" model="school.period">
+        <field name="name">Period 6</field>
+        <field name="sequence">60</field>
+        <field name="time_start">11.75</field> <!-- 11:45 -->
+        <field name="time_end">12.5</field>    <!-- 12:30 -->
+        <field name="is_break">False</field>
+    </record>
+
+    <record id="period_7" model="school.period">
+        <field name="name">Period 7</field>
+        <field name="sequence">70</field>
+        <field name="time_start">12.5</field>  <!-- 12:30 -->
+        <field name="time_end">13.25</field>   <!-- 13:15 -->
+        <field name="is_break">False</field>
+    </record>
+
+</data>
+</odoo>

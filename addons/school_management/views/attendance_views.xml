@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Attendance Tree View -->
+        <record id="view_attendance_tree" model="ir.ui.view">
+            <field name="name">school.attendance.tree</field>
+            <field name="model">school.attendance</field>
+            <field name="arch" type="xml">
+                <tree string="Attendance"
+                    decoration-danger="status == 'absent'"
+                    decoration-warning="status == 'late'"
+                    decoration-info="status == 'excused'">
+                    <field name="date"/>
+                    <field name="student_id"/>
+                    <field name="class_id"/>
+                    <field name="status"/>
+                    <field name="teacher_id"/>
+                    <field name="notes"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Attendance Form View -->
+        <record id="view_attendance_form" model="ir.ui.view">
+            <field name="name">school.attendance.form</field>
+            <field name="model">school.attendance</field>
+            <field name="arch" type="xml">
+                <form string="Attendance Record">
+                    <header>
+                        <button name="action_send_absence_alert"
+                                string="Send Absence Alert"
+                                type="object"
+                                class="btn-warning"
+                                invisible="status != 'absent'"/>
+                        <field name="status" widget="statusbar"
+                            statusbar_visible="present,late,absent,excused"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="display_name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group string="Attendance Info">
+                                <field name="student_id"/>
+                                <field name="class_id"/>
+                                <field name="academic_year_id" readonly="1"/>
+                                <field name="date"/>
+                            </group>
+                            <group string="Status">
+                                <field name="status" widget="radio"/>
+                                <field name="teacher_id"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="notes" placeholder="Additional notes..."/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Attendance Pivot View -->
+        <record id="view_attendance_pivot" model="ir.ui.view">
+            <field name="name">school.attendance.pivot</field>
+            <field name="model">school.attendance</field>
+            <field name="arch" type="xml">
+                <pivot string="Attendance Analysis">
+                    <field name="class_id" type="row"/>
+                    <field name="status" type="col"/>
+                    <field name="student_id" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Attendance Graph View -->
+        <record id="view_attendance_graph" model="ir.ui.view">
+            <field name="name">school.attendance.graph</field>
+            <field name="model">school.attendance</field>
+            <field name="arch" type="xml">
+                <graph string="Attendance" type="bar">
+                    <field name="status" type="row"/>
+                    <field name="student_id" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Attendance Search View -->
+        <record id="view_attendance_search" model="ir.ui.view">
+            <field name="name">school.attendance.search</field>
+            <field name="model">school.attendance</field>
+            <field name="arch" type="xml">
+                <search string="Search Attendance">
+                    <field name="student_id"/>
+                    <field name="class_id"/>
+                    <field name="teacher_id"/>
+                    <filter string="Present" name="present" domain="[('status','=','present')]"/>
+                    <filter string="Absent" name="absent" domain="[('status','=','absent')]"/>
+                    <filter string="Late" name="late" domain="[('status','=','late')]"/>
+                    <filter string="Excused" name="excused" domain="[('status','=','excused')]"/>
+                    <separator/>
+                    <filter string="Today" name="today"
+                        domain="[('date','=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter string="This Week" name="this_week"
+                        domain="[('date','&gt;=', (context_today() - relativedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Student" name="group_student" context="{'group_by': 'student_id'}"/>
+                        <filter string="Class" name="group_class" context="{'group_by': 'class_id'}"/>
+                        <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                        <filter string="Date" name="group_date" context="{'group_by': 'date:day'}"/>
+                        <filter string="Academic Year" name="group_year" context="{'group_by': 'academic_year_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Attendance Action -->
+        <record id="action_attendance" model="ir.actions.act_window">
+            <field name="name">Attendance</field>
+            <field name="res_model">school.attendance</field>
+            <field name="view_mode">tree,form,pivot,graph</field>
+            <field name="search_view_id" ref="view_attendance_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Record the first attendance entry
+                </p>
+            </field>
+        </record>
+
+        <!-- Bulk Attendance Wizard View -->
+        <record id="view_attendance_bulk_form" model="ir.ui.view">
+            <field name="name">school.attendance.bulk.form</field>
+            <field name="model">school.attendance.bulk</field>
+            <field name="arch" type="xml">
+                <form string="Record Class Attendance">
+                    <sheet>
+                        <group>
+                            <field name="class_id"/>
+                            <field name="date"/>
+                        </group>
+                        <field name="line_ids">
+                            <tree editable="bottom">
+                                <field name="student_id" readonly="1"/>
+                                <field name="status" widget="radio" options="{'horizontal': true}"/>
+                                <field name="notes"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                    <footer>
+                        <button name="action_confirm" string="Save Attendance"
+                            type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Bulk Attendance Action -->
+        <record id="action_attendance_bulk" model="ir.actions.act_window">
+            <field name="name">Take Attendance</field>
+            <field name="res_model">school.attendance.bulk</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

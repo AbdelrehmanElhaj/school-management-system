@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Enrollment Certificate -->
+        <template id="report_enrollment_certificate_document">
+            <t t-foreach="docs" t-as="student">
+                <div class="page" style="font-family: 'Times New Roman', serif; padding: 60px 80px; text-align:center; min-height:600px; border: 8px double #2c3e50; margin: 20px; position:relative;">
+
+                    <!-- Decorative top border -->
+                    <div style="border-bottom:2px solid #c9a84c; margin-bottom:30px; padding-bottom:15px;">
+                        <h1 style="color:#2c3e50; font-size:28px; margin:0; letter-spacing:3px; text-transform:uppercase;">
+                            Certificate of Enrollment
+                        </h1>
+                    </div>
+
+                    <p style="font-size:16px; color:#555; margin-bottom:30px;">This is to certify that</p>
+
+                    <h2 style="font-size:32px; color:#c9a84c; border-bottom:2px solid #c9a84c; display:inline-block; padding-bottom:5px; margin-bottom:20px;">
+                        <t t-esc="student.name"/>
+                    </h2>
+
+                    <p style="font-size:15px; line-height:1.8; color:#333; margin:20px 0;">
+                        with Student ID <strong><t t-esc="student.student_code"/></strong>
+                        is duly enrolled in
+                        <strong><t t-esc="student.class_id.display_name or 'N/A'"/></strong>
+                        for the academic year
+                        <strong><t t-esc="student.academic_year_id.name or 'N/A'"/></strong>.
+                    </p>
+
+                    <p style="font-size:15px; color:#333; margin:10px 0;">
+                        Enrollment Date:
+                        <strong><t t-esc="str(student.enrollment_date) if student.enrollment_date else 'N/A'"/></strong>
+                    </p>
+
+                    <p style="font-size:15px; color:#333; margin:10px 0;">
+                        Status:
+                        <strong style="color:#27ae60;"><t t-esc="student.status.upper()"/></strong>
+                    </p>
+
+                    <p style="font-size:13px; color:#777; margin-top:30px;">
+                        Issued on:
+                        <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%B %d, %Y')"/>
+                    </p>
+
+                    <!-- Signature area -->
+                    <div style="margin-top:60px; display:flex; justify-content:space-around;">
+                        <div style="text-align:center;">
+                            <div style="border-top:1px solid #333; padding-top:8px; width:180px; margin:0 auto;">
+                                <div style="font-size:13px;">Class Teacher</div>
+                                <div style="font-size:12px; color:#888;"><t t-esc="student.class_id.teacher_id.name or ''"/></div>
+                            </div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="border-top:1px solid #333; padding-top:8px; width:180px; margin:0 auto;">
+                                <div style="font-size:13px;">School Principal</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- School seal placeholder -->
+                    <div style="position:absolute; bottom:60px; right:80px; width:90px; height:90px; border:2px dashed #aaa; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#aaa; font-size:11px;">
+                        School<br/>Seal
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <template id="report_enrollment_certificate">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <t t-call="school_management.report_enrollment_certificate_document"
+                            t-lang="o.env.lang"/>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <!-- Completion / Pass Certificate -->
+        <template id="report_completion_certificate_document">
+            <t t-foreach="docs" t-as="student">
+                <t t-set="grades" t-value="env['school.grade'].search([('student_id','=',student.id)])"/>
+                <t t-set="total_exams" t-value="len(grades)"/>
+                <t t-set="passed_exams" t-value="len(grades.filtered(lambda g: g.passed))"/>
+                <t t-set="avg_pct" t-value="sum(grades.mapped('percentage')) / total_exams if total_exams else 0"/>
+                <t t-set="overall_grade" t-value="
+                    'A+' if avg_pct >= 95 else
+                    'A' if avg_pct >= 90 else
+                    'B+' if avg_pct >= 85 else
+                    'B' if avg_pct >= 80 else
+                    'C+' if avg_pct >= 75 else
+                    'C' if avg_pct >= 70 else
+                    'D' if avg_pct >= 60 else 'F'"/>
+
+                <div class="page" style="font-family: 'Times New Roman', serif; padding: 60px 80px; text-align:center; min-height:600px; border: 8px double #c9a84c; margin: 20px; background: linear-gradient(135deg, #fff 0%, #fffdf0 100%);">
+
+                    <div style="border-bottom:2px solid #c9a84c; margin-bottom:30px; padding-bottom:15px;">
+                        <h1 style="color:#2c3e50; font-size:28px; margin:0; letter-spacing:3px; text-transform:uppercase;">
+                            Certificate of Completion
+                        </h1>
+                    </div>
+
+                    <p style="font-size:16px; color:#555; margin-bottom:20px;">
+                        This certifies that
+                    </p>
+
+                    <h2 style="font-size:34px; color:#c9a84c; border-bottom:2px solid #c9a84c; display:inline-block; padding:0 30px 8px; margin-bottom:20px;">
+                        <t t-esc="student.name"/>
+                    </h2>
+
+                    <p style="font-size:15px; line-height:1.9; color:#333; margin:20px 0;">
+                        has successfully completed
+                        <strong><t t-esc="student.class_id.display_name or 'N/A'"/></strong>
+                        for the academic year
+                        <strong><t t-esc="student.academic_year_id.name or 'N/A'"/></strong>
+                        with an overall grade of
+                        <strong style="font-size:20px; color:#c9a84c;">
+                            <t t-esc="overall_grade"/>
+                        </strong>
+                        (<t t-esc="'%.1f%%' % avg_pct"/>).
+                    </p>
+
+                    <p style="font-size:14px; color:#555; margin:10px 0;">
+                        Passed: <strong><t t-esc="passed_exams"/></strong> of
+                        <strong><t t-esc="total_exams"/></strong> examinations
+                    </p>
+
+                    <p style="font-size:13px; color:#777; margin-top:30px;">
+                        Awarded on:
+                        <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%B %d, %Y')"/>
+                    </p>
+
+                    <div style="margin-top:60px; display:flex; justify-content:space-around;">
+                        <div style="text-align:center;">
+                            <div style="border-top:1px solid #333; padding-top:8px; width:180px; margin:0 auto;">
+                                <div style="font-size:13px;">Class Teacher</div>
+                                <div style="font-size:12px; color:#888;"><t t-esc="student.class_id.teacher_id.name or ''"/></div>
+                            </div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="border-top:1px solid #333; padding-top:8px; width:180px; margin:0 auto;">
+                                <div style="font-size:13px;">School Principal</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <template id="report_completion_certificate">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <t t-call="school_management.report_completion_certificate_document"
+                            t-lang="o.env.lang"/>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

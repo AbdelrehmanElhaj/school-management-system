@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <record id="school_branch_main" model="school.branch">
+        <field name="name">Main School</field>
+        <field name="code">MAIN</field>
+    </record>
+</data>
+</odoo>

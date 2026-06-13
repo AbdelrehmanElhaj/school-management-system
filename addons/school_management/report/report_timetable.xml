@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <template id="report_timetable_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="timetable">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Header -->
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <h3 class="mb-0">Class Timetable</h3>
+                                <h4 class="text-muted">
+                                    <t t-esc="timetable.class_id.display_name"/>
+                                </h4>
+                            </div>
+                            <div class="col-6 text-end">
+                                <p class="mb-0">
+                                    <strong>Academic Year:</strong>
+                                    <t t-esc="timetable.academic_year_id.name or ''"/>
+                                </p>
+                                <p class="mb-0">
+                                    <strong>Reference:</strong>
+                                    <t t-esc="timetable.name"/>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Timetable Grid -->
+                        <t t-set="periods" t-value="env['school.period'].search([('active','=',True)], order='sequence')"/>
+                        <t t-set="day_order" t-value="['0','1','2','3','4']"/>
+                        <t t-set="day_labels" t-value="{'0':'Sunday','1':'Monday','2':'Tuesday','3':'Wednesday','4':'Thursday'}"/>
+                        <t t-set="slot_index" t-value="{(s.day_of_week, s.period_id.id): s for s in timetable.slot_ids}"/>
+
+                        <table class="table table-bordered table-sm text-center"
+                               style="font-size:9pt; table-layout:fixed; width:100%">
+                            <thead>
+                                <tr style="background-color:#343a40; color:white;">
+                                    <th style="width:14%">Period</th>
+                                    <t t-foreach="day_order" t-as="d">
+                                        <th style="width:17.2%">
+                                            <t t-esc="day_labels[d]"/>
+                                        </th>
+                                    </t>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="periods" t-as="p">
+                                    <t t-if="p.is_break">
+                                        <tr style="background-color:#e9ecef">
+                                            <td colspan="6" class="text-muted fst-italic py-1">
+                                                <t t-esc="p.name"/> ·
+                                                <t t-esc="p.time_start_display"/> –
+                                                <t t-esc="p.time_end_display"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <t t-else="">
+                                        <tr>
+                                            <td>
+                                                <strong><t t-esc="p.name"/></strong><br/>
+                                                <small class="text-muted">
+                                                    <t t-esc="p.time_start_display"/> –
+                                                    <t t-esc="p.time_end_display"/>
+                                                </small>
+                                            </td>
+                                            <t t-foreach="day_order" t-as="d">
+                                                <t t-set="slot" t-value="slot_index.get((d, p.id))"/>
+                                                <t t-if="slot">
+                                                    <td style="background-color:#e8f4fd">
+                                                        <strong><t t-esc="slot.subject_id.name"/></strong><br/>
+                                                        <small><t t-esc="slot.teacher_id.name"/></small>
+                                                        <t t-if="slot.room">
+                                                            <br/><small class="text-muted"><t t-esc="slot.room"/></small>
+                                                        </t>
+                                                    </td>
+                                                </t>
+                                                <t t-else="">
+                                                    <td class="text-muted">—</td>
+                                                </t>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!-- Notes -->
+                        <t t-if="timetable.notes">
+                            <div class="mt-3">
+                                <strong>Notes:</strong>
+                                <p><t t-esc="timetable.notes"/></p>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</data>
+</odoo>

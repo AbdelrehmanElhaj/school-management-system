@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCHOOL PERIOD (Configuration)
+    ═══════════════════════════════════════════════════════════════ -->
+
+    <record id="view_period_list" model="ir.ui.view">
+        <field name="name">school.period.list</field>
+        <field name="model">school.period</field>
+        <field name="arch" type="xml">
+            <tree string="School Periods" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="time_start" widget="float_time" string="Start"/>
+                <field name="time_end" widget="float_time" string="End"/>
+                <field name="is_break"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_period_form" model="ir.ui.view">
+        <field name="name">school.period.form</field>
+        <field name="model">school.period</field>
+        <field name="arch" type="xml">
+            <form string="School Period">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="sequence"/>
+                            <field name="is_break"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="time_start" widget="float_time" string="Start Time"/>
+                            <field name="time_end" widget="float_time" string="End Time"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_school_period" model="ir.actions.act_window">
+        <field name="name">School Periods</field>
+        <field name="res_model">school.period</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'active_test': False}</field>
+    </record>
+
+    <!-- ════════════════════════════════════════════════════════════
+         TIMETABLE
+    ═══════════════════════════════════════════════════════════════ -->
+
+    <record id="view_timetable_list" model="ir.ui.view">
+        <field name="name">school.timetable.list</field>
+        <field name="model">school.timetable</field>
+        <field name="arch" type="xml">
+            <tree string="Timetables"
+                  decoration-success="state == 'active'"
+                  decoration-warning="state == 'draft'"
+                  decoration-muted="state == 'archived'">
+                <field name="display_name" string="Timetable"/>
+                <field name="class_id"/>
+                <field name="academic_year_id"/>
+                <field name="slot_count" string="Slots"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_timetable_form" model="ir.ui.view">
+        <field name="name">school.timetable.form</field>
+        <field name="model">school.timetable</field>
+        <field name="arch" type="xml">
+            <form string="Class Timetable">
+                <header>
+                    <button name="action_activate" string="Activate"
+                            type="object" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_reset_draft" string="Reset to Draft"
+                            type="object"
+                            invisible="state == 'draft'"/>
+                    <button name="action_archive_timetable" string="Archive"
+                            type="object"
+                            invisible="state == 'archived'"/>
+                    <button name="action_print_timetable" string="Print Timetable"
+                            type="object" class="btn-secondary"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,active,archived"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_print_timetable" icon="fa-print">
+                            <field name="slot_count" widget="statinfo" string="Slots"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Reference"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. 2024-2025 Term 1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="class_id"/>
+                            <field name="academic_year_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="notes" placeholder="Notes…"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Weekly Grid" name="grid">
+                            <field name="timetable_html" widget="html"
+                                   readonly="1" nolabel="1"
+                                   style="overflow-x:auto"/>
+                        </page>
+                        <page string="Edit Slots" name="slots">
+                            <field name="slot_ids" nolabel="1">
+                                <tree editable="bottom" default_order="day_of_week,time_start">
+                                    <field name="day_of_week"/>
+                                    <field name="period_id"/>
+                                    <field name="time_start" widget="float_time"
+                                           string="Start" readonly="1"/>
+                                    <field name="time_end" widget="float_time"
+                                           string="End" readonly="1"/>
+                                    <field name="subject_id"/>
+                                    <field name="teacher_id"/>
+                                    <field name="room"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_timetable" model="ir.actions.act_window">
+        <field name="name">Timetables</field>
+        <field name="res_model">school.timetable</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ════════════════════════════════════════════════════════════
+         TIMETABLE SLOT (Teacher Schedule view)
+    ═══════════════════════════════════════════════════════════════ -->
+
+    <record id="view_slot_list" model="ir.ui.view">
+        <field name="name">school.timetable.slot.list</field>
+        <field name="model">school.timetable.slot</field>
+        <field name="arch" type="xml">
+            <tree string="Schedule" default_order="day_of_week,time_start">
+                <field name="day_of_week"/>
+                <field name="period_id"/>
+                <field name="time_start" widget="float_time" string="Start"/>
+                <field name="time_end" widget="float_time" string="End"/>
+                <field name="class_id"/>
+                <field name="subject_id"/>
+                <field name="teacher_id"/>
+                <field name="room"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_slot_search" model="ir.ui.view">
+        <field name="name">school.timetable.slot.search</field>
+        <field name="model">school.timetable.slot</field>
+        <field name="arch" type="xml">
+            <search string="Schedule">
+                <field name="teacher_id"/>
+                <field name="class_id"/>
+                <field name="subject_id"/>
+                <group expand="1" string="Group By">
+                    <filter string="Teacher" name="group_teacher" context="{'group_by': 'teacher_id'}"/>
+                    <filter string="Class" name="group_class" context="{'group_by': 'class_id'}"/>
+                    <filter string="Day" name="group_day" context="{'group_by': 'day_of_week'}"/>
+                    <filter string="Subject" name="group_subject" context="{'group_by': 'subject_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_teacher_schedule" model="ir.actions.act_window">
+        <field name="name">Teacher Schedule</field>
+        <field name="res_model">school.timetable.slot</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{'search_default_group_teacher': 1}</field>
+    </record>
+
+</data>
+</odoo>

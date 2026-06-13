@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- ════════════════════════════════════════════════════════════
+         ATTENDANCE ANALYSIS
+    ═══════════════════════════════════════════════════════════════ -->
+
+    <record id="view_attendance_graph" model="ir.ui.view">
+        <field name="name">school.attendance.graph</field>
+        <field name="model">school.attendance</field>
+        <field name="arch" type="xml">
+            <graph string="Attendance Analysis" type="bar" sample="1">
+                <field name="date" interval="week" type="row"/>
+                <field name="status" type="col"/>
+                <field name="student_id" type="measure" operator="count_distinct"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_attendance_pivot" model="ir.ui.view">
+        <field name="name">school.attendance.pivot</field>
+        <field name="model">school.attendance</field>
+        <field name="arch" type="xml">
+            <pivot string="Attendance Analysis" sample="1">
+                <field name="class_id" type="row"/>
+                <field name="status" type="col"/>
+                <field name="student_id" type="measure" operator="count_distinct"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_attendance_analysis" model="ir.actions.act_window">
+        <field name="name">Attendance Analysis</field>
+        <field name="res_model">school.attendance</field>
+        <field name="view_mode">graph,pivot,tree</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_attendance_graph')}),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_attendance_pivot')}),
+        ]"/>
+    </record>
+
+    <!-- ════════════════════════════════════════════════════════════
+         FEE ANALYSIS
+    ═══════════════════════════════════════════════════════════════ -->
+
+    <record id="view_fee_graph" model="ir.ui.view">
+        <field name="name">school.fee.graph</field>
+        <field name="model">school.fee</field>
+        <field name="arch" type="xml">
+            <graph string="Fee Analysis" type="bar" sample="1">
+                <field name="fee_type_id" type="row"/>
+                <field name="amount" type="measure"/>
+                <field name="paid_amount" type="measure"/>
+                <field name="balance" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_fee_pivot" model="ir.ui.view">
+        <field name="name">school.fee.pivot</field>
+        <field name="model">school.fee</field>
+        <field name="arch" type="xml">
+            <pivot string="Fee Analysis" sample="1">
+                <field name="fee_type_id" type="row"/>
+                <field name="term" type="col"/>
+                <field name="amount" type="measure"/>
+                <field name="paid_amount" type="measure"/>
+                <field name="balance" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_fee_analysis" model="ir.actions.act_window">
+        <field name="name">Fee Analysis</field>
+        <field name="res_model">school.fee</field>
+        <field name="view_mode">graph,pivot,tree</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_fee_graph')}),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_fee_pivot')}),
+        ]"/>
+    </record>
+
+    <!-- ════════════════════════════════════════════════════════════
+         GRADE ANALYSIS
+    ═══════════════════════════════════════════════════════════════ -->
+
+    <record id="view_grade_graph" model="ir.ui.view">
+        <field name="name">school.grade.graph</field>
+        <field name="model">school.grade</field>
+        <field name="arch" type="xml">
+            <graph string="Grade Analysis" type="bar" sample="1">
+                <field name="subject_id" type="row"/>
+                <field name="percentage" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_grade_pivot" model="ir.ui.view">
+        <field name="name">school.grade.pivot</field>
+        <field name="model">school.grade</field>
+        <field name="arch" type="xml">
+            <pivot string="Grade Analysis" sample="1">
+                <field name="subject_id" type="row"/>
+                <field name="class_id" type="col"/>
+                <field name="percentage" type="measure"/>
+                <field name="score" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_grade_analysis" model="ir.actions.act_window">
+        <field name="name">Grade Analysis</field>
+        <field name="res_model">school.grade</field>
+        <field name="view_mode">graph,pivot,tree</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_grade_graph')}),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_grade_pivot')}),
+        ]"/>
+    </record>
+
+    <!-- ════════════════════════════════════════════════════════════
+         STUDENT ANALYSIS
+    ═══════════════════════════════════════════════════════════════ -->
+
+    <record id="view_student_graph" model="ir.ui.view">
+        <field name="name">school.student.graph</field>
+        <field name="model">school.student</field>
+        <field name="arch" type="xml">
+            <graph string="Student Analysis" type="bar" sample="1">
+                <field name="grade_level" type="row"/>
+                <field name="gender" type="col"/>
+                <field name="id" type="measure" string="Students" operator="count_distinct"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_student_pivot" model="ir.ui.view">
+        <field name="name">school.student.pivot</field>
+        <field name="model">school.student</field>
+        <field name="arch" type="xml">
+            <pivot string="Student Analysis" sample="1">
+                <field name="grade_level" type="row"/>
+                <field name="status" type="col"/>
+                <field name="id" type="measure" string="Count" operator="count_distinct"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_student_analysis" model="ir.actions.act_window">
+        <field name="name">Student Analysis</field>
+        <field name="res_model">school.student</field>
+        <field name="view_mode">graph,pivot,tree</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_student_graph')}),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_student_pivot')}),
+        ]"/>
+    </record>
+
+</data>
+</odoo>

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- ── Action to open Dashboard ─────────────────────────────────────── -->
+    <record id="action_school_dashboard" model="ir.actions.act_window">
+        <field name="name">School Dashboard</field>
+        <field name="res_model">school.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="res_id" ref="school_management.school_dashboard_default"/>
+        <field name="target">main</field>
+        <field name="context">{'create': False}</field>
+    </record>
+
+    <!-- ── Dashboard Form View ──────────────────────────────────────────── -->
+    <record id="view_school_dashboard_form" model="ir.ui.view">
+        <field name="name">school.dashboard.form</field>
+        <field name="model">school.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="School Dashboard" create="false" delete="false">
+                <sheet>
+
+                    <!-- Header title + school filter -->
+                    <div class="oe_title mb-2">
+                        <h1 class="o_row">
+                            <span>School Dashboard</span>
+                        </h1>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light">
+                                    <i class="fa fa-university me-1"/> Campus Filter
+                                </span>
+                                <field name="school_id"
+                                    class="form-control"
+                                    placeholder="All campuses"
+                                    options="{'no_create': True}"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── Row 1: Core KPIs ───────────────────────────────── -->
+                    <div class="row mb-3">
+
+                        <!-- Students -->
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #875A7B !important;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-1">Active Students</div>
+                                    <div class="display-6 fw-bold text-primary">
+                                        <field name="total_students" readonly="1"/>
+                                    </div>
+                                    <div class="small text-success mt-1">
+                                        +<field name="new_students_month" readonly="1" nolabel="1"/> this month
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Teachers -->
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #00A09D !important;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-1">Active Teachers</div>
+                                    <div class="display-6 fw-bold" style="color: #00A09D;">
+                                        <field name="total_teachers" readonly="1"/>
+                                    </div>
+                                    <div class="small text-muted mt-1">
+                                        <field name="total_classes" readonly="1" nolabel="1"/> open classes
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Attendance Today -->
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #28A745 !important;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-1">Attendance Today</div>
+                                    <div class="display-6 fw-bold text-success">
+                                        <field name="today_attendance_rate" readonly="1" widget="float" options="{'digits': [5,1]}"/>%
+                                    </div>
+                                    <div class="small text-danger mt-1">
+                                        <field name="today_absent" readonly="1" nolabel="1"/> absent
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fee Collection -->
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #FFC107 !important;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-1">Fee Collection Rate</div>
+                                    <div class="display-6 fw-bold text-warning">
+                                        <field name="collection_rate" readonly="1" widget="float" options="{'digits': [5,1]}"/>%
+                                    </div>
+                                    <div class="small text-danger mt-1">
+                                        <field name="overdue_fees_count" readonly="1" nolabel="1"/> overdue
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- ── Row 2: Secondary KPIs ──────────────────────────── -->
+                    <div class="row mb-3">
+
+                        <!-- Gender Split -->
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">Gender Split</div>
+                                    <div class="d-flex justify-content-between">
+                                        <div class="text-center">
+                                            <div class="fw-bold fs-4 text-primary"><field name="male_students" readonly="1"/></div>
+                                            <div class="small text-muted">Male</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="fw-bold fs-4" style="color: #E91E8C;"><field name="female_students" readonly="1"/></div>
+                                            <div class="small text-muted">Female</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Weekly Attendance -->
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">This Week Attendance</div>
+                                    <div class="fw-bold fs-4 text-success">
+                                        <field name="week_attendance_rate" readonly="1" widget="float" options="{'digits': [5,1]}"/>%
+                                    </div>
+                                    <div class="small text-muted">rolling 7-day rate</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fees Summary -->
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">Fees Outstanding</div>
+                                    <div class="fw-bold fs-4 text-danger">
+                                        <field name="total_fees_outstanding" readonly="1"/>
+                                    </div>
+                                    <div class="small text-muted">
+                                        of <field name="total_fees_due" readonly="1" nolabel="1"/> billed
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Grades -->
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-0 bg-light h-100">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">Academic Performance</div>
+                                    <div class="fw-bold fs-4 text-primary">
+                                        <field name="avg_grade" readonly="1" widget="float" options="{'digits': [5,1]}"/>%
+                                    </div>
+                                    <div class="small text-success">
+                                        <field name="pass_rate" readonly="1" widget="float" options="{'digits': [5,1]}" nolabel="1"/>% pass rate
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- ── Quick Links ────────────────────────────────────── -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title text-muted mb-3">Analytics</h5>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <button type="action"
+                                            name="%(school_management.action_attendance_analysis)d"
+                                            class="btn btn-outline-success btn-sm">
+                                            Attendance Analysis
+                                        </button>
+                                        <button type="action"
+                                            name="%(school_management.action_fee_analysis)d"
+                                            class="btn btn-outline-warning btn-sm">
+                                            Fee Analysis
+                                        </button>
+                                        <button type="action"
+                                            name="%(school_management.action_grade_analysis)d"
+                                            class="btn btn-outline-primary btn-sm">
+                                            Grade Analysis
+                                        </button>
+                                        <button type="action"
+                                            name="%(school_management.action_student_analysis)d"
+                                            class="btn btn-outline-secondary btn-sm">
+                                            Student Analysis
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</data>
+</odoo>
