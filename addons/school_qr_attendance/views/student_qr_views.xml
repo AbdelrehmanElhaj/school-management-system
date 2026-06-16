@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- Extend student form to show QR code -->
+  <record id="view_student_form_qr_inherit" model="ir.ui.view">
+    <field name="name">school.student.form.qr</field>
+    <field name="model">school.student</field>
+    <field name="inherit_id" ref="school_management.view_student_form"/>
+    <field name="arch" type="xml">
+      <!-- Add QR card button in header -->
+      <xpath expr="//header" position="inside">
+        <button name="action_print_qr_card" string="🪪 طباعة بطاقة QR" type="object"
+                class="btn-secondary"/>
+      </xpath>
+      <!-- Add QR code image tab -->
+      <xpath expr="//notebook" position="inside">
+        <page string="رمز QR" name="qr_code">
+          <group>
+            <field name="qr_code" string="كود QR"/>
+          </group>
+          <div class="text-center">
+            <field name="qr_code_image" widget="image" class="img-thumbnail"
+                   style="max-width:200px;"/>
+          </div>
+        </page>
+      </xpath>
+    </field>
+  </record>
+
+</odoo>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- QR Attendance submenu under existing School menu -->
+  <menuitem id="menu_qr_attendance_root"
+            name="حضور QR"
+            parent="school_management.menu_school_root"
+            sequence="30"/>
+
+  <menuitem id="menu_qr_sessions"
+            name="جلسات الحضور"
+            parent="menu_qr_attendance_root"
+            action="action_qr_session"
+            sequence="10"/>
+
+  <menuitem id="menu_teacher_attendance"
+            name="حضور المعلمين"
+            parent="menu_qr_attendance_root"
+            action="action_teacher_attendance"
+            sequence="20"/>
+
+</odoo>

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_qr_session_admin,school.qr.session admin,model_school_qr_session,base.group_system,1,1,1,1
+access_qr_session_user,school.qr.session user,model_school_qr_session,base.group_user,1,1,1,0
+access_teacher_attendance_admin,school.teacher.attendance admin,model_school_teacher_attendance,base.group_system,1,1,1,1
+access_teacher_attendance_user,school.teacher.attendance user,model_school_teacher_attendance,base.group_user,1,1,1,0

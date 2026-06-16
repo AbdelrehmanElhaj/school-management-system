@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- QR Session Form -->
+  <record id="view_qr_session_form" model="ir.ui.view">
+    <field name="name">school.qr.session.form</field>
+    <field name="model">school.qr.session</field>
+    <field name="arch" type="xml">
+      <form string="جلسة حضور QR">
+        <header>
+          <button name="action_open_kiosk" string="🖥️ فتح الكشك" type="object"
+                  class="btn-primary" invisible="state == 'closed'"/>
+          <button name="action_close" string="إغلاق الجلسة" type="object"
+                  class="btn-secondary" invisible="state == 'closed'"/>
+          <button name="action_reopen" string="إعادة فتح" type="object"
+                  invisible="state == 'open'"/>
+          <field name="state" widget="statusbar" statusbar_visible="open,closed"/>
+        </header>
+        <sheet>
+          <div class="oe_title">
+            <h1><field name="name" placeholder="اسم الجلسة"/></h1>
+          </div>
+          <group>
+            <group>
+              <field name="class_id"/>
+              <field name="teacher_id"/>
+            </group>
+            <group>
+              <field name="date"/>
+              <field name="scan_count"/>
+              <field name="kiosk_url" widget="url" string="رابط الكشك"/>
+            </group>
+          </group>
+          <notebook>
+            <page string="سجلات الحضور" name="attendance">
+              <field name="attendance_ids" nolabel="1" readonly="1"/>
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <!-- QR Session Tree -->
+  <record id="view_qr_session_tree" model="ir.ui.view">
+    <field name="name">school.qr.session.tree</field>
+    <field name="model">school.qr.session</field>
+    <field name="arch" type="xml">
+      <tree string="جلسات الحضور">
+        <field name="name"/>
+        <field name="class_id"/>
+        <field name="teacher_id"/>
+        <field name="date"/>
+        <field name="scan_count"/>
+        <field name="state" widget="badge"
+               decoration-success="state == 'open'"
+               decoration-muted="state == 'closed'"/>
+      </tree>
+    </field>
+  </record>
+
+  <!-- QR Session Search -->
+  <record id="view_qr_session_search" model="ir.ui.view">
+    <field name="name">school.qr.session.search</field>
+    <field name="model">school.qr.session</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="name"/>
+        <field name="class_id"/>
+        <field name="teacher_id"/>
+        <filter string="مفتوحة" name="open" domain="[('state','=','open')]"/>
+        <filter string="مغلقة" name="closed" domain="[('state','=','closed')]"/>
+        <filter string="اليوم" name="today" domain="[('date','=',context_today().strftime('%Y-%m-%d'))]"/>
+        <group expand="0" string="Group By">
+          <filter name="by_class" string="الفصل" context="{'group_by': 'class_id'}"/>
+          <filter name="by_date" string="التاريخ" context="{'group_by': 'date'}"/>
+        </group>
+      </search>
+    </field>
+  </record>
+
+  <!-- QR Session Action -->
+  <record id="action_qr_session" model="ir.actions.act_window">
+    <field name="name">جلسات الحضور</field>
+    <field name="res_model">school.qr.session</field>
+    <field name="view_mode">tree,form</field>
+    <field name="context">{'search_default_open': 1}</field>
+  </record>
+
+</odoo>
