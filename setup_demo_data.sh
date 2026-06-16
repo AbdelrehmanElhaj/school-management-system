@@ -61,7 +61,7 @@ info "Installing school_management module (~60 s)..."
 docker exec "$ODOO_CONTAINER" odoo \
     -c /etc/odoo/odoo.conf \
     -d "$DB" \
-    -i school_management \
+    -i school_management,school_qr_attendance \
     --stop-after-init \
     --without-demo=all
 info "Module installed."
@@ -111,7 +111,7 @@ with registry.cursor() as cr:
         print(f"  {'─' * 50}")
 
     TODAY = datetime.date.today()
-    TOTAL = 13
+    TOTAL = 14
 
     print()
     print("=" * 64)
@@ -873,9 +873,128 @@ with registry.cursor() as cr:
     print(f"  → {ann_count} announcements published")
 
     # =========================================================================
-    # 13. Summary
+    # 13. QR Attendance (sessions + teacher attendance)
     # =========================================================================
-    section(13, TOTAL, "Summary")
+    section(13, TOTAL, "QR Attendance (sessions + teacher check-in/check-out)")
+
+    # -- Assign QR codes to any student/teacher that doesn't have one yet -----
+    qr_assigned = 0
+    for st in env['school.student'].search([('qr_code', '=', False)]):
+        st.write({'qr_code': f'STU-{st.id:05d}'})
+        qr_assigned += 1
+    for tc in env['school.teacher'].search([('qr_code', '=', False)]):
+        tc.write({'qr_code': f'TCH-{tc.id:05d}'})
+        qr_assigned += 1
+    if qr_assigned:
+        print(f"  → assigned QR codes to {qr_assigned} missing records")
+
+    # Ensure every student/teacher has a qr_code at this point
+    all_students = {st.qr_code: st for st in env['school.student'].search([('qr_code', '!=', False)])}
+    all_teachers = {tc.qr_code: tc for tc in env['school.teacher'].search([('qr_code', '!=', False)])}
+
+    # -- QR sessions: 3 past sessions (one per class) + 1 open today ----------
+    # Use Sunday of week-4 from WEEK1_START as the demo session date (matches
+    # the attendance data window already loaded in section 9)
+    WEEK4_SUN = WEEK1_START + datetime.timedelta(weeks=3)   # week 4, Sunday
+
+    qr_session_specs = [
+        # (class_key, teacher, date, state)
+        (('grade1', 'A'), ahmed,  WEEK4_SUN,                              'closed'),
+        (('grade2', 'A'), omar,   WEEK4_SUN + datetime.timedelta(days=1), 'closed'),
+        (('grade3', 'A'), fatima, WEEK4_SUN + datetime.timedelta(days=2), 'closed'),
+        (('grade1', 'A'), ahmed,  TODAY,                                  'open'),
+    ]
+
+    QrSession = env['school.qr.session']
+    qr_sess_count = 0
+    qr_att_count  = 0
+    sessions_made  = []
+
+    for cls_key, teacher, sess_date, state in qr_session_specs:
+        cls = classes[cls_key]
+        sess_name = f"حضور QR — {cls.name} — {sess_date}"
+        sess, c = create_once('school.qr.session',
+                              [('name', '=', sess_name)],
+                              {'name': sess_name, 'class_id': cls.id,
+                               'teacher_id': teacher.id, 'date': str(sess_date),
+                               'state': state})
+        ok(sess_name, c)
+        qr_sess_count += 1
+        sessions_made.append((sess, cls, sess_date, state))
+
+    # -- Scan 4 students per past session (present, source=qr) ----------------
+    Att = env['school.attendance']
+    for sess, cls, sess_date, state in sessions_made:
+        if state == 'open':
+            continue   # leave the open session empty so a demo can show a live scan
+        cls_students = env['school.student'].search([
+            ('class_id', '=', cls.id),
+            ('status',   '=', 'active'),
+        ], limit=4)
+        for st in cls_students:
+            existing = Att.search([('student_id', '=', st.id), ('date', '=', str(sess_date))], limit=1)
+            if existing:
+                # upgrade existing manual record to QR
+                existing.write({'qr_session_id': sess.id, 'source': 'qr'})
+            else:
+                Att.create({
+                    'student_id':     st.id,
+                    'class_id':       cls.id,
+                    'date':           str(sess_date),
+                    'status':         'present',
+                    'teacher_id':     sess.teacher_id.id,
+                    'qr_session_id':  sess.id,
+                    'source':         'qr',
+                })
+                qr_att_count += 1
+
+    # -- Teacher attendance: past 5 school days (Sun–Thu) for all teachers ----
+    TchAtt = env['school.teacher.attendance']
+    tch_att_count = 0
+    main_teachers_list = [ahmed, fatima, omar, maryam, khalid, sara, hassan, wafa]
+
+    # Build list: Mon–Fri (Sun–Thu Saudi) going back 1 week from today
+    # We use WEEK4_SUN (a known Sunday) as the anchor
+    tch_dates = [WEEK4_SUN + datetime.timedelta(days=d) for d in range(5)]   # Sun–Thu
+
+    # Check-in/check-out offsets for variety (UTC times, school opens ~05:00 UTC = 08:00 AST)
+    tch_schedule = {
+        ahmed.id:   ('05:00', '12:30'),   # on time
+        fatima.id:  ('05:10', '12:30'),   # on time
+        omar.id:    ('05:05', '12:00'),   # on time
+        maryam.id:  ('05:15', '12:30'),   # on time
+        khalid.id:  ('05:20', '12:30'),   # on time — 8:20 AST
+        sara.id:    ('05:00', '12:30'),   # on time
+        hassan.id:  ('05:10', '12:30'),   # on time
+        wafa.id:    ('05:05', '12:30'),   # on time
+    }
+
+    for teacher in main_teachers_list:
+        ci_str, co_str = tch_schedule.get(teacher.id, ('05:10', '12:30'))
+        for d in tch_dates:
+            existing = TchAtt.search([('teacher_id', '=', teacher.id), ('date', '=', str(d))], limit=1)
+            if existing:
+                continue
+            ci_dt_str = f"{d} {ci_str}:00"
+            co_dt_str = f"{d} {co_str}:00"
+            TchAtt.create({
+                'teacher_id': teacher.id,
+                'date':       str(d),
+                'check_in':   ci_dt_str,
+                'check_out':  co_dt_str,
+                'source':     'qr',
+            })
+            tch_att_count += 1
+
+    cr.commit()
+    print(f"  → {qr_sess_count} QR sessions  ({sum(1 for s,_,_,st in sessions_made if st=='closed')} closed, {sum(1 for s,_,_,st in sessions_made if st=='open')} open)")
+    print(f"  → {qr_att_count} QR attendance records for students")
+    print(f"  → {tch_att_count} teacher check-in/check-out records")
+
+    # =========================================================================
+    # 14. Summary
+    # =========================================================================
+    section(14, TOTAL, "Summary")
 
     print()
     print("=" * 64)
@@ -905,6 +1024,9 @@ with registry.cursor() as cr:
         ("Timetables",        count('school.timetable')),
         ("Timetable slots",   count('school.timetable.slot')),
         ("Announcements",     count('school.announcement')),
+        ("QR Sessions",       count('school.qr.session')),
+        ("  └ Open",          count('school.qr.session', [('state','=','open')])),
+        ("Teacher Attendance",count('school.teacher.attendance')),
     ]
     for label, value in rows:
         print(f"  {label:<24} {value:>5}")
@@ -919,7 +1041,7 @@ with registry.cursor() as cr:
     # 14. Create user accounts
     # =========================================================================
     section = lambda n, t, title: print(f"\n[{n}/{t}] {title}\n  {'─' * 50}")
-    section(14, 14, "User Accounts")
+    section(15, 15, "User Accounts")
 
     def make_user(login, name, email, groups_xmlids):
         existing = env['res.users'].search([('login', '=', login)], limit=1)
@@ -1000,7 +1122,7 @@ info "Loading Arabic translations (upgrading module)..."
 docker exec "$ODOO_CONTAINER" odoo \
     -c /etc/odoo/odoo.conf \
     -d "$DB" \
-    --update=school_management \
+    --update=school_management,school_qr_attendance \
     --stop-after-init
 
 info "Setting Arabic as default language for all users..."
