@@ -7,7 +7,9 @@ from . import school_class
 from . import attendance
 from . import exam
 from . import grade
+from . import enrollment
 from . import fee
+from . import fee_installment
 from . import account_integration
 from . import dashboard
 from . import timetable

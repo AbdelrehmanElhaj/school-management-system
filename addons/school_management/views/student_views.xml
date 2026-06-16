@@ -31,16 +31,41 @@
             <field name="arch" type="xml">
                 <form string="Student">
                     <header>
+                        <!-- Enrollment workflow buttons (shown until enrollment is active) -->
+                        <button name="action_submit_application"
+                            string="تقديم الطلب" type="object"
+                            class="btn-primary"
+                            invisible="enrollment_state != 'new'"/>
+                        <button name="action_submit_documents"
+                            string="رفع المستندات" type="object"
+                            class="btn-primary"
+                            invisible="enrollment_state != 'pending_docs'"/>
+                        <button name="action_approve_enrollment"
+                            string="قبول التسجيل" type="object"
+                            class="btn-success"
+                            invisible="enrollment_state != 'pending_approval'"
+                            groups="school_management.group_school_admin,school_management.group_school_principal"/>
+                        <button name="action_reject_enrollment"
+                            string="إعادة الطلب" type="object"
+                            class="btn-warning"
+                            invisible="enrollment_state != 'pending_approval'"
+                            groups="school_management.group_school_admin,school_management.group_school_principal"/>
+                        <!-- Enrollment state statusbar (hidden once enrolled) -->
+                        <field name="enrollment_state" widget="statusbar"
+                            statusbar_visible="new,pending_docs,pending_approval,active"
+                            invisible="enrollment_state == 'active'"/>
+                        <!-- Operational status buttons (shown only when fully enrolled) -->
                         <button name="action_withdraw" string="Withdraw" type="object"
                             class="btn-danger"
-                            invisible="status != 'active'"/>
+                            invisible="status != 'active' or enrollment_state != 'active'"/>
                         <button name="action_activate" string="Re-activate" type="object"
                             class="btn-primary"
-                            invisible="status == 'active'"/>
+                            invisible="status == 'active' or enrollment_state != 'active'"/>
                         <button name="action_transfer" string="Transfer" type="object"
-                            invisible="status != 'active'"/>
+                            invisible="status != 'active' or enrollment_state != 'active'"/>
                         <field name="status" widget="statusbar"
-                            statusbar_visible="active,transferred,withdrawn,graduated"/>
+                            statusbar_visible="active,transferred,withdrawn,graduated"
+                            invisible="enrollment_state != 'active'"/>
                     </header>
                     <sheet>
                         <field name="photo" widget="image" class="oe_avatar"/>
@@ -54,6 +79,15 @@
                             <button name="%(school_management.action_report_enrollment_certificate)d"
                                 string="Certificate" type="action"
                                 class="oe_stat_button" icon="fa-certificate"/>
+                            <button class="oe_stat_button" icon="fa-file-text-o"
+                                invisible="enrollment_state == 'active'">
+                                <div class="o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="checklist_pending_count"/>
+                                    </span>
+                                    <span class="o_stat_text">وثائق معلقة</span>
+                                </div>
+                            </button>
                         </div>
                         <div class="oe_title">
                             <label for="student_code" class="oe_edit_only"/>
@@ -76,6 +110,22 @@
                             </group>
                         </group>
                         <notebook>
+                            <page string="متطلبات التسجيل" name="enrollment_checklist">
+                                <field name="checklist_ids"
+                                    context="{'default_student_id': id}">
+                                    <tree editable="bottom"
+                                        decoration-success="status in ('submitted','verified')"
+                                        decoration-danger="status == 'pending' and is_required"
+                                        decoration-muted="status == 'not_applicable'">
+                                        <field name="requirement_name" readonly="1"/>
+                                        <field name="is_required" readonly="1"/>
+                                        <field name="status"/>
+                                        <field name="document_file" filename="document_filename"/>
+                                        <field name="document_filename" invisible="1"/>
+                                        <field name="notes"/>
+                                    </tree>
+                                </field>
+                            </page>
                             <page string="Contact &amp; Guardian">
                                 <group>
                                     <group string="Guardian">
@@ -158,6 +208,11 @@
                     <filter string="Transferred" name="transferred" domain="[('status','=','transferred')]"/>
                     <filter string="Male" name="male" domain="[('gender','=','male')]"/>
                     <filter string="Female" name="female" domain="[('gender','=','female')]"/>
+                    <separator/>
+                    <filter string="طلبات التسجيل المعلقة" name="pending_enrollment"
+                        domain="[('enrollment_state','in',['new','pending_docs','pending_approval'])]"/>
+                    <filter string="بانتظار الموافقة" name="pending_approval"
+                        domain="[('enrollment_state','=','pending_approval')]"/>
                     <separator/>
                     <group expand="0" string="Group By">
                         <filter string="School" name="group_school" context="{'group_by': 'school_id'}"/>

@@ -58,5 +58,10 @@
             <field name="comment">View children's attendance, fees, and notifications.</field>
         </record>
 
+        <!-- Odoo system admins (Settings group) automatically get full school admin access -->
+        <record id="base.group_system" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_school_admin'))]"/>
+        </record>
+
     </data>
 </odoo>

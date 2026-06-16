@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from datetime import date
 
 
@@ -49,6 +49,15 @@ class Student(models.Model):
         ('graduated', 'Graduated'),
     ], string='Status', default='active', tracking=True)
 
+    # Enrollment workflow state (separate from operational status)
+    enrollment_state = fields.Selection([
+        ('new', 'طلب جديد'),
+        ('pending_docs', 'بانتظار المستندات'),
+        ('pending_approval', 'بانتظار الموافقة'),
+        ('active', 'مقبول'),
+    ], string='Enrollment State', default='new', tracking=True,
+       help='Tracks the enrollment process from application to acceptance.')
+
     # Guardian Information
     guardian_id = fields.Many2one('school.guardian', string='Guardian/Parent')
     guardian_name = fields.Char(
@@ -63,6 +72,17 @@ class Student(models.Model):
     phone = fields.Char(string='Phone')
     address = fields.Text(string='Address')
 
+    # Enrollment checklist
+    checklist_ids = fields.One2many(
+        'school.enrollment.checklist.item', 'student_id', string='Enrollment Checklist'
+    )
+    checklist_pending_count = fields.Integer(
+        string='Pending Documents', compute='_compute_checklist_counts'
+    )
+    checklist_done_count = fields.Integer(
+        string='Submitted Documents', compute='_compute_checklist_counts'
+    )
+
     _sql_constraints = [
         ('student_code_unique', 'UNIQUE(student_code)', 'Student ID must be unique.'),
     ]
@@ -73,7 +93,21 @@ class Student(models.Model):
             if vals.get('student_code', _('New')) == _('New'):
                 vals['student_code'] = self.env['ir.sequence'].next_by_code(
                     'school.student') or _('New')
-        return super().create(vals_list)
+        records = super().create(vals_list)
+        # Auto-create enrollment checklist items from active requirements
+        requirements = self.env['school.enrollment.requirement'].search(
+            [('active', '=', True)]
+        )
+        if requirements:
+            checklist_items = []
+            for rec in records:
+                for req in requirements:
+                    checklist_items.append({
+                        'student_id': rec.id,
+                        'requirement_id': req.id,
+                    })
+            self.env['school.enrollment.checklist.item'].create(checklist_items)
+        return records
 
     @api.depends('birth_date')
     def _compute_age(self):
@@ -86,11 +120,61 @@ class Student(models.Model):
             else:
                 rec.age = 0
 
+    @api.depends('checklist_ids.status', 'checklist_ids.is_required')
+    def _compute_checklist_counts(self):
+        for rec in self:
+            pending = rec.checklist_ids.filtered(
+                lambda c: c.is_required and c.status == 'pending'
+            )
+            done = rec.checklist_ids.filtered(
+                lambda c: c.status in ('submitted', 'verified')
+            )
+            rec.checklist_pending_count = len(pending)
+            rec.checklist_done_count = len(done)
+
     @api.constrains('birth_date')
     def _check_birth_date(self):
         for rec in self:
             if rec.birth_date and rec.birth_date > date.today():
                 raise ValidationError(_('Birth date cannot be in the future.'))
+
+    # ── Enrollment workflow actions ────────────────────────────────────────────
+
+    def action_submit_application(self):
+        """new → pending_docs"""
+        for rec in self:
+            if rec.enrollment_state == 'new':
+                rec.enrollment_state = 'pending_docs'
+
+    def action_submit_documents(self):
+        """pending_docs → pending_approval  (only if all required docs submitted)"""
+        for rec in self:
+            if rec.enrollment_state != 'pending_docs':
+                continue
+            pending_required = rec.checklist_ids.filtered(
+                lambda c: c.is_required and c.status == 'pending'
+            )
+            if pending_required:
+                names = ', '.join(pending_required.mapped('requirement_name'))
+                raise UserError(
+                    _('المستندات الإلزامية التالية لم تُرفع بعد: %s') % names
+                )
+            rec.enrollment_state = 'pending_approval'
+
+    def action_approve_enrollment(self):
+        """pending_approval → active"""
+        for rec in self:
+            if rec.enrollment_state == 'pending_approval':
+                rec.enrollment_state = 'active'
+                rec.status = 'active'
+
+    def action_reject_enrollment(self):
+        """pending_approval → new  (reset to start)"""
+        for rec in self:
+            if rec.enrollment_state == 'pending_approval':
+                rec.enrollment_state = 'new'
+
+    # ── Operational status actions ─────────────────────────────────────────────
 
     def action_withdraw(self):
         self.write({'status': 'withdrawn'})

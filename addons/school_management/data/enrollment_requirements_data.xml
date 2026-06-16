@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="req_birth_certificate" model="school.enrollment.requirement">
+            <field name="name">شهادة الميلاد</field>
+            <field name="description">نسخة أصلية أو مصورة من شهادة ميلاد الطالب</field>
+            <field name="is_required" eval="True"/>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="req_national_id" model="school.enrollment.requirement">
+            <field name="name">صورة بطاقة الهوية الوطنية</field>
+            <field name="description">صورة من بطاقة الهوية الوطنية للطالب أو سجل الأسرة</field>
+            <field name="is_required" eval="True"/>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="req_vaccination" model="school.enrollment.requirement">
+            <field name="name">بطاقة التطعيمات</field>
+            <field name="description">سجل التطعيمات المعتمد من وزارة الصحة</field>
+            <field name="is_required" eval="True"/>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="req_prev_school" model="school.enrollment.requirement">
+            <field name="name">شهادة المدرسة السابقة</field>
+            <field name="description">شهادة أو وثيقة من المدرسة السابقة تثبت اجتياز الصف</field>
+            <field name="is_required" eval="True"/>
+            <field name="sequence">40</field>
+        </record>
+
+        <record id="req_photos" model="school.enrollment.requirement">
+            <field name="name">صور شخصية 4×6</field>
+            <field name="description">أربع صور شخصية حديثة بمقياس 4×6 سم بخلفية بيضاء</field>
+            <field name="is_required" eval="True"/>
+            <field name="sequence">50</field>
+        </record>
+
+        <record id="req_guardian_id" model="school.enrollment.requirement">
+            <field name="name">صورة هوية ولي الأمر</field>
+            <field name="description">صورة من بطاقة الهوية الوطنية لولي أمر الطالب</field>
+            <field name="is_required" eval="True"/>
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="req_transfer_letter" model="school.enrollment.requirement">
+            <field name="name">خطاب النقل</field>
+            <field name="description">خطاب نقل الطالب من المدرسة السابقة (للمنقولين من مدارس أخرى فقط)</field>
+            <field name="is_required" eval="False"/>
+            <field name="sequence">70</field>
+        </record>
+
+    </data>
+</odoo>

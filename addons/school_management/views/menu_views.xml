@@ -218,5 +218,11 @@
             action="school_management.action_school_branch"
             sequence="5"/>
 
+        <menuitem id="menu_enrollment_requirements"
+            name="Enrollment Requirements"
+            parent="menu_school_config"
+            action="school_management.action_enrollment_requirement"
+            sequence="25"/>
+
     </data>
 </odoo>

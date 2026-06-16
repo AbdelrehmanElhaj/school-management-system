@@ -125,22 +125,22 @@ with registry.cursor() as cr:
     section(1, TOTAL, "School Branches")
 
     main_school, c = create_once('school.branch', [('code', '=', 'MAIN')], {
-        'name':    'Main Campus',
+        'name':    'المدرسة الرئيسية',
         'code':    'MAIN',
         'phone':   '+966112001001',
         'email':   'main@school.sa',
         'address': 'King Fahd Road, Riyadh 11411, Saudi Arabia',
     })
-    ok(f"Main Campus  (code: MAIN)", c)
+    ok(f"المدرسة الرئيسية  (code: MAIN)", c)
 
     north, c = create_once('school.branch', [('code', '=', 'NORTH')], {
-        'name':    'North Campus',
+        'name':    'الحرم الشمالي',
         'code':    'NORTH',
         'phone':   '+966112002001',
         'email':   'north@school.sa',
         'address': 'Prince Mohammed Road, Riyadh 11517, Saudi Arabia',
     })
-    ok(f"North Campus (code: NORTH)", c)
+    ok(f"الحرم الشمالي (code: NORTH)", c)
 
     # =========================================================================
     # 2. Academic Years
@@ -148,18 +148,18 @@ with registry.cursor() as cr:
     section(2, TOTAL, "Academic Years")
 
     ay_prev, c = create_once('school.academic.year', [('code', '=', '2024-2025')], {
-        'name':       'Academic Year 2024-2025',
+        'name':       'السنة الدراسية 2024-2025',
         'code':       '2024-2025',
         'school_id':  main_school.id,
         'date_start': '2024-09-01',
         'date_end':   '2025-06-30',
         'state':      'done',
     })
-    ok("2024-2025  Main Campus  (done)", c)
+    ok("2024-2025  المدرسة الرئيسية  (منتهي)", c)
 
     ay, c = create_once('school.academic.year',
         [('code', '=', '2025-2026'), ('school_id', '=', main_school.id)], {
-        'name':       'Academic Year 2025-2026',
+        'name':       'السنة الدراسية 2025-2026',
         'code':       '2025-2026',
         'school_id':  main_school.id,
         'date_start': '2025-09-01',
@@ -167,10 +167,10 @@ with registry.cursor() as cr:
         'state':      'active',
         'current':    True,
     })
-    ok("2025-2026  Main Campus  (active / current)", c)
+    ok("2025-2026  المدرسة الرئيسية  (نشط / حالي)", c)
 
     ay_north, c = create_once('school.academic.year', [('code', '=', '2025-2026-N')], {
-        'name':       'Academic Year 2025-2026 — North',
+        'name':       'السنة الدراسية 2025-2026 — الشمالي',
         'code':       '2025-2026-N',
         'school_id':  north.id,
         'date_start': '2025-09-01',
@@ -178,7 +178,7 @@ with registry.cursor() as cr:
         'state':      'active',
         'current':    False,
     })
-    ok("2025-2026-N North Campus (active)", c)
+    ok("2025-2026-N الحرم الشمالي (نشط)", c)
 
     # =========================================================================
     # 3. Subjects
@@ -261,23 +261,23 @@ with registry.cursor() as cr:
 
     # (name, email, phone, gender, spec, subj_codes, school_id)
     teachers_raw = [
-        ('Ahmed Al-Rashidi',   'ahmed.rashidi@school.sa',        '+966501001001', 'male',
+        ('أحمد الرشيدي',   'ahmed.rashidi@school.sa',        '+966501001001', 'male',
          'Mathematics & Science',            ['MATH','SCI'],           main_school.id),
-        ('Fatima Al-Zahrani',  'fatima.zahrani@school.sa',        '+966501001002', 'female',
+        ('فاطمة الزهراني',  'fatima.zahrani@school.sa',        '+966501001002', 'female',
          'Arabic Language & Islamic Studies', ['ARB','RELG'],           main_school.id),
-        ('Omar Al-Ghamdi',     'omar.ghamdi@school.sa',           '+966501001003', 'male',
+        ('عمر الغامدي',     'omar.ghamdi@school.sa',           '+966501001003', 'male',
          'English Language',                  ['ENG'],                  main_school.id),
-        ('Maryam Al-Otaibi',   'maryam.otaibi@school.sa',         '+966501001004', 'female',
+        ('مريم العتيبي',   'maryam.otaibi@school.sa',         '+966501001004', 'female',
          'History & Geography',               ['HIST','GEO'],           main_school.id),
-        ('Khalid Al-Dosari',   'khalid.dosari@school.sa',         '+966501001005', 'male',
+        ('خالد الدوسري',   'khalid.dosari@school.sa',         '+966501001005', 'male',
          'Information Technology',            ['ICT'],                  main_school.id),
-        ('Sara Al-Shehri',     'sara.shehri@school.sa',           '+966501001006', 'female',
+        ('سارة الشهري',     'sara.shehri@school.sa',           '+966501001006', 'female',
          'Physical Education & Arts',         ['PE','ART'],             main_school.id),
-        ('Hassan Al-Harbi',    'hassan.harbi@school.sa',          '+966501001007', 'male',
+        ('حسن الحربي',    'hassan.harbi@school.sa',          '+966501001007', 'male',
          'Science & Mathematics',             ['MATH','SCI','ICT'],     main_school.id),
-        ('Wafa Al-Balawi',     'wafa.balawi@school.sa',           '+966501001008', 'female',
+        ('وفاء البلوي',     'wafa.balawi@school.sa',           '+966501001008', 'female',
          'Arabic Language & History',         ['ARB','RELG','HIST'],    main_school.id),
-        ('Nasser Al-Shammari', 'nasser.shammari@northcampus.sa',  '+966501002001', 'male',
+        ('ناصر الشمري', 'nasser.shammari@northcampus.sa',  '+966501002001', 'male',
          'All Subjects (Primary)',            ['MATH','SCI','ENG','ARB'], north.id),
     ]
 
@@ -297,15 +297,15 @@ with registry.cursor() as cr:
         ok(name, c)
         teachers[name] = t
 
-    ahmed   = teachers['Ahmed Al-Rashidi']
-    fatima  = teachers['Fatima Al-Zahrani']
-    omar    = teachers['Omar Al-Ghamdi']
-    maryam  = teachers['Maryam Al-Otaibi']
-    khalid  = teachers['Khalid Al-Dosari']
-    sara    = teachers['Sara Al-Shehri']
-    hassan  = teachers['Hassan Al-Harbi']
-    wafa    = teachers['Wafa Al-Balawi']
-    nasser  = teachers['Nasser Al-Shammari']
+    ahmed   = teachers['أحمد الرشيدي']
+    fatima  = teachers['فاطمة الزهراني']
+    omar    = teachers['عمر الغامدي']
+    maryam  = teachers['مريم العتيبي']
+    khalid  = teachers['خالد الدوسري']
+    sara    = teachers['سارة الشهري']
+    hassan  = teachers['حسن الحربي']
+    wafa    = teachers['وفاء البلوي']
+    nasser  = teachers['ناصر الشمري']
 
     # Assign homeroom teachers and class lists
     homeroom = {
@@ -344,35 +344,35 @@ with registry.cursor() as cr:
 
     guardians_raw = [
         # Main campus (indices 0-21)
-        ('Abdullah Al-Harbi',    'father', '+966501003001', 'a.harbi@parent.sa'),
-        ('Nora Al-Harbi',        'mother', '+966501003002', 'n.harbi@parent.sa'),
-        ('Mohammed Al-Qahtani',  'father', '+966501003003', 'm.qahtani@parent.sa'),
-        ('Hessa Al-Shammari',    'mother', '+966501003004', 'h.shammari@parent.sa'),
-        ('Saad Al-Mutairi',      'father', '+966501003005', 's.mutairi@parent.sa'),
-        ('Reem Al-Anazi',        'mother', '+966501003006', 'r.anazi@parent.sa'),
-        ('Ibrahim Al-Sulami',    'father', '+966501003007', 'i.sulami@parent.sa'),
-        ('Manal Al-Ghamdi',      'mother', '+966501003008', 'm.ghamdi@parent.sa'),
-        ('Turki Al-Zahrani',     'father', '+966501003009', 't.zahrani@parent.sa'),
-        ('Dalal Al-Otaibi',      'mother', '+966501003010', 'd.otaibi@parent.sa'),
-        ('Fawaz Al-Enezi',       'father', '+966501003011', 'f.enezi@parent.sa'),
-        ('Samira Al-Bishi',      'mother', '+966501003012', 's.bishi@parent.sa'),
-        ('Waleed Al-Dossari',    'father', '+966501003013', 'w.dossari@parent.sa'),
-        ('Layla Al-Hamdan',      'mother', '+966501003014', 'l.hamdan@parent.sa'),
-        ('Salman Al-Rashidi',    'father', '+966501003015', 'sl.rashidi@parent.sa'),
-        ('Widad Al-Subaie',      'mother', '+966501003016', 'w.subaie@parent.sa'),
-        ('Naif Al-Maliki',       'father', '+966501003017', 'n.maliki@parent.sa'),
-        ('Ghada Al-Thubaiti',    'mother', '+966501003018', 'g.thubaiti@parent.sa'),
-        ('Meshal Al-Faifi',      'father', '+966501003019', 'm.faifi@parent.sa'),
-        ('Haifa Al-Yami',        'mother', '+966501003020', 'h.yami@parent.sa'),
-        ('Rashid Al-Shahrani',   'father', '+966501003021', 'r.shahrani@parent.sa'),
-        ('Mariam Al-Khalidi',    'mother', '+966501003022', 'm.khalidi@parent.sa'),
+        ('عبدالله الحربي',    'father', '+966501003001', 'a.harbi@parent.sa'),
+        ('نورة الحربي',        'mother', '+966501003002', 'n.harbi@parent.sa'),
+        ('محمد القحطاني',  'father', '+966501003003', 'm.qahtani@parent.sa'),
+        ('حصة الشمري',    'mother', '+966501003004', 'h.shammari@parent.sa'),
+        ('سعد المطيري',      'father', '+966501003005', 's.mutairi@parent.sa'),
+        ('ريم العنزي',        'mother', '+966501003006', 'r.anazi@parent.sa'),
+        ('إبراهيم السلمي',    'father', '+966501003007', 'i.sulami@parent.sa'),
+        ('منال الغامدي',      'mother', '+966501003008', 'm.ghamdi@parent.sa'),
+        ('تركي الزهراني',     'father', '+966501003009', 't.zahrani@parent.sa'),
+        ('دلال العتيبي',      'mother', '+966501003010', 'd.otaibi@parent.sa'),
+        ('فواز العنزي',       'father', '+966501003011', 'f.enezi@parent.sa'),
+        ('سميرة البيشي',      'mother', '+966501003012', 's.bishi@parent.sa'),
+        ('وليد الدوسري',    'father', '+966501003013', 'w.dossari@parent.sa'),
+        ('ليلى الحمدان',      'mother', '+966501003014', 'l.hamdan@parent.sa'),
+        ('سلمان الرشيدي',    'father', '+966501003015', 'sl.rashidi@parent.sa'),
+        ('وداد السبيعي',      'mother', '+966501003016', 'w.subaie@parent.sa'),
+        ('نايف المالكي',       'father', '+966501003017', 'n.maliki@parent.sa'),
+        ('غادة الثبيتي',    'mother', '+966501003018', 'g.thubaiti@parent.sa'),
+        ('مشعل الفيفي',      'father', '+966501003019', 'm.faifi@parent.sa'),
+        ('هيفاء اليامي',        'mother', '+966501003020', 'h.yami@parent.sa'),
+        ('راشد الشهراني',   'father', '+966501003021', 'r.shahrani@parent.sa'),
+        ('مريم الخالدي',    'mother', '+966501003022', 'm.khalidi@parent.sa'),
         # North campus (indices 22-27)
-        ('Abdulrahman Al-Aqeel', 'father', '+966501004001', 'ar.aqeel@parent.sa'),
-        ('Suniya Al-Aqeel',      'mother', '+966501004002', 'su.aqeel@parent.sa'),
-        ('Majed Al-Shalan',      'father', '+966501004003', 'mj.shalan@parent.sa'),
-        ('Hind Al-Shalan',       'mother', '+966501004004', 'hi.shalan@parent.sa'),
-        ('Faris Al-Duweesh',     'father', '+966501004005', 'fa.duweesh@parent.sa'),
-        ('Sara Al-Johani',       'mother', '+966501004006', 'sa.johani@parent.sa'),
+        ('عبدالرحمن العقيل', 'father', '+966501004001', 'ar.aqeel@parent.sa'),
+        ('سنية العقيل',      'mother', '+966501004002', 'su.aqeel@parent.sa'),
+        ('ماجد الشلاّن',      'father', '+966501004003', 'mj.shalan@parent.sa'),
+        ('هند الشلاّن',       'mother', '+966501004004', 'hi.shalan@parent.sa'),
+        ('فارس الدويش',     'father', '+966501004005', 'fa.duweesh@parent.sa'),
+        ('سارة الجهني',       'mother', '+966501004006', 'sa.johani@parent.sa'),
     ]
     guardians = []
     for name, rel, phone, email in guardians_raw:
@@ -399,65 +399,65 @@ with registry.cursor() as cr:
     # (name, gender, birth_date, class_key, guardian_idx)
     main_students_raw = [
         # ── Grade 1A (4 students) ────────────────────────────────────────────
-        ('Ali Abdullah Al-Harbi',      'male',   '2017-03-15', ('grade1','A'), 0),
-        ('Lina Mohammed Al-Qahtani',   'female', '2017-07-22', ('grade1','A'), 2),
-        ('Omar Saad Al-Mutairi',       'male',   '2016-11-05', ('grade1','A'), 4),
-        ('Nada Ibrahim Al-Sulami',     'female', '2016-04-18', ('grade1','A'), 6),
+        ('علي عبدالله الحربي',      'male',   '2017-03-15', ('grade1','A'), 0),
+        ('لينا محمد القحطاني',   'female', '2017-07-22', ('grade1','A'), 2),
+        ('عمر سعد المطيري',       'male',   '2016-11-05', ('grade1','A'), 4),
+        ('ندى إبراهيم السلمي',     'female', '2016-04-18', ('grade1','A'), 6),
         # ── Grade 1B (3 students) ────────────────────────────────────────────
-        ('Youssef Turki Al-Zahrani',   'male',   '2017-08-30', ('grade1','B'), 8),
-        ('Haya Fawaz Al-Enezi',        'female', '2017-02-14', ('grade1','B'), 10),
-        ('Faisal Waleed Al-Dossari',   'male',   '2017-05-20', ('grade1','B'), 12),
+        ('يوسف تركي الزهراني',   'male',   '2017-08-30', ('grade1','B'), 8),
+        ('هيا فواز العنزي',        'female', '2017-02-14', ('grade1','B'), 10),
+        ('فيصل وليد الدوسري',   'male',   '2017-05-20', ('grade1','B'), 12),
         # ── Grade 2A (4 students) ────────────────────────────────────────────
-        ('Ghaida Salman Al-Rashidi',   'female', '2015-12-10', ('grade2','A'), 14),
-        ('Rayan Naif Al-Maliki',       'male',   '2015-06-25', ('grade2','A'), 16),
-        ('Sara Meshal Al-Faifi',       'female', '2015-09-08', ('grade2','A'), 18),
-        ('Majed Rashid Al-Shahrani',   'male',   '2015-01-17', ('grade2','A'), 20),
+        ('غيداء سلمان الرشيدي',   'female', '2015-12-10', ('grade2','A'), 14),
+        ('ريان نايف المالكي',       'male',   '2015-06-25', ('grade2','A'), 16),
+        ('سارة مشعل الفيفي',       'female', '2015-09-08', ('grade2','A'), 18),
+        ('ماجد راشد الشهراني',   'male',   '2015-01-17', ('grade2','A'), 20),
         # ── Grade 2B (3 students) ────────────────────────────────────────────
-        ('Arwa Abdullah Al-Harbi',     'female', '2015-04-02', ('grade2','B'), 1),
-        ('Khalid Mohammed Al-Qahtani', 'male',   '2015-10-28', ('grade2','B'), 3),
-        ('Dana Saad Al-Mutairi',       'female', '2015-07-15', ('grade2','B'), 5),
+        ('أروى عبدالله الحربي',     'female', '2015-04-02', ('grade2','B'), 1),
+        ('خالد محمد القحطاني', 'male',   '2015-10-28', ('grade2','B'), 3),
+        ('دانة سعد المطيري',       'female', '2015-07-15', ('grade2','B'), 5),
         # ── Grade 3A (4 students) ────────────────────────────────────────────
-        ('Bandar Ibrahim Al-Sulami',   'male',   '2014-03-22', ('grade3','A'), 7),
-        ('Rand Turki Al-Zahrani',      'female', '2014-11-30', ('grade3','A'), 9),
-        ('Nawaf Fawaz Al-Enezi',       'male',   '2014-08-12', ('grade3','A'), 11),
-        ('Ghala Waleed Al-Dossari',    'female', '2014-05-05', ('grade3','A'), 13),
+        ('بندر إبراهيم السلمي',   'male',   '2014-03-22', ('grade3','A'), 7),
+        ('رند تركي الزهراني',      'female', '2014-11-30', ('grade3','A'), 9),
+        ('نواف فواز العنزي',       'male',   '2014-08-12', ('grade3','A'), 11),
+        ('غلا وليد الدوسري',    'female', '2014-05-05', ('grade3','A'), 13),
         # ── Grade 3B (3 students) ────────────────────────────────────────────
-        ('Saud Salman Al-Rashidi',     'male',   '2013-02-18', ('grade3','B'), 15),
-        ('Lujain Naif Al-Maliki',      'female', '2013-06-24', ('grade3','B'), 17),
-        ('Badr Meshal Al-Faifi',       'male',   '2013-10-03', ('grade3','B'), 19),
+        ('سعود سلمان الرشيدي',     'male',   '2013-02-18', ('grade3','B'), 15),
+        ('لجين نايف المالكي',      'female', '2013-06-24', ('grade3','B'), 17),
+        ('بدر مشعل الفيفي',       'male',   '2013-10-03', ('grade3','B'), 19),
         # ── Grade 4A (3 students) ────────────────────────────────────────────
-        ('Reema Rashid Al-Shahrani',   'female', '2012-08-15', ('grade4','A'), 21),
-        ('Sultan Abdullah Al-Harbi',   'male',   '2012-03-07', ('grade4','A'), 0),
-        ('Fatima Mohammed Al-Qahtani', 'female', '2013-11-19', ('grade4','A'), 2),
+        ('ريما راشد الشهراني',   'female', '2012-08-15', ('grade4','A'), 21),
+        ('سلطان عبدالله الحربي',   'male',   '2012-03-07', ('grade4','A'), 0),
+        ('فاطمة محمد القحطاني', 'female', '2013-11-19', ('grade4','A'), 2),
         # ── Grade 4B (3 students) ────────────────────────────────────────────
-        ('Nayef Saad Al-Mutairi',      'male',   '2013-04-25', ('grade4','B'), 4),
-        ('Dima Ibrahim Al-Sulami',     'female', '2012-09-11', ('grade4','B'), 6),
-        ('Hamad Turki Al-Zahrani',     'male',   '2012-07-28', ('grade4','B'), 8),
+        ('نايف سعد المطيري',      'male',   '2013-04-25', ('grade4','B'), 4),
+        ('ديمة إبراهيم السلمي',     'female', '2012-09-11', ('grade4','B'), 6),
+        ('حمد تركي الزهراني',     'male',   '2012-07-28', ('grade4','B'), 8),
         # ── Grade 5A (3 students) ────────────────────────────────────────────
-        ('Maha Fawaz Al-Enezi',        'female', '2012-01-14', ('grade5','A'), 10),
-        ('Tariq Waleed Al-Dossari',    'male',   '2011-11-22', ('grade5','A'), 12),
-        ('Hind Salman Al-Rashidi',     'female', '2011-06-08', ('grade5','A'), 14),
+        ('مها فواز العنزي',        'female', '2012-01-14', ('grade5','A'), 10),
+        ('طارق وليد الدوسري',    'male',   '2011-11-22', ('grade5','A'), 12),
+        ('هند سلمان الرشيدي',     'female', '2011-06-08', ('grade5','A'), 14),
         # ── Grade 5B (3 students) ────────────────────────────────────────────
-        ('Osama Naif Al-Maliki',       'male',   '2011-08-30', ('grade5','B'), 16),
-        ('Asma Meshal Al-Faifi',       'female', '2010-12-18', ('grade5','B'), 18),
-        ('Yazeed Rashid Al-Shahrani',  'male',   '2010-09-05', ('grade5','B'), 20),
+        ('أسامة نايف المالكي',       'male',   '2011-08-30', ('grade5','B'), 16),
+        ('أسماء مشعل الفيفي',       'female', '2010-12-18', ('grade5','B'), 18),
+        ('يزيد راشد الشهراني',  'male',   '2010-09-05', ('grade5','B'), 20),
         # ── Grade 6A (3 students) ────────────────────────────────────────────
-        ('Abrar Abdullah Al-Harbi',    'female', '2010-04-27', ('grade6','A'), 1),
-        ('Rashed Mohammed Al-Qahtani', 'male',   '2009-11-14', ('grade6','A'), 3),
-        ('Layla Saad Al-Mutairi',      'female', '2009-07-20', ('grade6','A'), 5),
+        ('أبرار عبدالله الحربي',    'female', '2010-04-27', ('grade6','A'), 1),
+        ('راشد محمد القحطاني', 'male',   '2009-11-14', ('grade6','A'), 3),
+        ('ليلى سعد المطيري',      'female', '2009-07-20', ('grade6','A'), 5),
         # ── Grade 6B (3 students) ────────────────────────────────────────────
-        ('Mishal Ibrahim Al-Sulami',   'male',   '2009-03-09', ('grade6','B'), 7),
-        ('Tahani Turki Al-Zahrani',    'female', '2009-10-31', ('grade6','B'), 9),
-        ('Feras Fawaz Al-Enezi',       'male',   '2010-02-16', ('grade6','B'), 11),
+        ('مشعل إبراهيم السلمي',   'male',   '2009-03-09', ('grade6','B'), 7),
+        ('تهاني تركي الزهراني',    'female', '2009-10-31', ('grade6','B'), 9),
+        ('فراس فواز العنزي',       'male',   '2010-02-16', ('grade6','B'), 11),
     ]
 
     north_students_raw = [
-        ('Noor Abdulrahman Al-Aqeel',   'female', '2017-05-10', ('grade1','A'), 22),
-        ('Tariq Majed Al-Shalan',       'male',   '2017-09-23', ('grade1','A'), 24),
-        ('Rima Faris Al-Duweesh',       'female', '2017-01-07', ('grade1','A'), 26),
-        ('Khaled Abdulrahman Al-Aqeel', 'male',   '2015-08-14', ('grade2','A'), 23),
-        ('Dina Majed Al-Shalan',        'female', '2015-11-29', ('grade2','A'), 25),
-        ('Sami Faris Al-Duweesh',       'male',   '2016-03-18', ('grade2','A'), 27),
+        ('نور عبدالرحمن العقيل',   'female', '2017-05-10', ('grade1','A'), 22),
+        ('طارق ماجد الشلاّن',       'male',   '2017-09-23', ('grade1','A'), 24),
+        ('ريما فارس الدويش',       'female', '2017-01-07', ('grade1','A'), 26),
+        ('خالد عبدالرحمن العقيل', 'male',   '2015-08-14', ('grade2','A'), 23),
+        ('دينا ماجد الشلاّن',        'female', '2015-11-29', ('grade2','A'), 25),
+        ('سامي فارس الدويش',       'male',   '2016-03-18', ('grade2','A'), 27),
     ]
 
     students = []
@@ -469,8 +469,9 @@ with registry.cursor() as cr:
             'nationality':     country_id,
             'class_id':        classes[cls_key].id,
             'guardian_id':     guardians[g_idx].id,
-            'enrollment_date': '2025-09-01',
-            'status':          'active',
+            'enrollment_date':  '2025-09-01',
+            'status':           'active',
+            'enrollment_state': 'active',
         })
         ok(name, c)
         students.append(s)
@@ -486,6 +487,7 @@ with registry.cursor() as cr:
             'guardian_id':     guardians[g_idx].id,
             'enrollment_date': '2025-09-01',
             'status':          'active',
+            'enrollment_state': 'active',
         })
         ok(name, c)
         north_students.append(s)
@@ -664,21 +666,21 @@ with registry.cursor() as cr:
     # =========================================================================
     section(10, TOTAL, "Exams & Grades")
 
-    # Scores by first-two-name fragment
+    # Scores by first-two-name fragment (Arabic)
     score_map = {
-        'Ali Abdullah':    88, 'Lina Mohammed':   93, 'Omar Saad':       76,
-        'Nada Ibrahim':    95, 'Youssef Turki':   81, 'Haya Fawaz':      70,
-        'Faisal Waleed':   65, 'Ghaida Salman':   78, 'Rayan Naif':      84,
-        'Sara Meshal':     90, 'Majed Rashid':    79, 'Arwa Abdullah':   88,
-        'Khalid Mohammed': 72, 'Dana Saad':       85, 'Bandar Ibrahim':  62,
-        'Rand Turki':      77, 'Nawaf Fawaz':     94, 'Ghala Waleed':    86,
-        'Saud Salman':     71, 'Lujain Naif':     97, 'Badr Meshal':     68,
-        'Reema Rashid':    83, 'Sultan Abdullah': 74, 'Fatima Mohammed': 89,
-        'Nayef Saad':      60, 'Dima Ibrahim':    92, 'Hamad Turki':     73,
-        'Maha Fawaz':      87, 'Tariq Waleed':    66, 'Hind Salman':     91,
-        'Osama Naif':      79, 'Asma Meshal':     82, 'Yazeed Rashid':   58,
-        'Abrar Abdullah':  96, 'Rashed Mohammed': 69, 'Layla Saad':      85,
-        'Mishal Ibrahim':  77, 'Tahani Turki':    93, 'Feras Fawaz':     64,
+        'علي عبدالله':    88, 'لينا محمد':    93, 'عمر سعد':       76,
+        'ندى إبراهيم':    95, 'يوسف تركي':   81, 'هيا فواز':      70,
+        'فيصل وليد':      65, 'غيداء سلمان':  78, 'ريان نايف':     84,
+        'سارة مشعل':      90, 'ماجد راشد':    79, 'أروى عبدالله':  88,
+        'خالد محمد':      72, 'دانة سعد':     85, 'بندر إبراهيم':  62,
+        'رند تركي':       77, 'نواف فواز':    94, 'غلا وليد':      86,
+        'سعود سلمان':     71, 'لجين نايف':    97, 'بدر مشعل':      68,
+        'ريما راشد':      83, 'سلطان عبدالله':74, 'فاطمة محمد':    89,
+        'نايف سعد':       60, 'ديمة إبراهيم': 92, 'حمد تركي':      73,
+        'مها فواز':       87, 'طارق وليد':    66, 'هند سلمان':     91,
+        'أسامة نايف':     79, 'أسماء مشعل':   82, 'يزيد راشد':     58,
+        'أبرار عبدالله':  96, 'راشد محمد':    69, 'ليلى سعد':      85,
+        'مشعل إبراهيم':   77, 'تهاني تركي':   93, 'فراس فواز':     64,
     }
 
     def get_score(student_name):
@@ -689,14 +691,14 @@ with registry.cursor() as cr:
 
     exams_cfg = [
         # (name, subj_code, class_key, date, term, max_score, pass_score)
-        ('Math Mid-Term — Grade 1A',    'MATH', ('grade1','A'), '2025-11-15', 'first',  100.0, 50.0),
-        ('English Mid-Term — Grade 1A', 'ENG',  ('grade1','A'), '2025-11-17', 'first',  100.0, 50.0),
-        ('Arabic Mid-Term — Grade 2A',  'ARB',  ('grade2','A'), '2025-11-18', 'first',  100.0, 50.0),
-        ('Science Mid-Term — Grade 3A', 'SCI',  ('grade3','A'), '2025-11-20', 'first',  100.0, 50.0),
-        ('ICT Mid-Term — Grade 4A',     'ICT',  ('grade4','A'), '2025-11-22', 'first',  100.0, 50.0),
-        ('Math Final — Grade 1A',       'MATH', ('grade1','A'), '2026-02-10', 'second', 100.0, 50.0),
-        ('English Final — Grade 2A',    'ENG',  ('grade2','A'), '2026-02-12', 'second', 100.0, 50.0),
-        ('Math Final — Grade 6A',       'MATH', ('grade6','A'), '2026-05-10', 'third',  100.0, 50.0),
+        ('اختبار منتصف الفصل — الرياضيات — الصف الأول أ',    'MATH', ('grade1','A'), '2025-11-15', 'first',  100.0, 50.0),
+        ('اختبار منتصف الفصل — اللغة الإنجليزية — الصف الأول أ', 'ENG', ('grade1','A'), '2025-11-17', 'first',  100.0, 50.0),
+        ('اختبار منتصف الفصل — اللغة العربية — الصف الثاني أ',  'ARB', ('grade2','A'), '2025-11-18', 'first',  100.0, 50.0),
+        ('اختبار منتصف الفصل — العلوم — الصف الثالث أ',        'SCI', ('grade3','A'), '2025-11-20', 'first',  100.0, 50.0),
+        ('اختبار منتصف الفصل — الحاسب الآلي — الصف الرابع أ',  'ICT', ('grade4','A'), '2025-11-22', 'first',  100.0, 50.0),
+        ('الاختبار النهائي — الرياضيات — الصف الأول أ',         'MATH', ('grade1','A'), '2026-02-10', 'second', 100.0, 50.0),
+        ('الاختبار النهائي — اللغة الإنجليزية — الصف الثاني أ', 'ENG', ('grade2','A'), '2026-02-12', 'second', 100.0, 50.0),
+        ('الاختبار النهائي — الرياضيات — الصف السادس أ',        'MATH', ('grade6','A'), '2026-05-10', 'third',  100.0, 50.0),
     ]
 
     exam_count  = 0
@@ -731,7 +733,7 @@ with registry.cursor() as cr:
                     'student_id': st.id,
                     'exam_id':    ex.id,
                     'score':      get_score(st.name),
-                    'notes':      'Mid-term assessment' if 'Mid' in exam_name else 'Final assessment',
+                    'notes':      'اختبار منتصف الفصل' if 'منتصف' in exam_name else 'الاختبار النهائي',
                 })
                 new_grades  += 1
                 grade_count += 1
@@ -816,42 +818,42 @@ with registry.cursor() as cr:
 
     announcements_raw = [
         {
-            'name':         'Welcome Back — Academic Year 2025-2026',
-            'body':         '<p>Dear parents and guardians,</p>'
-                            '<p>We are delighted to welcome all students and families to the new academic year 2025-2026. '
-                            'Classes begin on Sunday 7 September 2025.</p>'
-                            '<p>Wishing everyone a productive and successful year.</p>',
+            'name':         'أهلاً بالعودة — السنة الدراسية 2025-2026',
+            'body':         '<p>أعزاءنا أولياء الأمور والطلاب،</p>'
+                            '<p>يسعدنا الترحيب بجميع الطلاب والأسر في بداية العام الدراسي الجديد 2025-2026. '
+                            'تبدأ الدراسة يوم الأحد 7 سبتمبر 2025.</p>'
+                            '<p>نتمنى للجميع عاماً دراسياً مثمراً وناجحاً.</p>',
             'date_publish': '2025-09-01',
             'date_expire':  '2025-09-15',
             'audience':     'all',
             'send_email':   False,
         },
         {
-            'name':         'Mid-Term Exam Schedule — November 2025',
-            'body':         '<p>Mid-term examinations are scheduled from <strong>15–22 November 2025</strong>.</p>'
-                            '<ul><li>Grade 1: Mathematics &amp; English</li>'
-                            '<li>Grade 2: Arabic &amp; Science</li>'
-                            '<li>Grades 3-6: All subjects</li></ul>'
-                            '<p>Please ensure students prepare accordingly.</p>',
+            'name':         'جدول اختبارات منتصف الفصل — نوفمبر 2025',
+            'body':         '<p>تُعقد اختبارات منتصف الفصل من <strong>15 إلى 22 نوفمبر 2025</strong>.</p>'
+                            '<ul><li>الصف الأول: الرياضيات واللغة الإنجليزية</li>'
+                            '<li>الصف الثاني: اللغة العربية والعلوم</li>'
+                            '<li>الصفوف 3-6: جميع المواد</li></ul>'
+                            '<p>يرجى التأكد من استعداد الطلاب للاختبارات.</p>',
             'date_publish': '2025-10-20',
             'date_expire':  '2025-11-23',
             'audience':     'all',
             'send_email':   False,
         },
         {
-            'name':         'Saudi National Day — School Closed 23 September',
-            'body':         '<p>In celebration of Saudi National Day, school will be <strong>closed on Tuesday 23 September 2025</strong>.</p>'
-                            '<p>We are proud to celebrate the Kingdom\'s 95th National Day. '
-                            'Regular classes resume on Sunday 28 September 2025.</p>',
+            'name':         'اليوم الوطني السعودي — إجازة 23 سبتمبر',
+            'body':         '<p>بمناسبة اليوم الوطني السعودي، ستكون المدرسة <strong>مغلقة يوم الثلاثاء 23 سبتمبر 2025</strong>.</p>'
+                            '<p>نفخر بالاحتفال باليوم الوطني للمملكة العربية السعودية 95. '
+                            'تستأنف الدراسة يوم الأحد 28 سبتمبر 2025.</p>',
             'date_publish': '2025-09-20',
             'date_expire':  '2025-09-25',
             'audience':     'all',
             'send_email':   False,
         },
         {
-            'name':         'Parent-Teacher Meeting — December 10, 2025',
-            'body':         '<p>We invite all parents to attend the <strong>Parent-Teacher Meeting</strong> on Wednesday, 10 December 2025.</p>'
-                            '<p>Timings: 4:00 PM – 7:00 PM. Please book your appointment through the school office.</p>',
+            'name':         'اجتماع أولياء الأمور والمعلمين — 10 ديسمبر 2025',
+            'body':         '<p>ندعو جميع أولياء الأمور لحضور <strong>اجتماع أولياء الأمور والمعلمين</strong> يوم الأربعاء 10 ديسمبر 2025.</p>'
+                            '<p>المواعيد: 4:00 م – 7:00 م. يرجى حجز موعدكم عبر مكتب المدرسة.</p>',
             'date_publish': '2025-11-25',
             'date_expire':  '2025-12-11',
             'audience':     'parents',
@@ -913,6 +915,98 @@ with registry.cursor() as cr:
     print("  Login :  admin / admin")
     print("=" * 64)
 
+    # =========================================================================
+    # 14. Create user accounts
+    # =========================================================================
+    section = lambda n, t, title: print(f"\n[{n}/{t}] {title}\n  {'─' * 50}")
+    section(14, 14, "User Accounts")
+
+    def make_user(login, name, email, groups_xmlids):
+        existing = env['res.users'].search([('login', '=', login)], limit=1)
+        if existing:
+            return existing, False
+        user = env['res.users'].with_context(no_reset_password=True).create({
+            'name':     name,
+            'login':    login,
+            'email':    email,
+            'password': 'School@2026',
+        })
+        for xmlid in groups_xmlids:
+            try:
+                grp = env.ref(xmlid)
+                grp.write({'users': [(4, user.id)]})
+            except Exception:
+                pass
+        return user, True
+
+    G = {
+        'admin':      'school_management.group_school_admin',
+        'principal':  'school_management.group_school_principal',
+        'affairs':    'school_management.group_school_affairs',
+        'accountant': 'school_management.group_school_accountant',
+        'teacher':    'school_management.group_school_teacher',
+        'student':    'school_management.group_school_student',
+        'parent':     'school_management.group_school_parent',
+    }
+
+    users_created = 0
+    u, c = make_user('ahmed.rashidi@school.sa', 'أحمد الرشيدي',  'ahmed.rashidi@school.sa',  [G['principal']])
+    users_created += c
+    u, c = make_user('affairs@school.sa',        'شؤون الطلاب',   'affairs@school.sa',         [G['affairs']])
+    users_created += c
+    u, c = make_user('accountant@school.sa',     'المحاسب',        'accountant@school.sa',      [G['accountant']])
+    users_created += c
+
+    for login, name in [
+        ('fatima.zahrani@school.sa',        'فاطمة الزهراني'),
+        ('omar.ghamdi@school.sa',           'عمر الغامدي'),
+        ('maryam.otaibi@school.sa',         'مريم العتيبي'),
+        ('khalid.dosari@school.sa',         'خالد الدوسري'),
+        ('sara.shehri@school.sa',           'سارة الشهري'),
+        ('hassan.harbi@school.sa',          'حسن الحربي'),
+        ('wafa.balawi@school.sa',           'وفاء البلوي'),
+        ('nasser.shammari@northcampus.sa',  'ناصر الشمري'),
+    ]:
+        u, c = make_user(login, name, login, [G['teacher']])
+        users_created += c
+
+    for g in env['school.guardian'].search([]):
+        if g.email:
+            u, c = make_user(g.email, g.name, g.email, [G['parent']])
+            users_created += c
+
+    for s in env['school.student'].search([]):
+        first = s.name.split()[0]
+        login = f"{first}.{s.student_code}@student.sa"
+        u, c = make_user(login, s.name, login, [G['student']])
+        users_created += c
+
+    cr.commit()
+    print(f"  → {users_created} user accounts created")
+
 PYEOF
 
+# ---------------------------------------------------------------------------
+# 6. Install Arabic language + load translations
+# ---------------------------------------------------------------------------
+info "Installing Arabic language (ar_001)..."
+docker exec "$ODOO_CONTAINER" odoo \
+    -c /etc/odoo/odoo.conf \
+    -d "$DB" \
+    --load-language=ar_001 \
+    --stop-after-init
+
+info "Loading Arabic translations (upgrading module)..."
+docker exec "$ODOO_CONTAINER" odoo \
+    -c /etc/odoo/odoo.conf \
+    -d "$DB" \
+    --update=school_management \
+    --stop-after-init
+
+info "Setting Arabic as default language for all users..."
+docker exec "$DB_CONTAINER" psql -U "$DB_USER" -d "$DB" \
+    -c "UPDATE res_partner SET lang = 'ar_001'
+        WHERE id IN (SELECT partner_id FROM res_users WHERE active = TRUE);"
+
 info "Demo database setup complete."
+info "URL: http://$(hostname -I | awk '{print $1}'):8069  |  admin / admin  |  Language: العربية"

@@ -41,6 +41,7 @@
         'data/period_data.xml',
         'data/communication_templates.xml',
         'data/school_branch_data.xml',
+        'data/enrollment_requirements_data.xml',
         # Report QWeb templates (before views so actions are available)
         'report/report_timetable.xml',
         'report/report_grade_sheet.xml',
@@ -72,8 +73,12 @@
         'views/portal/announcement_templates.xml',
         # Views - Phase 8 (Multi-school)
         'views/school_branch_views.xml',
+        # Views - Enrollment & Installments
+        'views/enrollment_views.xml',
         # Menus (always last)
         'views/menu_views.xml',
+        # Hide unneeded built-in menus
+        'data/hide_menus.xml',
     ],
     'demo': [],
     'installable': True,
