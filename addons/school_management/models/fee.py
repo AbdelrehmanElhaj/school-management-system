@@ -91,6 +91,19 @@ class Fee(models.Model):
         ('overdue', 'Overdue'),
         ('cancelled', 'Cancelled'),
     ], string='Status', default='draft', tracking=True)
+
+    # Payment mode and installments
+    payment_mode = fields.Selection([
+        ('single', 'دفعة واحدة'),
+        ('installments', 'أقساط'),
+    ], string='Payment Mode', default='single', tracking=True)
+    installment_ids = fields.One2many(
+        'school.fee.installment', 'fee_id', string='Installments'
+    )
+    installment_count = fields.Integer(
+        string='Installments', compute='_compute_installment_count'
+    )
+
     payment_ids = fields.One2many(
         'school.fee.payment', 'fee_id', string='Payments'
     )
@@ -136,6 +149,11 @@ class Fee(models.Model):
         for rec in self:
             rec.payment_count = len(rec.payment_ids)
 
+    @api.depends('installment_ids')
+    def _compute_installment_count(self):
+        for rec in self:
+            rec.installment_count = len(rec.installment_ids)
+
     @api.onchange('fee_type_id')
     def _onchange_fee_type(self):
         if self.fee_type_id and self.fee_type_id.default_amount:
@@ -148,8 +166,7 @@ class Fee(models.Model):
                 raise ValidationError(_('Fee amount must be greater than zero.'))
 
     def _update_state(self):
-        from datetime import date
-        today = date.today()
+        today = fields.Date.today()
         for rec in self:
             if rec.state == 'cancelled':
                 continue
@@ -157,6 +174,12 @@ class Fee(models.Model):
                 rec.state = 'paid'
             elif rec.paid_amount > 0:
                 rec.state = 'partial'
+            elif rec.payment_mode == 'installments' and rec.installment_ids:
+                # Check if any unpaid installment is overdue
+                overdue = rec.installment_ids.filtered(
+                    lambda i: i.due_date and i.due_date < today and i.state != 'paid'
+                )
+                rec.state = 'overdue' if overdue else 'due'
             elif rec.due_date and rec.due_date < today:
                 rec.state = 'overdue'
             else:
@@ -165,6 +188,12 @@ class Fee(models.Model):
     def action_confirm(self):
         for rec in self:
             if rec.state == 'draft':
+                if (rec.student_id and
+                        rec.student_id.enrollment_state != 'active'):
+                    raise UserError(
+                        _('لا يمكن تأكيد الرسوم: الطالب "%s" لم يُكمل إجراءات التسجيل بعد.')
+                        % rec.student_id.name
+                    )
                 rec.state = 'due'
 
     def action_cancel(self):
@@ -178,17 +207,40 @@ class Fee(models.Model):
     def action_draft(self):
         self.write({'state': 'draft'})
 
+    def action_schedule_payments(self):
+        """Open payment schedule wizard."""
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('جدولة الدفعات'),
+            'res_model': 'school.fee.schedule.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_fee_id': self.id,
+                'default_first_due_date': self.due_date,
+            },
+        }
+
     def action_register_payment(self):
+        ctx = {
+            'default_fee_id': self.id,
+            'default_amount': self.balance,
+        }
+        # Pre-select first unpaid installment when in installment mode
+        if self.payment_mode == 'installments' and self.installment_ids:
+            first_unpaid = self.installment_ids.filtered(
+                lambda i: i.state not in ('paid',)
+            ).sorted('sequence')
+            if first_unpaid:
+                ctx['default_installment_id'] = first_unpaid[0].id
+                ctx['default_amount'] = first_unpaid[0].balance
         return {
             'type': 'ir.actions.act_window',
             'name': _('Register Payment'),
             'res_model': 'school.fee.payment.wizard',
             'view_mode': 'form',
             'target': 'new',
-            'context': {
-                'default_fee_id': self.id,
-                'default_amount': self.balance,
-            },
+            'context': ctx,
         }
 
     def action_view_payments(self):
@@ -202,7 +254,6 @@ class Fee(models.Model):
         }
 
     def action_send_reminder(self):
-        """Send payment reminder email to guardian."""
         template = self.env.ref(
             'school_management.email_template_fee_reminder', raise_if_not_found=False
         )
@@ -215,16 +266,31 @@ class Fee(models.Model):
     def cron_mark_overdue_and_remind(self):
         """Called by cron: mark overdue fees and send email reminders."""
         today = fields.Date.today()
-        overdue = self.search([
+        # Single-mode: use due_date on fee
+        overdue_single = self.search([
             ('state', 'in', ['due', 'partial']),
+            ('payment_mode', '=', 'single'),
             ('due_date', '<', today),
         ])
-        overdue.write({'state': 'overdue'})
+        overdue_single.write({'state': 'overdue'})
+        # Installment-mode: check individual installment due dates
+        installment_fees = self.search([
+            ('state', 'in', ['due', 'partial']),
+            ('payment_mode', '=', 'installments'),
+        ])
+        for fee in installment_fees:
+            if fee.installment_ids.filtered(
+                lambda i: i.due_date and i.due_date < today and i.state != 'paid'
+            ):
+                fee.state = 'overdue'
+        overdue_all = overdue_single | installment_fees.filtered(
+            lambda f: f.state == 'overdue'
+        )
         template = self.env.ref(
             'school_management.email_template_fee_reminder', raise_if_not_found=False
         )
         if template:
-            for fee in overdue.filtered(lambda f: f.guardian_id.email):
+            for fee in overdue_all.filtered(lambda f: f.guardian_id.email):
                 try:
                     template.send_mail(fee.id, force_send=True)
                 except Exception:
@@ -247,6 +313,10 @@ class FeePayment(models.Model):
     )
     fee_id = fields.Many2one(
         'school.fee', string='Fee', required=True, tracking=True
+    )
+    installment_id = fields.Many2one(
+        'school.fee.installment', string='Installment',
+        domain="[('fee_id', '=', fee_id), ('state', '!=', 'paid')]"
     )
     student_id = fields.Many2one(
         'school.student', string='Student',
@@ -298,8 +368,8 @@ class FeePayment(models.Model):
     def _compute_display_name(self):
         for rec in self:
             fee = rec.fee_id.display_name or ''
-            date = str(rec.payment_date) if rec.payment_date else ''
-            rec.display_name = f"{fee} / {date}" if fee else date
+            date_str = str(rec.payment_date) if rec.payment_date else ''
+            rec.display_name = f"{fee} / {date_str}" if fee else date_str
 
     @api.constrains('amount')
     def _check_amount(self):
@@ -322,7 +392,6 @@ class FeePayment(models.Model):
         for rec in self:
             rec.state = 'confirmed'
             rec.fee_id._update_state()
-            # Send receipt email
             template = self.env.ref(
                 'school_management.email_template_payment_receipt',
                 raise_if_not_found=False
@@ -344,6 +413,15 @@ class FeePaymentWizard(models.TransientModel):
     _description = 'Register Fee Payment Wizard'
 
     fee_id = fields.Many2one('school.fee', string='Fee', required=True)
+    fee_payment_mode = fields.Selection(related='fee_id.payment_mode', readonly=True)
+    installment_id = fields.Many2one(
+        'school.fee.installment', string='Installment',
+        domain="[('fee_id', '=', fee_id), ('state', '!=', 'paid')]"
+    )
+    installment_balance = fields.Monetary(
+        string='Installment Balance', related='installment_id.balance',
+        currency_field='currency_id', readonly=True
+    )
     student_id = fields.Many2one(
         'school.student', related='fee_id.student_id', readonly=True
     )
@@ -372,9 +450,15 @@ class FeePaymentWizard(models.TransientModel):
     ], string='Payment Method', default='cash', required=True)
     notes = fields.Text(string='Notes')
 
+    @api.onchange('installment_id')
+    def _onchange_installment_id(self):
+        if self.installment_id:
+            self.amount = self.installment_id.balance
+
     def action_confirm(self):
         payment = self.env['school.fee.payment'].create({
             'fee_id': self.fee_id.id,
+            'installment_id': self.installment_id.id if self.installment_id else False,
             'amount': self.amount,
             'payment_date': self.payment_date,
             'payment_method': self.payment_method,

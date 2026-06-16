@@ -81,6 +81,9 @@
                     <header>
                         <button name="action_confirm" string="Confirm" type="object"
                             class="btn-primary" invisible="state != 'draft'"/>
+                        <button name="action_schedule_payments" string="جدولة الدفعات"
+                            type="object"
+                            invisible="state != 'draft' or payment_mode != 'single'"/>
                         <button name="action_register_payment" string="Register Payment"
                             type="object" class="btn-primary"
                             invisible="state not in ('due','partial','overdue')"/>
@@ -130,6 +133,7 @@
                                 <field name="academic_year_id" readonly="1"/>
                                 <field name="fee_type_id"/>
                                 <field name="term"/>
+                                <field name="payment_mode" widget="radio"/>
                             </group>
                             <group string="Financial">
                                 <field name="currency_id"/>
@@ -143,12 +147,34 @@
                             </group>
                         </group>
                         <notebook>
+                            <!-- Installments tab (visible in installment mode) -->
+                            <page string="جدول الدفعات" name="installments"
+                                invisible="payment_mode != 'installments'">
+                                <field name="installment_ids" readonly="state != 'draft'">
+                                    <tree
+                                        decoration-success="state == 'paid'"
+                                        decoration-danger="state == 'overdue'"
+                                        decoration-warning="state == 'partial'"
+                                        decoration-muted="state == 'pending'">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="name"/>
+                                        <field name="amount"/>
+                                        <field name="due_date"/>
+                                        <field name="paid_amount"/>
+                                        <field name="balance"/>
+                                        <field name="state"/>
+                                        <field name="currency_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </page>
                             <page string="Payments">
                                 <field name="payment_ids" readonly="1">
                                     <tree decoration-success="state=='confirmed'"
                                           decoration-muted="state=='cancelled'">
                                         <field name="payment_code"/>
                                         <field name="payment_date"/>
+                                        <field name="installment_id"
+                                            invisible="parent.payment_mode != 'installments'"/>
                                         <field name="amount"/>
                                         <field name="payment_method"/>
                                         <field name="received_by"/>
@@ -344,12 +370,18 @@
                         <group>
                             <group string="Fee Information">
                                 <field name="fee_id" readonly="1"/>
+                                <field name="fee_payment_mode" invisible="1"/>
                                 <field name="student_id" readonly="1"/>
                                 <field name="fee_amount" readonly="1"/>
                                 <field name="balance" readonly="1"/>
                                 <field name="currency_id" invisible="1"/>
                             </group>
                             <group string="Payment">
+                                <field name="installment_id"
+                                    invisible="fee_payment_mode != 'installments'"
+                                    options="{'no_create': True}"/>
+                                <field name="installment_balance" readonly="1"
+                                    invisible="fee_payment_mode != 'installments' or not installment_id"/>
                                 <field name="amount"/>
                                 <field name="payment_date"/>
                                 <field name="payment_method"/>

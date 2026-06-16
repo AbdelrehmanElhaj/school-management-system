@@ -4,7 +4,7 @@
 
         <template id="report_receipt_document">
             <t t-foreach="docs" t-as="payment">
-                <div class="page" style="font-family: Arial, sans-serif; padding: 30px; max-width: 600px; margin: 0 auto;">
+                <div class="page" dir="rtl" style="font-family: Arial, 'Amiri', sans-serif; padding: 30px; max-width: 600px; margin: 0 auto;">
 
                     <!-- Receipt Header -->
                     <div style="text-align:center; border-bottom:3px double #2c3e50; padding-bottom:15px; margin-bottom:20px;">

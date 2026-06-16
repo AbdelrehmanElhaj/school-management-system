@@ -5,7 +5,7 @@
         <!-- Enrollment Certificate -->
         <template id="report_enrollment_certificate_document">
             <t t-foreach="docs" t-as="student">
-                <div class="page" style="font-family: 'Times New Roman', serif; padding: 60px 80px; text-align:center; min-height:600px; border: 8px double #2c3e50; margin: 20px; position:relative;">
+                <div class="page" dir="rtl" style="font-family: 'Times New Roman', 'Amiri', serif; padding: 60px 80px; text-align:center; min-height:600px; border: 8px double #2c3e50; margin: 20px; position:relative;">
 
                     <!-- Decorative top border -->
                     <div style="border-bottom:2px solid #c9a84c; margin-bottom:30px; padding-bottom:15px;">
@@ -93,7 +93,7 @@
                     'C' if avg_pct >= 70 else
                     'D' if avg_pct >= 60 else 'F'"/>
 
-                <div class="page" style="font-family: 'Times New Roman', serif; padding: 60px 80px; text-align:center; min-height:600px; border: 8px double #c9a84c; margin: 20px; background: linear-gradient(135deg, #fff 0%, #fffdf0 100%);">
+                <div class="page" dir="rtl" style="font-family: 'Times New Roman', 'Amiri', serif; padding: 60px 80px; text-align:center; min-height:600px; border: 8px double #c9a84c; margin: 20px; background: linear-gradient(135deg, #fff 0%, #fffdf0 100%);">
 
                     <div style="border-bottom:2px solid #c9a84c; margin-bottom:30px; padding-bottom:15px;">
                         <h1 style="color:#2c3e50; font-size:28px; margin:0; letter-spacing:3px; text-transform:uppercase;">
@@ -118,7 +118,7 @@
                         <strong style="font-size:20px; color:#c9a84c;">
                             <t t-esc="overall_grade"/>
                         </strong>
-                        (<t t-esc="'%.1f%%' % avg_pct"/>).
+                        (<t t-esc="'%.1f' % avg_pct"/><t t-esc="'%'"/>).
                     </p>
 
                     <p style="font-size:14px; color:#555; margin:10px 0;">

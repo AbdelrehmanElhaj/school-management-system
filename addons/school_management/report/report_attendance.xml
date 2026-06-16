@@ -13,24 +13,24 @@
                 <t t-set="excused" t-value="len(attendances.filtered(lambda a: a.status == 'excused'))"/>
                 <t t-set="rate" t-value="(present + late) * 100.0 / total if total else 0"/>
 
-                <div class="page" style="font-family: Arial, sans-serif; padding: 20px;">
+                <div class="page" dir="rtl" style="font-family: Arial, 'Amiri', sans-serif; padding: 20px;">
                     <!-- Header -->
                     <div style="text-align:center; border-bottom:2px solid #2c3e50; padding-bottom:15px; margin-bottom:20px;">
-                        <h2 style="color:#2c3e50; margin:0;">Attendance Report</h2>
+                        <h2 style="color:#2c3e50; margin:0;">تقرير الحضور والغياب</h2>
                         <p style="margin:4px 0; color:#555;">
-                            Academic Year: <strong><t t-esc="student.academic_year_id.name or 'N/A'"/></strong>
+                            السنة الدراسية: <strong><t t-esc="student.academic_year_id.name or 'N/A'"/></strong>
                         </p>
                     </div>
 
                     <!-- Student Info -->
                     <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
                         <tr>
-                            <td style="padding:4px; width:50%;"><strong>Student Name:</strong> <t t-esc="student.name"/></td>
-                            <td style="padding:4px;"><strong>Student ID:</strong> <t t-esc="student.student_code"/></td>
+                            <td style="padding:4px; width:50%;"><strong>اسم الطالب:</strong> <t t-esc="student.name"/></td>
+                            <td style="padding:4px;"><strong>رقم الطالب:</strong> <t t-esc="student.student_code"/></td>
                         </tr>
                         <tr>
-                            <td style="padding:4px;"><strong>Class:</strong> <t t-esc="student.class_id.display_name or ''"/></td>
-                            <td style="padding:4px;"><strong>Print Date:</strong>
+                            <td style="padding:4px;"><strong>الفصل:</strong> <t t-esc="student.class_id.display_name or ''"/></td>
+                            <td style="padding:4px;"><strong>تاريخ الطباعة:</strong>
                                 <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d')"/>
                             </td>
                         </tr>
@@ -40,25 +40,25 @@
                     <div style="display:flex; gap:10px; margin-bottom:20px;">
                         <div style="flex:1; text-align:center; padding:12px; background:#d4edda; border-radius:6px;">
                             <div style="font-size:22px; font-weight:bold; color:#155724;"><t t-esc="present"/></div>
-                            <div style="font-size:11px; color:#155724;">Present</div>
+                            <div style="font-size:11px; color:#155724;">حاضر</div>
                         </div>
                         <div style="flex:1; text-align:center; padding:12px; background:#f8d7da; border-radius:6px;">
                             <div style="font-size:22px; font-weight:bold; color:#721c24;"><t t-esc="absent"/></div>
-                            <div style="font-size:11px; color:#721c24;">Absent</div>
+                            <div style="font-size:11px; color:#721c24;">غائب</div>
                         </div>
                         <div style="flex:1; text-align:center; padding:12px; background:#fff3cd; border-radius:6px;">
                             <div style="font-size:22px; font-weight:bold; color:#856404;"><t t-esc="late"/></div>
-                            <div style="font-size:11px; color:#856404;">Late</div>
+                            <div style="font-size:11px; color:#856404;">متأخر</div>
                         </div>
                         <div style="flex:1; text-align:center; padding:12px; background:#d1ecf1; border-radius:6px;">
                             <div style="font-size:22px; font-weight:bold; color:#0c5460;"><t t-esc="excused"/></div>
-                            <div style="font-size:11px; color:#0c5460;">Excused</div>
+                            <div style="font-size:11px; color:#0c5460;">بعذر</div>
                         </div>
                         <div style="flex:1; text-align:center; padding:12px; background:#e2e3e5; border-radius:6px;">
                             <div style="font-size:22px; font-weight:bold; color:#383d41;">
-                                <t t-esc="'%.1f%%' % rate"/>
+                                <t t-esc="'%.1f' % rate"/><t t-esc="'%'"/>
                             </div>
-                            <div style="font-size:11px; color:#383d41;">Attendance Rate</div>
+                            <div style="font-size:11px; color:#383d41;">نسبة الحضور</div>
                         </div>
                     </div>
 
@@ -67,19 +67,15 @@
                         <table style="width:100%; border-collapse:collapse; font-size:12px;">
                             <thead>
                                 <tr style="background-color:#2c3e50; color:white;">
-                                    <th style="padding:8px; border:1px solid #ddd; text-align:left;">Date</th>
-                                    <th style="padding:8px; border:1px solid #ddd; text-align:center;">Status</th>
-                                    <th style="padding:8px; border:1px solid #ddd; text-align:left;">Recorded By</th>
-                                    <th style="padding:8px; border:1px solid #ddd; text-align:left;">Notes</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:right;">التاريخ</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:center;">الحالة</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:right;">المعلم</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:right;">ملاحظات</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <t t-foreach="attendances" t-as="att">
-                                    <tr t-attf-style="background-color: #{
-                                        '#ffe6e6' if att.status == 'absent' else
-                                        '#fff9e6' if att.status == 'late' else
-                                        '#e6f3ff' if att.status == 'excused' else 'white'
-                                    };">
+                                    <tr t-attf-style="background-color: #{('#ffe6e6' if att.status == 'absent' else ('#fff9e6' if att.status == 'late' else ('#e6f3ff' if att.status == 'excused' else 'white')))};">
                                         <td style="padding:6px; border:1px solid #ddd;">
                                             <t t-esc="str(att.date)"/>
                                         </td>
@@ -98,19 +94,19 @@
                         </table>
                     </t>
                     <t t-else="">
-                        <p style="color:#888; font-style:italic;">No attendance records found.</p>
+                        <p style="color:#888; font-style:italic;">لا توجد سجلات حضور.</p>
                     </t>
 
                     <!-- Signature -->
                     <div style="margin-top:40px; display:flex; justify-content:space-between;">
                         <div style="text-align:center; width:30%;">
-                            <div style="border-top:1px solid #333; padding-top:5px;">Class Teacher</div>
+                            <div style="border-top:1px solid #333; padding-top:5px;">معلم الفصل</div>
                         </div>
                         <div style="text-align:center; width:30%;">
-                            <div style="border-top:1px solid #333; padding-top:5px;">Principal</div>
+                            <div style="border-top:1px solid #333; padding-top:5px;">مدير المدرسة</div>
                         </div>
                         <div style="text-align:center; width:30%;">
-                            <div style="border-top:1px solid #333; padding-top:5px;">School Stamp</div>
+                            <div style="border-top:1px solid #333; padding-top:5px;">ختم المدرسة</div>
                         </div>
                     </div>
                 </div>

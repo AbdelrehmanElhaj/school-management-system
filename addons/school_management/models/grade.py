@@ -55,6 +55,9 @@ class Grade(models.Model):
     passed = fields.Boolean(
         string='Passed', compute='_compute_passed', store=True
     )
+    passed_display = fields.Char(
+        string='Result', compute='_compute_passed_display'
+    )
     rank = fields.Integer(
         string='Rank', compute='_compute_rank', store=True
     )
@@ -107,6 +110,11 @@ class Grade(models.Model):
     def _compute_passed(self):
         for rec in self:
             rec.passed = rec.score >= rec.pass_score
+
+    @api.depends('passed')
+    def _compute_passed_display(self):
+        for rec in self:
+            rec.passed_display = _('Pass') if rec.passed else _('Fail')
 
     @api.depends('exam_id', 'score')
     def _compute_rank(self):

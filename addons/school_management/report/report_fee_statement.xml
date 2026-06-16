@@ -12,47 +12,52 @@
                 <t t-set="total_paid" t-value="sum(fees.mapped('paid_amount'))"/>
                 <t t-set="total_balance" t-value="sum(fees.mapped('balance'))"/>
 
-                <div class="page" style="font-family: Arial, sans-serif; padding: 20px;">
+                <div class="page" dir="rtl" style="font-family: Arial, 'Amiri', sans-serif; padding: 20px;">
+                    <!-- Header -->
                     <div style="text-align:center; border-bottom:2px solid #2c3e50; padding-bottom:15px; margin-bottom:20px;">
-                        <h2 style="color:#2c3e50; margin:0;">Fee Statement</h2>
+                        <h2 style="color:#2c3e50; margin:0;">كشف الرسوم المدرسية</h2>
                         <p style="margin:4px 0; color:#555;">
-                            Academic Year: <strong><t t-esc="student.academic_year_id.name or 'N/A'"/></strong>
+                            السنة الدراسية: <strong><t t-esc="student.academic_year_id.name or 'N/A'"/></strong>
                         </p>
                     </div>
 
+                    <!-- Student Info -->
                     <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
                         <tr>
-                            <td style="padding:4px; width:50%;"><strong>Student:</strong> <t t-esc="student.name"/></td>
-                            <td style="padding:4px;"><strong>Student ID:</strong> <t t-esc="student.student_code"/></td>
+                            <td style="padding:4px; width:50%;"><strong>اسم الطالب:</strong> <t t-esc="student.name"/></td>
+                            <td style="padding:4px;"><strong>رقم الطالب:</strong> <t t-esc="student.student_code"/></td>
                         </tr>
                         <tr>
-                            <td style="padding:4px;"><strong>Class:</strong> <t t-esc="student.class_id.display_name or ''"/></td>
-                            <td style="padding:4px;"><strong>Guardian:</strong> <t t-esc="student.guardian_id.name or ''"/></td>
+                            <td style="padding:4px;"><strong>الفصل:</strong> <t t-esc="student.class_id.display_name or ''"/></td>
+                            <td style="padding:4px;"><strong>ولي الأمر:</strong> <t t-esc="student.guardian_id.name or ''"/></td>
                         </tr>
                         <tr>
-                            <td style="padding:4px;"><strong>Guardian Phone:</strong> <t t-esc="student.guardian_phone or ''"/></td>
-                            <td style="padding:4px;"><strong>Print Date:</strong>
+                            <td style="padding:4px;"><strong>هاتف ولي الأمر:</strong> <t t-esc="student.guardian_phone or ''"/></td>
+                            <td style="padding:4px;"><strong>تاريخ الطباعة:</strong>
                                 <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d')"/>
                             </td>
                         </tr>
                     </table>
 
+                    <!-- Fees Table -->
                     <t t-if="fees">
                         <table style="width:100%; border-collapse:collapse; font-size:12px;">
                             <thead>
                                 <tr style="background-color:#2c3e50; color:white;">
-                                    <th style="padding:8px; border:1px solid #ddd;">Fee ID</th>
-                                    <th style="padding:8px; border:1px solid #ddd;">Type</th>
-                                    <th style="padding:8px; border:1px solid #ddd;">Term</th>
-                                    <th style="padding:8px; border:1px solid #ddd; text-align:right;">Amount</th>
-                                    <th style="padding:8px; border:1px solid #ddd; text-align:right;">Paid</th>
-                                    <th style="padding:8px; border:1px solid #ddd; text-align:right;">Balance</th>
-                                    <th style="padding:8px; border:1px solid #ddd; text-align:center;">Due Date</th>
-                                    <th style="padding:8px; border:1px solid #ddd; text-align:center;">Status</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:right;">رقم الرسم</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:right;">النوع</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:right;">الفصل</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:right;">نمط الدفع</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:right;">الإجمالي</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:right;">المدفوع</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:right;">المتبقي</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:center;">تاريخ الاستحقاق</th>
+                                    <th style="padding:8px; border:1px solid #ddd; text-align:center;">الحالة</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <t t-foreach="fees" t-as="fee">
+                                    <!-- Main fee row -->
                                     <tr t-attf-style="background-color: #{
                                         '#ffe6e6' if fee.state == 'overdue' else
                                         '#fff9e6' if fee.state == 'partial' else
@@ -61,6 +66,10 @@
                                         <td style="padding:6px; border:1px solid #ddd;"><t t-esc="fee.fee_code"/></td>
                                         <td style="padding:6px; border:1px solid #ddd;"><t t-esc="fee.fee_type_id.name"/></td>
                                         <td style="padding:6px; border:1px solid #ddd;"><t t-esc="fee.term or ''"/></td>
+                                        <td style="padding:6px; border:1px solid #ddd; text-align:center;">
+                                            <t t-if="fee.payment_mode == 'installments'">أقساط (<t t-esc="fee.installment_count"/>)</t>
+                                            <t t-else="">دفعة واحدة</t>
+                                        </td>
                                         <td style="padding:6px; border:1px solid #ddd; text-align:right;">
                                             <t t-esc="'%.2f' % fee.amount"/> <t t-esc="fee.currency_id.symbol"/>
                                         </td>
@@ -75,11 +84,42 @@
                                             <t t-esc="fee.state.upper()"/>
                                         </td>
                                     </tr>
+                                    <!-- Installment breakdown rows (shown only in installments mode) -->
+                                    <t t-if="fee.payment_mode == 'installments' and fee.installment_ids">
+                                        <t t-foreach="fee.installment_ids.sorted('sequence')" t-as="inst">
+                                            <tr t-attf-style="background-color: #{
+                                                '#ffd6d6' if inst.state == 'overdue' else
+                                                '#fffacd' if inst.state == 'partial' else
+                                                '#d6f5d6' if inst.state == 'paid' else '#f8f9fa'
+                                            }; font-size:11px;">
+                                                <td style="padding:4px 6px 4px 20px; border:1px solid #eee; color:#666;">
+                                                    ↳ <t t-esc="inst.name"/>
+                                                </td>
+                                                <td colspan="2" style="padding:4px 6px; border:1px solid #eee; color:#666;"/>
+                                                <td style="padding:4px 6px; border:1px solid #eee; color:#666; text-align:center;"/>
+                                                <td style="padding:4px 6px; border:1px solid #eee; text-align:right;">
+                                                    <t t-esc="'%.2f' % inst.amount"/>
+                                                </td>
+                                                <td style="padding:4px 6px; border:1px solid #eee; text-align:right; color:green;">
+                                                    <t t-esc="'%.2f' % inst.paid_amount"/>
+                                                </td>
+                                                <td style="padding:4px 6px; border:1px solid #eee; text-align:right; color:#c0392b;">
+                                                    <t t-esc="'%.2f' % inst.balance"/>
+                                                </td>
+                                                <td style="padding:4px 6px; border:1px solid #eee; text-align:center;">
+                                                    <t t-esc="str(inst.due_date)"/>
+                                                </td>
+                                                <td style="padding:4px 6px; border:1px solid #eee; text-align:center; font-size:10px;">
+                                                    <t t-esc="inst.state.upper()"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </t>
                                 </t>
                             </tbody>
                             <tfoot>
                                 <tr style="background-color:#ecf0f1; font-weight:bold;">
-                                    <td colspan="3" style="padding:8px; border:1px solid #ddd; text-align:right;">TOTAL</td>
+                                    <td colspan="4" style="padding:8px; border:1px solid #ddd; text-align:right;">الإجمالي</td>
                                     <td style="padding:8px; border:1px solid #ddd; text-align:right;">
                                         <t t-esc="'%.2f' % total_amount"/>
                                     </td>
@@ -95,18 +135,19 @@
                         </table>
                     </t>
                     <t t-else="">
-                        <p style="color:#888; font-style:italic;">No fee records found.</p>
+                        <p style="color:#888; font-style:italic;">لا توجد سجلات رسوم.</p>
                     </t>
 
+                    <!-- Signatures -->
                     <div style="margin-top:40px; display:flex; justify-content:space-between;">
                         <div style="text-align:center; width:30%;">
-                            <div style="border-top:1px solid #333; padding-top:5px;">Accountant</div>
+                            <div style="border-top:1px solid #333; padding-top:5px;">المحاسب</div>
                         </div>
                         <div style="text-align:center; width:30%;">
-                            <div style="border-top:1px solid #333; padding-top:5px;">Principal</div>
+                            <div style="border-top:1px solid #333; padding-top:5px;">مدير المدرسة</div>
                         </div>
                         <div style="text-align:center; width:30%;">
-                            <div style="border-top:1px solid #333; padding-top:5px;">School Stamp</div>
+                            <div style="border-top:1px solid #333; padding-top:5px;">ختم المدرسة</div>
                         </div>
                     </div>
                 </div>

@@ -6,7 +6,7 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="timetable">
                 <t t-call="web.external_layout">
-                    <div class="page">
+                    <div class="page" dir="rtl" style="font-family: Arial, 'Amiri', sans-serif;">
                         <!-- Header -->
                         <div class="row mb-3">
                             <div class="col-6">
