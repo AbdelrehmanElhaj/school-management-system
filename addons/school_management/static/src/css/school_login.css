@@ -1,0 +1,370 @@
+/* =====================================================
+   School Management System — Custom Landing Login Page
+   Supports LTR and RTL (Arabic default)
+   ===================================================== */
+
+/* ── Reset / base ── */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, 'Arabic Typesetting', Arial, sans-serif;
+}
+
+/* Neutralise website.layout wrappers so our layout can fill the viewport */
+#wrapwrap,
+#wrapwrap > main {
+    min-height: 100vh;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+}
+
+/* ── Outer wrapper ── */
+.sms-landing {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+/* ================================================================
+   BRANDING PANEL
+   ================================================================ */
+.sms-brand-panel {
+    flex: 1;
+    min-width: 0;
+    background: linear-gradient(145deg, #0f2d4a 0%, #1a4f7a 40%, #1565c0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+}
+
+/* decorative circles */
+.sms-brand-panel::before,
+.sms-brand-panel::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    pointer-events: none;
+}
+.sms-brand-panel::before {
+    width: 460px;
+    height: 460px;
+    top: -140px;
+    right: -80px;
+}
+.sms-brand-panel::after {
+    width: 300px;
+    height: 300px;
+    bottom: -80px;
+    left: -60px;
+}
+
+.sms-brand-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 440px;
+    width: 100%;
+}
+
+/* Logo */
+.sms-logo-wrap {
+    margin-bottom: 28px;
+}
+.sms-logo-wrap img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 14px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Titles */
+.sms-name-ar {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.35;
+    margin: 0 0 6px;
+    letter-spacing: 0.01em;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.sms-name-en {
+    font-size: 1rem;
+    font-weight: 400;
+    opacity: 0.8;
+    margin: 0 0 10px;
+    letter-spacing: 0.03em;
+}
+.sms-tagline {
+    font-size: 0.875rem;
+    opacity: 0.65;
+    margin: 0 0 36px;
+}
+
+/* Feature grid */
+.sms-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+.sms-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 14px 16px;
+    backdrop-filter: blur(8px);
+    transition: background 0.2s;
+    text-align: start;
+}
+.sms-feature:hover {
+    background: rgba(255, 255, 255, 0.17);
+}
+.sms-feature-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.sms-feature-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+.sms-feature-sub {
+    font-size: 0.7rem;
+    opacity: 0.65;
+    line-height: 1.3;
+}
+
+/* ================================================================
+   LOGIN PANEL
+   ================================================================ */
+.sms-login-panel {
+    width: 430px;
+    flex-shrink: 0;
+    background: #f4f7fb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 36px;
+    position: relative;
+}
+
+.sms-login-card {
+    width: 100%;
+    max-width: 360px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 4px 40px rgba(0, 0, 0, 0.10);
+    padding: 36px 32px 28px;
+}
+
+/* Mini logo (shown only on mobile when brand panel is hidden) */
+.sms-login-logo {
+    display: none;
+    text-align: center;
+    margin-bottom: 16px;
+}
+.sms-login-logo img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: #e8f0ff;
+    padding: 8px;
+}
+
+.sms-login-title {
+    text-align: center;
+    margin-bottom: 28px;
+}
+.sms-login-title h2 {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: #0f2d4a;
+    margin: 0 0 4px;
+}
+.sms-login-title p {
+    font-size: 0.8125rem;
+    color: #8a9bb0;
+    margin: 0;
+}
+
+/* ── Odoo form inside our card ── */
+.sms-login-card .oe_login_form {
+    margin: 0;
+}
+.sms-login-card .form-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #3d5166;
+    margin-bottom: 6px;
+}
+.sms-login-card .form-control {
+    border-radius: 10px;
+    border: 1.5px solid #dde5f0;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    color: #1a2b3c;
+    background: #fafcff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    direction: ltr;
+}
+.sms-login-card .form-control:focus {
+    border-color: #1565c0;
+    box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.12);
+    outline: none;
+    background: #fff;
+}
+.sms-login-card .btn-primary {
+    border-radius: 10px;
+    padding: 11px 20px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #1a4f7a, #1565c0);
+    border: none;
+    width: 100%;
+    letter-spacing: 0.02em;
+    transition: opacity 0.2s, transform 0.1s;
+}
+.sms-login-card .btn-primary:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+}
+.sms-login-card .btn-primary:active {
+    transform: translateY(0);
+}
+.sms-login-card .alert {
+    border-radius: 10px;
+    font-size: 0.8375rem;
+}
+.sms-login-card .oe_login_buttons {
+    margin-top: 4px;
+}
+
+/* Hide Odoo powered-by footer */
+.sms-login-card .text-center.small.mt-4 {
+    display: none !important;
+}
+
+/* ================================================================
+   LANGUAGE TOGGLE BUTTON
+   ================================================================ */
+.sms-lang-toggle {
+    position: fixed;
+    top: 16px;
+    inset-inline-end: 16px;
+    z-index: 1000;
+}
+.sms-lang-btn {
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #fff;
+    letter-spacing: 0.04em;
+    transition: background 0.2s;
+}
+.sms-lang-btn:hover {
+    background: rgba(255, 255, 255, 0.28);
+}
+
+/* ================================================================
+   RTL — reverse panel order
+   ================================================================ */
+[dir="rtl"] .sms-landing {
+    flex-direction: row-reverse;
+}
+
+/* In RTL, inputs stay LTR so email/password type correctly */
+[dir="rtl"] .sms-login-card .form-control {
+    direction: ltr;
+    text-align: left;
+}
+
+/* In RTL, labels are right-aligned */
+[dir="rtl"] .sms-login-card .form-label {
+    display: block;
+    text-align: right;
+}
+
+/* In RTL, center text stays centered */
+[dir="rtl"] .sms-login-title,
+[dir="rtl"] .sms-brand-content {
+    text-align: center;
+}
+
+/* ================================================================
+   RESPONSIVE — tablet & mobile
+   ================================================================ */
+@media (max-width: 900px) {
+    .sms-login-panel {
+        width: 380px;
+        padding: 32px 24px;
+    }
+}
+
+@media (max-width: 700px) {
+    .sms-landing {
+        flex-direction: column !important;
+    }
+
+    .sms-brand-panel {
+        padding: 32px 24px 28px;
+        min-height: auto;
+    }
+
+    .sms-brand-content {
+        max-width: 100%;
+    }
+
+    .sms-name-ar {
+        font-size: 1.5rem;
+    }
+
+    .sms-features {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .sms-feature {
+        padding: 10px 12px;
+    }
+
+    .sms-login-panel {
+        width: 100%;
+        padding: 28px 20px 36px;
+        min-height: auto;
+    }
+
+    .sms-login-logo {
+        display: block;
+    }
+
+    .sms-login-card {
+        box-shadow: none;
+        border-radius: 16px;
+        padding: 28px 24px 20px;
+    }
+}
+
+@media (max-width: 400px) {
+    .sms-features {
+        grid-template-columns: 1fr;
+    }
+}

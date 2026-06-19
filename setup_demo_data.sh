@@ -10,8 +10,8 @@
 set -euo pipefail
 
 DB="demo"
-ODOO_CONTAINER="odoo17"
-DB_CONTAINER="odoo17-db"
+ODOO_CONTAINER="school-odoo"
+DB_CONTAINER="school-db"
 DB_USER="odoo17"
 
 GREEN='\033[0;32m'; YELLOW='\033[1;33m'; RED='\033[0;31m'; NC='\033[0m'

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Override web.login_layout at priority=25 so it applies AFTER
+        the website module's own override (priority=20).  We replace
+        the root <t> completely with our custom full-screen landing page.
+    -->
+    <template id="school_login_layout" inherit_id="web.login_layout"
+              priority="25" name="School Landing Login">
+
+        <xpath expr="t" position="replace">
+            <t t-call="website.layout">
+                <!-- Suppress website header, footer and copyright -->
+                <t t-set="no_header"    t-value="True"/>
+                <t t-set="no_footer"    t-value="True"/>
+                <t t-set="no_copyright" t-value="True"/>
+
+                <!-- Custom landing layout -->
+                <div class="sms-landing" id="sms-landing">
+
+                    <!-- Language / direction toggle -->
+                    <div class="sms-lang-toggle">
+                        <button class="sms-lang-btn" id="sms-lang-btn" type="button">EN</button>
+                    </div>
+
+                    <!-- ── Branding panel ── -->
+                    <div class="sms-brand-panel">
+                        <div class="sms-brand-content">
+
+                            <div class="sms-logo-wrap">
+                                <img src="/school_management/static/src/img/icon.png" alt="School Logo"/>
+                            </div>
+
+                            <h1 class="sms-name-ar">نظام إدارة المدرسة</h1>
+                            <p class="sms-name-en">School Management System</p>
+                            <p class="sms-tagline">منصة متكاملة لإدارة المؤسسات التعليمية</p>
+
+                            <div class="sms-features">
+                                <div class="sms-feature">
+                                    <span class="sms-feature-icon">🎓</span>
+                                    <div>
+                                        <div class="sms-feature-title">الطلاب والمعلمون</div>
+                                        <div class="sms-feature-sub">Students &amp; Teachers</div>
+                                    </div>
+                                </div>
+                                <div class="sms-feature">
+                                    <span class="sms-feature-icon">📅</span>
+                                    <div>
+                                        <div class="sms-feature-title">الجداول والحضور</div>
+                                        <div class="sms-feature-sub">Schedules &amp; Attendance</div>
+                                    </div>
+                                </div>
+                                <div class="sms-feature">
+                                    <span class="sms-feature-icon">📊</span>
+                                    <div>
+                                        <div class="sms-feature-title">النتائج والتقارير</div>
+                                        <div class="sms-feature-sub">Grades &amp; Reports</div>
+                                    </div>
+                                </div>
+                                <div class="sms-feature">
+                                    <span class="sms-feature-icon">💳</span>
+                                    <div>
+                                        <div class="sms-feature-title">الرسوم والمدفوعات</div>
+                                        <div class="sms-feature-sub">Fees &amp; Payments</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- ── Login panel ── -->
+                    <div class="sms-login-panel">
+                        <div class="sms-login-card">
+
+                            <!-- Mini logo shown only on mobile -->
+                            <div class="sms-login-logo">
+                                <img src="/school_management/static/src/img/icon.png" alt="Logo"/>
+                            </div>
+
+                            <div class="sms-login-title">
+                                <h2>تسجيل الدخول</h2>
+                                <p>Sign in to your account</p>
+                            </div>
+
+                            <!-- Odoo injects the login form here -->
+                            <t t-out="0"/>
+
+                        </div>
+                    </div>
+
+                </div><!-- /.sms-landing -->
+
+                <!-- CSS: referenced here so it loads regardless of asset bundles -->
+                <link rel="stylesheet" type="text/css"
+                      href="/school_management/static/src/css/school_login.css"/>
+
+                <!-- RTL toggle — defaults to RTL, persists choice in localStorage -->
+                <script type="text/javascript">
+                    (function () {
+                        var html = document.documentElement;
+                        var saved = localStorage.getItem('sms_dir');
+                        var dir = saved || 'rtl';
+                        html.setAttribute('dir', dir);
+
+                        function updateBtn(btn, d) {
+                            btn.textContent = d === 'rtl' ? 'EN' : 'عر'; /* عر */
+                        }
+
+                        document.addEventListener('DOMContentLoaded', function () {
+                            var btn = document.getElementById('sms-lang-btn');
+                            if (!btn) { return; }
+                            updateBtn(btn, dir);
+                            btn.addEventListener('click', function () {
+                                var cur = html.getAttribute('dir') || 'rtl';
+                                var next = cur === 'rtl' ? 'ltr' : 'rtl';
+                                html.setAttribute('dir', next);
+                                localStorage.setItem('sms_dir', next);
+                                updateBtn(btn, next);
+                            });
+                        });
+                    })();
+                </script>
+
+            </t>
+        </xpath>
+    </template>
+</odoo>

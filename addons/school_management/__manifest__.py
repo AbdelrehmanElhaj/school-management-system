@@ -75,6 +75,8 @@
         'views/school_branch_views.xml',
         # Views - Enrollment & Installments
         'views/enrollment_views.xml',
+        # Login landing page (overrides web.login_layout)
+        'views/login_template.xml',
         # Menus (always last)
         'views/menu_views.xml',
         # Hide unneeded built-in menus
