@@ -31,10 +31,10 @@ services:
       - USER=odoo17
       - PASSWORD=odoo17
       # nginx-proxy routing
-      - VIRTUAL_HOST=school.hdrelhaj.com
+      - VIRTUAL_HOST=school.hdrelhaj.com,sms.hdrelhaj.com
       - VIRTUAL_PORT=8069
       # Let's Encrypt
-      - LETSENCRYPT_HOST=school.hdrelhaj.com
+      - LETSENCRYPT_HOST=school.hdrelhaj.com,sms.hdrelhaj.com
       - LETSENCRYPT_EMAIL=a.elhaj@proptech.sa
     volumes:
       - school-web-data:/var/lib/odoo
