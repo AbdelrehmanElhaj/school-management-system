@@ -8,3 +8,5 @@ __pycache__/
 .env
 config/certs/
 config/certbot/certs/
+salih-docs/
+docker-compose.override.yml

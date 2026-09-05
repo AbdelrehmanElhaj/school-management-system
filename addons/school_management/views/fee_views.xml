@@ -63,10 +63,12 @@
                     <field name="fee_type_id"/>
                     <field name="term"/>
                     <field name="amount"/>
+                    <field name="discount_amount" optional="hide"/>
                     <field name="paid_amount"/>
                     <field name="balance"/>
                     <field name="currency_id" invisible="1"/>
                     <field name="due_date"/>
+                    <field name="is_exempt" optional="hide"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -138,6 +140,9 @@
                             <group string="Financial">
                                 <field name="currency_id"/>
                                 <field name="amount"/>
+                                <field name="discount_amount"/>
+                                <field name="discount_reason" invisible="not discount_amount"/>
+                                <field name="is_exempt"/>
                                 <field name="paid_amount" readonly="1"/>
                                 <field name="balance" readonly="1"/>
                                 <field name="invoice_date"/>
@@ -241,6 +246,8 @@
                     <filter string="Paid" name="paid" domain="[('state','=','paid')]"/>
                     <filter string="Unpaid" name="unpaid"
                         domain="[('state','in',['due','partial','overdue'])]"/>
+                    <filter string="Exempt" name="exempt" domain="[('is_exempt','=',True)]"/>
+                    <filter string="Discounted" name="discounted" domain="[('discount_amount','>',0)]"/>
                     <separator/>
                     <filter string="First Term" name="first" domain="[('term','=','first')]"/>
                     <filter string="Second Term" name="second" domain="[('term','=','second')]"/>

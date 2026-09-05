@@ -113,6 +113,15 @@ class Fee(models.Model):
     notes = fields.Text(string='Notes')
     invoice_date = fields.Date(string='Invoice Date', default=fields.Date.today)
 
+    discount_amount = fields.Monetary(
+        string='Discount', currency_field='currency_id', tracking=True
+    )
+    discount_reason = fields.Char(string='Discount Reason')
+    is_exempt = fields.Boolean(
+        string='Fee Exempt', tracking=True,
+        help='Student is fully exempted from this fee (معفي).'
+    )
+
     _sql_constraints = [
         ('fee_code_unique', 'UNIQUE(fee_code)', 'Fee ID must be unique.'),
     ]
@@ -139,10 +148,13 @@ class Fee(models.Model):
                 p.amount for p in rec.payment_ids if p.state == 'confirmed'
             )
 
-    @api.depends('amount', 'paid_amount')
+    @api.depends('amount', 'paid_amount', 'discount_amount', 'is_exempt')
     def _compute_balance(self):
         for rec in self:
-            rec.balance = rec.amount - rec.paid_amount
+            if rec.is_exempt:
+                rec.balance = 0.0
+            else:
+                rec.balance = rec.amount - rec.paid_amount - rec.discount_amount
 
     @api.depends('payment_ids')
     def _compute_payment_count(self):
@@ -170,7 +182,7 @@ class Fee(models.Model):
         for rec in self:
             if rec.state == 'cancelled':
                 continue
-            if rec.balance <= 0:
+            if rec.is_exempt or rec.balance <= 0:
                 rec.state = 'paid'
             elif rec.paid_amount > 0:
                 rec.state = 'partial'
@@ -381,10 +393,12 @@ class FeePayment(models.Model):
                     p.amount for p in rec.fee_id.payment_ids
                     if p.state == 'confirmed' and p.id != rec.id
                 )
-                if rec.amount + confirmed_others > rec.fee_id.amount:
+                payable = rec.fee_id.amount - rec.fee_id.discount_amount
+                if rec.amount + confirmed_others > payable:
                     raise ValidationError(
-                        _('Total payments (%.2f) would exceed the fee amount (%.2f).') % (
-                            rec.amount + confirmed_others, rec.fee_id.amount
+                        _('Total payments (%.2f) would exceed the payable amount '
+                          'after discount (%.2f).') % (
+                            rec.amount + confirmed_others, payable
                         )
                     )
 

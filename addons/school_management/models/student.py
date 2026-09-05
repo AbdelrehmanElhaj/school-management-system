@@ -44,6 +44,7 @@ class Student(models.Model):
     enrollment_date = fields.Date(string='Enrollment Date', default=fields.Date.today)
     status = fields.Selection([
         ('active', 'Active'),
+        ('paused', 'Paused'),
         ('withdrawn', 'Withdrawn'),
         ('transferred', 'Transferred'),
         ('graduated', 'Graduated'),
@@ -184,6 +185,9 @@ class Student(models.Model):
 
     def action_transfer(self):
         self.write({'status': 'transferred'})
+
+    def action_pause(self):
+        self.write({'status': 'paused'})
 
 
 class Guardian(models.Model):

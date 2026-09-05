@@ -10,6 +10,7 @@
                 <tree string="Students"
                     decoration-danger="status == 'withdrawn'"
                     decoration-warning="status == 'transferred'"
+                    decoration-info="status == 'paused'"
                     decoration-muted="status == 'graduated'">
                     <field name="student_code"/>
                     <field name="name"/>
@@ -63,8 +64,10 @@
                             invisible="status == 'active' or enrollment_state != 'active'"/>
                         <button name="action_transfer" string="Transfer" type="object"
                             invisible="status != 'active' or enrollment_state != 'active'"/>
+                        <button name="action_pause" string="Pause" type="object"
+                            invisible="status != 'active' or enrollment_state != 'active'"/>
                         <field name="status" widget="statusbar"
-                            statusbar_visible="active,transferred,withdrawn,graduated"
+                            statusbar_visible="active,paused,transferred,withdrawn,graduated"
                             invisible="enrollment_state != 'active'"/>
                     </header>
                     <sheet>
@@ -204,6 +207,7 @@
                     <field name="guardian_id"/>
                     <field name="national_id"/>
                     <filter string="Active" name="active" domain="[('status','=','active')]"/>
+                    <filter string="Paused" name="paused" domain="[('status','=','paused')]"/>
                     <filter string="Withdrawn" name="withdrawn" domain="[('status','=','withdrawn')]"/>
                     <filter string="Transferred" name="transferred" domain="[('status','=','transferred')]"/>
                     <filter string="Male" name="male" domain="[('gender','=','male')]"/>
