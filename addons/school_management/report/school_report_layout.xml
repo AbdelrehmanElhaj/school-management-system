@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ══════════════════════════════════════════════════════════════
+             Unified branded document layout (WP4).
+             All documents t-call school_header / school_footer so a logo
+             or color change in the settings reflects everywhere at once.
+             Variables honoured by the footer:
+               doc_number  — document serial printed bottom-right
+               hide_signatures — set truthy to drop the signature row
+             ══════════════════════════════════════════════════════════════ -->
+
+        <template id="school_header">
+            <t t-set="company" t-value="company if company else env.company"/>
+            <t t-set="brand_color" t-value="company.primary_color or '#135c49'"/>
+            <div dir="rtl" t-attf-style="border-bottom: 3px solid {{ brand_color }}; padding-bottom: 8px; margin-bottom: 14px;">
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr>
+                        <td style="width:20%; vertical-align:middle; text-align:right;">
+                            <img t-if="company.logo"
+                                t-att-src="image_data_uri(company.logo)"
+                                style="max-height:75px; max-width:120px;" alt="Logo"/>
+                        </td>
+                        <td style="width:60%; text-align:center; vertical-align:middle;">
+                            <div t-attf-style="font-size:19px; font-weight:bold; color: {{ brand_color }};">
+                                <span t-field="company.name"/>
+                            </div>
+                            <div t-if="company.school_name_en"
+                                style="font-size:13px; color:#555;">
+                                <span t-field="company.school_name_en"/>
+                            </div>
+                            <div style="font-size:10px; color:#777; margin-top:3px;">
+                                <span t-if="company.street" t-field="company.street"/>
+                                <span t-if="company.city"> — <span t-field="company.city"/></span>
+                                <span t-if="company.phone"> · هاتف: <span t-field="company.phone" dir="ltr"/></span>
+                            </div>
+                            <div t-if="company.school_license_no"
+                                style="font-size:10px; color:#777;">
+                                ترخيص رقم: <span t-field="company.school_license_no"/>
+                            </div>
+                        </td>
+                        <td style="width:20%; text-align:left; vertical-align:middle; font-size:10px; color:#777;">
+                            <div>التاريخ: <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d')"/></div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </template>
+
+        <template id="school_footer">
+            <t t-set="company" t-value="company if company else env.company"/>
+            <t t-set="brand_color" t-value="company.primary_color or '#135c49'"/>
+            <div dir="rtl" t-attf-style="border-top: 2px solid {{ brand_color }}; margin-top: 18px; padding-top: 8px; font-size: 10px; color:#555;">
+                <table t-if="not hide_signatures" style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:11px; color:#333;">
+                    <tr>
+                        <td style="width:33%; text-align:center; padding-top:18px;">
+                            التوقيع: ..........................
+                        </td>
+                        <td style="width:33%; text-align:center; padding-top:18px;">
+                            المراجعة: ..........................
+                        </td>
+                        <td style="width:33%; text-align:center; padding-top:18px;">
+                            الاعتماد: ..........................
+                        </td>
+                    </tr>
+                </table>
+                <div t-if="company.receipt_footer_text" style="text-align:center; margin-bottom:4px;">
+                    <span t-field="company.receipt_footer_text"/>
+                </div>
+                <table style="width:100%;">
+                    <tr>
+                        <td style="text-align:right;">
+                            <span t-if="doc_number">رقم المستند: <span t-esc="doc_number"/></span>
+                        </td>
+                        <td style="text-align:left;" dir="ltr">
+                            <span t-esc="company.name"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </template>
+
+    </data>
+</odoo>

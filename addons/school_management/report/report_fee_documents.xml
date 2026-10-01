@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ══ Fee Invoice (direct from the fee record) ══ -->
+        <template id="report_fee_invoice">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="fee">
+                    <t t-call="web.basic_layout">
+                        <div class="page" dir="rtl" style="font-family: Arial, sans-serif; padding: 20px;">
+                            <t t-call="school_management.school_header">
+                                <t t-set="company" t-value="fee.school_id.company_id if 'company_id' in fee.school_id._fields else env.company"/>
+                            </t>
+                            <h3 style="text-align:center; margin: 6px 0 14px;">فاتورة رسوم دراسية</h3>
+                            <table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:12px;">
+                                <tr>
+                                    <td style="padding:5px; color:#666; width:18%;">رقم الفاتورة:</td>
+                                    <td style="padding:5px; font-weight:bold; width:32%;"><span t-field="fee.fee_code"/></td>
+                                    <td style="padding:5px; color:#666; width:18%;">تاريخ الإصدار:</td>
+                                    <td style="padding:5px;"><span t-field="fee.invoice_date"/></td>
+                                </tr>
+                                <tr style="background:#f8f9fa;">
+                                    <td style="padding:5px; color:#666;">الطالب:</td>
+                                    <td style="padding:5px; font-weight:bold;"><span t-field="fee.student_id.name"/> (<span t-field="fee.student_id.student_code"/>)</td>
+                                    <td style="padding:5px; color:#666;">ولي الأمر:</td>
+                                    <td style="padding:5px;"><span t-esc="fee.guardian_id.name or '—'"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:5px; color:#666;">العام الدراسي:</td>
+                                    <td style="padding:5px;"><span t-field="fee.academic_year_id.name"/></td>
+                                    <td style="padding:5px; color:#666;">الفصل:</td>
+                                    <td style="padding:5px;"><span t-esc="fee.class_id.display_name or '—'"/></td>
+                                </tr>
+                            </table>
+                            <table style="width:100%; border-collapse:collapse; font-size:12px; margin-bottom:12px;">
+                                <tr style="background:#135c49; color:#fff;">
+                                    <th style="padding:7px; text-align:right;">البيان</th>
+                                    <th style="padding:7px; text-align:center;">الفترة</th>
+                                    <th style="padding:7px; text-align:left;">المبلغ (ج.م)</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding:7px; border:1px solid #ddd;"><span t-field="fee.fee_type_id.name"/></td>
+                                    <td style="padding:7px; border:1px solid #ddd; text-align:center;"><span t-field="fee.term"/></td>
+                                    <td style="padding:7px; border:1px solid #ddd; text-align:left;"><span t-esc="'%.2f' % fee.amount"/></td>
+                                </tr>
+                                <tr t-if="fee.sibling_discount_amount">
+                                    <td style="padding:7px; border:1px solid #ddd;" colspan="2">
+                                        خصم الأشقاء (<span t-esc="'%.0f%%' % fee.sibling_discount_percent"/>)
+                                    </td>
+                                    <td style="padding:7px; border:1px solid #ddd; text-align:left; color:#b23a30;">
+                                        −<span t-esc="'%.2f' % fee.sibling_discount_amount"/>
+                                    </td>
+                                </tr>
+                                <tr t-if="fee.discount_amount">
+                                    <td style="padding:7px; border:1px solid #ddd;" colspan="2">
+                                        خصم / منحة<span t-if="fee.discount_reason"> (<span t-field="fee.discount_reason"/>)</span>
+                                    </td>
+                                    <td style="padding:7px; border:1px solid #ddd; text-align:left; color:#b23a30;">
+                                        −<span t-esc="'%.2f' % fee.discount_amount"/>
+                                    </td>
+                                </tr>
+                                <tr t-if="fee.registration_credit">
+                                    <td style="padding:7px; border:1px solid #ddd;" colspan="2">رصيد رسوم التسجيل المدفوعة</td>
+                                    <td style="padding:7px; border:1px solid #ddd; text-align:left; color:#b23a30;">
+                                        −<span t-esc="'%.2f' % fee.registration_credit"/>
+                                    </td>
+                                </tr>
+                                <tr style="background:#e7f0ec; font-weight:bold;">
+                                    <td style="padding:7px; border:1px solid #ddd;" colspan="2">الصافي المستحق</td>
+                                    <td style="padding:7px; border:1px solid #ddd; text-align:left;"><span t-esc="'%.2f' % fee.net_payable"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:7px; border:1px solid #ddd;" colspan="2">المسدد</td>
+                                    <td style="padding:7px; border:1px solid #ddd; text-align:left;"><span t-esc="'%.2f' % fee.paid_amount"/></td>
+                                </tr>
+                                <tr style="font-weight:bold;">
+                                    <td style="padding:7px; border:1px solid #ddd;" colspan="2">المتبقي</td>
+                                    <td style="padding:7px; border:1px solid #ddd; text-align:left;"><span t-esc="'%.2f' % fee.balance"/></td>
+                                </tr>
+                            </table>
+                            <t t-if="fee.payment_mode == 'installments' and fee.installment_ids">
+                                <h5 style="margin:10px 0 6px;">جدول الأقساط</h5>
+                                <table style="width:100%; border-collapse:collapse; font-size:11px;">
+                                    <tr style="background:#f1f3f2;">
+                                        <th style="padding:5px; border:1px solid #ddd; text-align:right;">القسط</th>
+                                        <th style="padding:5px; border:1px solid #ddd;">الاستحقاق</th>
+                                        <th style="padding:5px; border:1px solid #ddd;">المبلغ</th>
+                                        <th style="padding:5px; border:1px solid #ddd;">الحالة</th>
+                                    </tr>
+                                    <tr t-foreach="fee.installment_ids.sorted('sequence')" t-as="inst">
+                                        <td style="padding:5px; border:1px solid #ddd;"><span t-field="inst.name"/></td>
+                                        <td style="padding:5px; border:1px solid #ddd; text-align:center;"><span t-field="inst.due_date"/></td>
+                                        <td style="padding:5px; border:1px solid #ddd; text-align:left;"><span t-esc="'%.2f' % inst.amount"/></td>
+                                        <td style="padding:5px; border:1px solid #ddd; text-align:center;"><span t-field="inst.state"/></td>
+                                    </tr>
+                                </table>
+                            </t>
+                            <t t-call="school_management.school_footer">
+                                <t t-set="doc_number" t-value="fee.fee_code"/>
+                            </t>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <!-- ══ Financial claim notice (single or batch from the fee list) ══ -->
+        <template id="report_fee_claim">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="fee">
+                    <t t-call="web.basic_layout">
+                        <div class="page" dir="rtl" style="font-family: Arial, sans-serif; padding: 20px;">
+                            <t t-call="school_management.school_header"/>
+                            <h3 style="text-align:center; margin: 6px 0 14px;">إشعار مطالبة مالية</h3>
+                            <p style="font-size:13px; line-height:1.9;">
+                                السيد ولي أمر الطالب /
+                                <strong><span t-field="fee.student_id.name"/></strong>
+                                — الفصل: <span t-esc="fee.class_id.display_name or '—'"/>
+                                — العام الدراسي: <span t-field="fee.academic_year_id.name"/>
+                                <br/>
+                                تحية طيبة وبعد،
+                                <br/>
+                                نفيدكم بأن المستحقات التالية ما زالت قائمة على الطالب المذكور،
+                                راجين التكرم بسدادها في أقرب وقت:
+                            </p>
+                            <table style="width:100%; border-collapse:collapse; font-size:12px; margin:10px 0;">
+                                <tr style="background:#135c49; color:#fff;">
+                                    <th style="padding:6px; text-align:right;">نوع الرسم</th>
+                                    <th style="padding:6px;">الصافي المستحق</th>
+                                    <th style="padding:6px;">المسدد</th>
+                                    <th style="padding:6px;">المتبقي</th>
+                                    <th style="padding:6px;">تاريخ الاستحقاق</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding:6px; border:1px solid #ddd;"><span t-field="fee.fee_type_id.name"/></td>
+                                    <td style="padding:6px; border:1px solid #ddd; text-align:center;"><span t-esc="'%.2f' % fee.net_payable"/></td>
+                                    <td style="padding:6px; border:1px solid #ddd; text-align:center;"><span t-esc="'%.2f' % fee.paid_amount"/></td>
+                                    <td style="padding:6px; border:1px solid #ddd; text-align:center; font-weight:bold; color:#b23a30;"><span t-esc="'%.2f' % fee.balance"/></td>
+                                    <td style="padding:6px; border:1px solid #ddd; text-align:center;"><span t-field="fee.due_date"/></td>
+                                </tr>
+                            </table>
+                            <t t-if="fee.payment_mode == 'installments'">
+                                <t t-set="overdue" t-value="fee.installment_ids.filtered(lambda i: i.state not in ('paid',) and i.due_date and i.due_date &lt;= context_timestamp(datetime.datetime.now()).date())"/>
+                                <p t-if="overdue" style="font-size:12px; color:#b23a30;">
+                                    الأقساط المتأخرة:
+                                    <t t-foreach="overdue" t-as="inst">
+                                        <span t-field="inst.name"/> (<span t-esc="'%.2f' % inst.balance"/>)<t t-if="not inst_last"> · </t>
+                                    </t>
+                                </p>
+                            </t>
+                            <p style="font-size:12px; color:#555;">
+                                للاستفسار أو ترتيب جدولة السداد يرجى مراجعة الإدارة المالية.
+                                وتفضلوا بقبول فائق الاحترام.
+                            </p>
+                            <t t-call="school_management.school_footer">
+                                <t t-set="doc_number" t-value="fee.fee_code"/>
+                            </t>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <!-- ══ Student ID card (85.6 × 54 mm) ══ -->
+        <template id="report_student_id_card">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="student">
+                    <t t-call="web.basic_layout">
+                        <t t-set="company" t-value="env.company"/>
+                        <t t-set="brand_color" t-value="company.primary_color or '#135c49'"/>
+                        <div class="page" dir="rtl" style="font-family: Arial, sans-serif;">
+                            <div t-attf-style="width: 323px; height: 193px; border: 1px solid {{ brand_color }}; border-radius: 10px; overflow: hidden; position: relative;">
+                                <div t-attf-style="background: {{ brand_color }}; color: #fff; padding: 5px 10px; font-size: 11px; font-weight: bold; text-align:center;">
+                                    <span t-field="company.name"/>
+                                    <span t-if="company.school_name_en" style="display:block; font-size:8px; font-weight:normal;">
+                                        <span t-field="company.school_name_en"/>
+                                    </span>
+                                </div>
+                                <table style="width:100%; padding: 6px 10px;">
+                                    <tr>
+                                        <td style="width:70px; vertical-align:top;">
+                                            <img t-if="student.photo"
+                                                t-att-src="image_data_uri(student.photo)"
+                                                style="width:65px; height:75px; object-fit:cover; border:1px solid #ccc; border-radius:4px;"/>
+                                            <div t-else="" style="width:65px; height:75px; border:1px solid #ccc; border-radius:4px; background:#f1f1f1;"/>
+                                        </td>
+                                        <td style="vertical-align:top; padding-right:8px; font-size:11px; line-height:1.7;">
+                                            <div style="font-weight:bold; font-size:12px;"><span t-field="student.name"/></div>
+                                            <div>الرقم: <span t-field="student.student_code" dir="ltr"/></div>
+                                            <div>الفصل: <span t-esc="student.class_id.display_name or '—'"/></div>
+                                            <div>العام: <span t-esc="student.academic_year_id.name or '—'"/></div>
+                                        </td>
+                                        <td style="width:62px; vertical-align:top; text-align:left;">
+                                            <img t-att-src="'data:image/png;base64,%s' % student.get_qr_code_b64()"
+                                                style="width:58px; height:58px;"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div t-attf-style="position:absolute; bottom:0; width:100%; background:#f5f5f5; border-top: 2px solid {{ brand_color }}; font-size:8px; color:#666; text-align:center; padding:3px 0;">
+                                    <span t-if="company.phone">هاتف: <span t-field="company.phone" dir="ltr"/></span>
+                                    <span t-if="company.website"> · <span t-field="company.website" dir="ltr"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <!-- ID-card paper format (86 × 54 mm) -->
+        <record id="paperformat_student_id_card" model="report.paperformat">
+            <field name="name">Student ID Card</field>
+            <field name="format">custom</field>
+            <field name="page_width">86</field>
+            <field name="page_height">54</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">0</field>
+            <field name="margin_bottom">0</field>
+            <field name="margin_left">0</field>
+            <field name="margin_right">0</field>
+            <field name="header_spacing">0</field>
+            <field name="dpi">96</field>
+        </record>
+
+        <!-- Report actions -->
+        <record id="action_report_fee_invoice" model="ir.actions.report">
+            <field name="name">فاتورة رسوم</field>
+            <field name="model">school.fee</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">school_management.report_fee_invoice</field>
+            <field name="report_file">school_management.report_fee_invoice</field>
+            <field name="print_report_name">'Invoice - ' + (object.fee_code or '')</field>
+            <field name="binding_model_id" ref="model_school_fee"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="action_report_fee_claim" model="ir.actions.report">
+            <field name="name">إشعار مطالبة مالية</field>
+            <field name="model">school.fee</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">school_management.report_fee_claim</field>
+            <field name="report_file">school_management.report_fee_claim</field>
+            <field name="print_report_name">'Claim - ' + (object.fee_code or '')</field>
+            <field name="binding_model_id" ref="model_school_fee"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="action_report_student_id_card" model="ir.actions.report">
+            <field name="name">بطاقة الطالب</field>
+            <field name="model">school.student</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">school_management.report_student_id_card</field>
+            <field name="report_file">school_management.report_student_id_card</field>
+            <field name="print_report_name">'ID Card - ' + (object.name or '')</field>
+            <field name="binding_model_id" ref="model_school_student"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="paperformat_student_id_card"/>
+        </record>
+
+    </data>
+</odoo>

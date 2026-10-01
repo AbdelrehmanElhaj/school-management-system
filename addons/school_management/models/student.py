@@ -306,6 +306,15 @@ class Student(models.Model):
             'أُنشئ سجل الالتحاق للعام الدراسي %s.') % year.name)
         return enrollment
 
+    def get_qr_code_b64(self):
+        """QR of the student code, embedded as base64 so the ID card
+        renders without a round-trip to the barcode controller."""
+        self.ensure_one()
+        import base64
+        png = self.env['ir.actions.report'].barcode(
+            'QR', self.student_code or str(self.id), width=180, height=180)
+        return base64.b64encode(png).decode()
+
     def company_docs_required(self):
         self.ensure_one()
         return self.env.company.enrollment_require_docs

@@ -7,60 +7,69 @@
             <t t-foreach="docs" t-as="student">
                 <div class="page" dir="rtl" style="font-family: 'Times New Roman', 'Amiri', serif; padding: 60px 80px; text-align:center; min-height:600px; border: 8px double #2c3e50; margin: 20px; position:relative;">
 
-                    <!-- Decorative top border -->
-                    <div style="border-bottom:2px solid #c9a84c; margin-bottom:30px; padding-bottom:15px;">
-                        <h1 style="color:#2c3e50; font-size:28px; margin:0; letter-spacing:3px; text-transform:uppercase;">
-                            Certificate of Enrollment
+                    <t t-set="company" t-value="env.company"/>
+                    <t t-set="brand_color" t-value="company.primary_color or '#2c3e50'"/>
+
+                    <!-- School identity -->
+                    <div t-attf-style="border-bottom:2px solid {{ company.secondary_color or '#c9a84c' }}; margin-bottom:24px; padding-bottom:14px;">
+                        <img t-if="company.logo" t-att-src="image_data_uri(company.logo)"
+                            style="max-height:70px; margin-bottom:8px;"/>
+                        <div t-attf-style="font-size:18px; font-weight:bold; color: {{ brand_color }};">
+                            <span t-field="company.name"/>
+                        </div>
+                        <div t-if="company.school_name_en" style="font-size:12px; color:#777;">
+                            <span t-field="company.school_name_en"/>
+                        </div>
+                        <div t-if="company.school_license_no" style="font-size:10px; color:#999;">
+                            ترخيص رقم: <span t-field="company.school_license_no"/>
+                        </div>
+                        <h1 t-attf-style="color: {{ brand_color }}; font-size:26px; margin:14px 0 0;">
+                            شهادة قيد
                         </h1>
                     </div>
 
-                    <p style="font-size:16px; color:#555; margin-bottom:30px;">This is to certify that</p>
+                    <p style="font-size:16px; color:#555; margin-bottom:26px;">تشهد إدارة المدرسة بأن الطالب/الطالبة</p>
 
-                    <h2 style="font-size:32px; color:#c9a84c; border-bottom:2px solid #c9a84c; display:inline-block; padding-bottom:5px; margin-bottom:20px;">
+                    <h2 t-attf-style="font-size:30px; color: {{ company.secondary_color or '#c9a84c' }}; border-bottom:2px solid {{ company.secondary_color or '#c9a84c' }}; display:inline-block; padding-bottom:5px; margin-bottom:18px;">
                         <t t-esc="student.name"/>
                     </h2>
 
-                    <p style="font-size:15px; line-height:1.8; color:#333; margin:20px 0;">
-                        with Student ID <strong><t t-esc="student.student_code"/></strong>
-                        is duly enrolled in
-                        <strong><t t-esc="student.class_id.display_name or 'N/A'"/></strong>
-                        for the academic year
-                        <strong><t t-esc="student.academic_year_id.name or 'N/A'"/></strong>.
+                    <p style="font-size:15px; line-height:1.9; color:#333; margin:18px 0;">
+                        رقم القيد <strong><t t-esc="student.student_code"/></strong>
+                        مقيد/ة بالفصل
+                        <strong><t t-esc="student.class_id.display_name or '—'"/></strong>
+                        للعام الدراسي
+                        <strong><t t-esc="student.academic_year_id.name or '—'"/></strong>.
                     </p>
 
-                    <p style="font-size:15px; color:#333; margin:10px 0;">
-                        Enrollment Date:
-                        <strong><t t-esc="str(student.enrollment_date) if student.enrollment_date else 'N/A'"/></strong>
+                    <p style="font-size:15px; color:#333; margin:8px 0;">
+                        تاريخ القيد:
+                        <strong><t t-esc="str(student.enrollment_date) if student.enrollment_date else '—'"/></strong>
                     </p>
 
-                    <p style="font-size:15px; color:#333; margin:10px 0;">
-                        Status:
-                        <strong style="color:#27ae60;"><t t-esc="student.status.upper()"/></strong>
-                    </p>
-
-                    <p style="font-size:13px; color:#777; margin-top:30px;">
-                        Issued on:
-                        <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%B %d, %Y')"/>
+                    <p style="font-size:13px; color:#777; margin-top:24px;">
+                        حُررت هذه الشهادة بتاريخ
+                        <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d')"/>
+                        بناءً على طلب ولي الأمر دون أدنى مسؤولية على المدرسة تجاه الغير.
                     </p>
 
                     <!-- Signature area -->
-                    <div style="margin-top:60px; display:flex; justify-content:space-around;">
+                    <div style="margin-top:50px; display:flex; justify-content:space-around;">
                         <div style="text-align:center;">
                             <div style="border-top:1px solid #333; padding-top:8px; width:180px; margin:0 auto;">
-                                <div style="font-size:13px;">Class Teacher</div>
-                                <div style="font-size:12px; color:#888;"><t t-esc="student.class_id.teacher_id.name or ''"/></div>
+                                <div style="font-size:13px;">شؤون الطلاب</div>
                             </div>
                         </div>
                         <div style="text-align:center;">
                             <div style="border-top:1px solid #333; padding-top:8px; width:180px; margin:0 auto;">
-                                <div style="font-size:13px;">School Principal</div>
+                                <div style="font-size:13px;">مدير المدرسة</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- School seal placeholder -->
-                    <div style="position:absolute; bottom:60px; right:80px; width:90px; height:90px; border:2px dashed #aaa; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#aaa; font-size:11px;">
-                        School<br/>Seal
+                    <div style="position:absolute; bottom:60px; left:80px; width:90px; height:90px; border:2px dashed #aaa; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#aaa; font-size:11px;">
+                        ختم<br/>المدرسة
                     </div>
                 </div>
             </t>
@@ -96,8 +105,13 @@
                 <div class="page" dir="rtl" style="font-family: 'Times New Roman', 'Amiri', serif; padding: 60px 80px; text-align:center; min-height:600px; border: 8px double #c9a84c; margin: 20px; background: linear-gradient(135deg, #fff 0%, #fffdf0 100%);">
 
                     <div style="border-bottom:2px solid #c9a84c; margin-bottom:30px; padding-bottom:15px;">
-                        <h1 style="color:#2c3e50; font-size:28px; margin:0; letter-spacing:3px; text-transform:uppercase;">
-                            Certificate of Completion
+                        <img t-if="env.company.logo" t-att-src="image_data_uri(env.company.logo)"
+                            style="max-height:60px; margin-bottom:6px;"/>
+                        <div style="font-size:16px; font-weight:bold; color:#2c3e50;">
+                            <span t-field="env.company.name"/>
+                        </div>
+                        <h1 style="color:#2c3e50; font-size:26px; margin:10px 0 0;">
+                            شهادة إتمام
                         </h1>
                     </div>
 

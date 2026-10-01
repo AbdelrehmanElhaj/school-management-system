@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'School Management System',
-    'version': '17.0.11.0.0',
+    'version': '17.0.12.0.0',
     'category': 'Education',
     'summary': 'Comprehensive School Management System for Odoo 17',
     'description': """
@@ -44,6 +44,7 @@
         'data/enrollment_requirements_data.xml',
         'data/fee_engine_data.xml',
         # Report QWeb templates (before views so actions are available)
+        'report/school_report_layout.xml',
         'report/report_timetable.xml',
         'report/report_grade_sheet.xml',
         'report/report_attendance.xml',
@@ -52,6 +53,8 @@
         'report/report_certificates.xml',
         # Report actions (must load before views that reference them)
         'report/report_actions.xml',
+        # Fee invoice, claim notice, student ID card (WP4)
+        'report/report_fee_documents.xml',
         # Views - Phase 1
         'views/academic_year_views.xml',
         'views/student_views.xml',

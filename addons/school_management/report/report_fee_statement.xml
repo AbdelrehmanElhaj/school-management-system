@@ -11,11 +11,12 @@
                 <t t-set="total_amount" t-value="sum(fees.mapped('amount'))"/>
                 <t t-set="total_paid" t-value="sum(fees.mapped('paid_amount'))"/>
                 <t t-set="total_balance" t-value="sum(fees.mapped('balance'))"/>
+                <t t-set="total_discounts" t-value="sum(fees.mapped('discount_amount')) + sum(fees.mapped('sibling_discount_amount')) + sum(fees.mapped('registration_credit'))"/>
 
                 <div class="page" dir="rtl" style="font-family: Arial, 'Amiri', sans-serif; padding: 20px;">
-                    <!-- Header -->
-                    <div style="text-align:center; border-bottom:2px solid #2c3e50; padding-bottom:15px; margin-bottom:20px;">
-                        <h2 style="color:#2c3e50; margin:0;">كشف الرسوم المدرسية</h2>
+                    <t t-call="school_management.school_header"/>
+                    <div style="text-align:center; margin-bottom:16px;">
+                        <h3 style="margin:0;">كشف الرسوم المدرسية</h3>
                         <p style="margin:4px 0; color:#555;">
                             السنة الدراسية: <strong><t t-esc="student.academic_year_id.name or 'N/A'"/></strong>
                         </p>
@@ -131,6 +132,13 @@
                                     </td>
                                     <td colspan="2" style="padding:8px; border:1px solid #ddd;"/>
                                 </tr>
+                                <tr t-if="total_discounts" style="font-size:11px; color:#555;">
+                                    <td colspan="9" style="padding:6px 8px; border:1px solid #ddd; text-align:right;">
+                                        إجمالي الخصومات والإعفاءات والأرصدة المخصومة:
+                                        <strong><t t-esc="'%.2f' % total_discounts"/></strong>
+                                        (المتبقي محسوب على الصافي بعد الخصومات)
+                                    </td>
+                                </tr>
                             </tfoot>
                         </table>
                     </t>
@@ -138,29 +146,17 @@
                         <p style="color:#888; font-style:italic;">لا توجد سجلات رسوم.</p>
                     </t>
 
-                    <!-- Signatures -->
-                    <div style="margin-top:40px; display:flex; justify-content:space-between;">
-                        <div style="text-align:center; width:30%;">
-                            <div style="border-top:1px solid #333; padding-top:5px;">المحاسب</div>
-                        </div>
-                        <div style="text-align:center; width:30%;">
-                            <div style="border-top:1px solid #333; padding-top:5px;">مدير المدرسة</div>
-                        </div>
-                        <div style="text-align:center; width:30%;">
-                            <div style="border-top:1px solid #333; padding-top:5px;">ختم المدرسة</div>
-                        </div>
-                    </div>
+                    <t t-call="school_management.school_footer">
+                        <t t-set="doc_number" t-value="student.student_code"/>
+                    </t>
                 </div>
             </t>
         </template>
 
         <template id="report_fee_statement">
             <t t-call="web.html_container">
-                <t t-foreach="docs" t-as="o">
-                    <t t-call="web.external_layout">
-                        <t t-call="school_management.report_fee_statement_document"
-                            t-lang="o.env.lang"/>
-                    </t>
+                <t t-call="web.basic_layout">
+                    <t t-call="school_management.report_fee_statement_document"/>
                 </t>
             </t>
         </template>

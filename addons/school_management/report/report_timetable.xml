@@ -7,6 +7,7 @@
             <t t-foreach="docs" t-as="timetable">
                 <t t-call="web.external_layout">
                     <div class="page" dir="rtl" style="font-family: Arial, 'Amiri', sans-serif;">
+                        <t t-call="school_management.school_header"/>
                         <!-- Header -->
                         <div class="row mb-3">
                             <div class="col-6">
