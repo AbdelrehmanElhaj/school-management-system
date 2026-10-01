@@ -73,6 +73,11 @@ class Student(models.Model):
     phone = fields.Char(string='Phone')
     address = fields.Text(string='Address')
 
+    # Yearly enrollment history (one record per academic year)
+    enrollment_history_ids = fields.One2many(
+        'school.student.enrollment', 'student_id', string='Enrollment History'
+    )
+
     # Enrollment checklist
     checklist_ids = fields.One2many(
         'school.enrollment.checklist.item', 'student_id', string='Enrollment Checklist'
@@ -168,6 +173,30 @@ class Student(models.Model):
             if rec.enrollment_state == 'pending_approval':
                 rec.enrollment_state = 'active'
                 rec.status = 'active'
+                rec._create_enrollment_record()
+
+    def _create_enrollment_record(self):
+        """Create the yearly enrollment record for the student's current
+        class/year (skipped if one already exists for that year)."""
+        self.ensure_one()
+        year = self.class_id.academic_year_id or \
+            self.env['school.academic.year'].get_active_year()
+        if not year:
+            return self.env['school.student.enrollment']
+        existing = self.env['school.student.enrollment'].search([
+            ('student_id', '=', self.id),
+            ('academic_year_id', '=', year.id),
+        ], limit=1)
+        if existing:
+            return existing
+        enrollment = self.env['school.student.enrollment'].create({
+            'student_id': self.id,
+            'academic_year_id': year.id,
+            'class_id': self.class_id.id,
+        })
+        self.message_post(body=_(
+            'أُنشئ سجل الالتحاق للعام الدراسي %s.') % year.name)
+        return enrollment
 
     def action_reject_enrollment(self):
         """pending_approval → new  (reset to start)"""
@@ -179,6 +208,14 @@ class Student(models.Model):
 
     def action_withdraw(self):
         self.write({'status': 'withdrawn'})
+        # Reflect the withdrawal on the active-year enrollment record.
+        active_year = self.env['school.academic.year'].get_active_year()
+        if active_year:
+            self.env['school.student.enrollment'].search([
+                ('student_id', 'in', self.ids),
+                ('academic_year_id', '=', active_year.id),
+                ('state', '=', 'enrolled'),
+            ]).write({'state': 'withdrawn'})
 
     def action_activate(self):
         self.write({'status': 'active'})

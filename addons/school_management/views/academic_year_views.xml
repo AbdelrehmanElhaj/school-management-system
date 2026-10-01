@@ -30,8 +30,9 @@
                         <button name="action_activate" string="Activate" type="object"
                             class="btn-primary"
                             invisible="state != 'draft'"/>
-                        <button name="action_close" string="Close Year" type="object"
-                            invisible="state != 'active'"/>
+                        <button name="action_archive_year" string="أرشفة العام" type="object"
+                            invisible="state != 'active'"
+                            confirm="ستُغلق جميع فصول هذا العام وتُقفل سجلاته المالية أمام التعديل لغير مدير النظام. هل أنت متأكد؟"/>
                         <button name="action_draft" string="Reset to Draft" type="object"
                             invisible="state != 'done'"/>
                         <field name="state" widget="statusbar"

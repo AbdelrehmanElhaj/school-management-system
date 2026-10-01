@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'School Management System',
-    'version': '17.0.8.0.0',
+    'version': '17.0.9.0.0',
     'category': 'Education',
     'summary': 'Comprehensive School Management System for Odoo 17',
     'description': """
@@ -75,6 +75,8 @@
         'views/school_branch_views.xml',
         # Views - Enrollment & Installments
         'views/enrollment_views.xml',
+        # Views - Yearly enrollment history & year promotion (WP1)
+        'views/student_enrollment_views.xml',
         # Login landing page (overrides web.login_layout)
         'views/login_template.xml',
         # Menus (always last)

@@ -42,6 +42,18 @@ class AcademicYear(models.Model):
             if rec.date_start and rec.date_end and rec.date_start >= rec.date_end:
                 raise ValidationError(_('End date must be after start date.'))
 
+    @api.model
+    def get_active_year(self, school=None):
+        """Return the single active academic year (used as default everywhere)."""
+        domain = [('state', '=', 'active'), ('current', '=', True)]
+        if school:
+            domain.append(('school_id', '=', school.id))
+        year = self.search(domain, limit=1)
+        if not year:
+            year = self.search([('state', '=', 'active')],
+                               order='date_start desc', limit=1)
+        return year
+
     def action_activate(self):
         # Only one active year per school at a time
         domain = [('current', '=', True)]
@@ -51,7 +63,31 @@ class AcademicYear(models.Model):
         self.write({'state': 'active', 'current': True})
 
     def action_close(self):
-        self.write({'state': 'done', 'current': False})
+        return self.action_archive_year()
+
+    def action_archive_year(self):
+        """Archive the year: validate nothing is half-done, then close it and
+        all its classes. Archived (done) years are locked by record rules."""
+        for rec in self:
+            draft_fees = self.env['school.fee'].search_count([
+                ('academic_year_id', '=', rec.id), ('state', '=', 'draft'),
+            ])
+            if draft_fees:
+                raise ValidationError(_(
+                    'لا يمكن أرشفة العام "%s": يوجد %d رسم في حالة مسودة. '
+                    'يجب تأكيدها أو إلغاؤها أولًا.') % (rec.name, draft_fees))
+            draft_payments = self.env['school.fee.payment'].search_count([
+                ('fee_id.academic_year_id', '=', rec.id), ('state', '=', 'draft'),
+            ])
+            if draft_payments:
+                raise ValidationError(_(
+                    'لا يمكن أرشفة العام "%s": يوجد %d دفعة غير مؤكدة. '
+                    'يجب تأكيدها أو إلغاؤها أولًا.') % (rec.name, draft_payments))
+            rec.class_ids.filtered(lambda c: c.state == 'open').write(
+                {'state': 'closed'})
+            rec.write({'state': 'done', 'current': False})
+            rec.message_post(body=_('تمت أرشفة العام الدراسي وإغلاق جميع فصوله.'))
+        return True
 
     def action_draft(self):
         self.write({'state': 'draft'})

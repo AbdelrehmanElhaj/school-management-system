@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Enrollment History Tree View -->
+        <record id="view_student_enrollment_tree" model="ir.ui.view">
+            <field name="name">school.student.enrollment.tree</field>
+            <field name="model">school.student.enrollment</field>
+            <field name="arch" type="xml">
+                <tree string="Enrollment Records"
+                    decoration-success="state == 'enrolled'"
+                    decoration-info="state == 'promoted'"
+                    decoration-danger="state == 'withdrawn'"
+                    decoration-muted="state == 'graduated'">
+                    <field name="student_id"/>
+                    <field name="academic_year_id"/>
+                    <field name="class_id"/>
+                    <field name="grade_level"/>
+                    <field name="enrollment_date" optional="hide"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Enrollment History Form View -->
+        <record id="view_student_enrollment_form" model="ir.ui.view">
+            <field name="name">school.student.enrollment.form</field>
+            <field name="model">school.student.enrollment</field>
+            <field name="arch" type="xml">
+                <form string="Enrollment Record">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="student_id"/>
+                                <field name="academic_year_id"/>
+                                <field name="class_id"/>
+                                <field name="grade_level"/>
+                            </group>
+                            <group>
+                                <field name="state"/>
+                                <field name="enrollment_date"/>
+                                <field name="notes"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Enrollment History Search View -->
+        <record id="view_student_enrollment_search" model="ir.ui.view">
+            <field name="name">school.student.enrollment.search</field>
+            <field name="model">school.student.enrollment</field>
+            <field name="arch" type="xml">
+                <search string="Search Enrollments">
+                    <field name="student_id"/>
+                    <field name="academic_year_id"/>
+                    <field name="class_id"/>
+                    <filter string="العام النشط" name="current_year"
+                        domain="[('academic_year_id.current','=',True)]"/>
+                    <separator/>
+                    <filter string="ملتحق" name="enrolled" domain="[('state','=','enrolled')]"/>
+                    <filter string="مُرحَّل" name="promoted" domain="[('state','=','promoted')]"/>
+                    <filter string="منسحب" name="withdrawn" domain="[('state','=','withdrawn')]"/>
+                    <filter string="متخرج" name="graduated" domain="[('state','=','graduated')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Academic Year" name="group_year"
+                            context="{'group_by': 'academic_year_id'}"/>
+                        <filter string="Class" name="group_class"
+                            context="{'group_by': 'class_id'}"/>
+                        <filter string="Grade" name="group_grade"
+                            context="{'group_by': 'grade_level'}"/>
+                        <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Enrollment History Action -->
+        <record id="action_student_enrollment" model="ir.actions.act_window">
+            <field name="name">سجلات الالتحاق</field>
+            <field name="res_model">school.student.enrollment</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_student_enrollment_search"/>
+            <field name="context">{'search_default_current_year': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    لا توجد سجلات التحاق بعد — تُنشأ تلقائيًا عند اعتماد الطلاب أو ترحيلهم.
+                </p>
+            </field>
+        </record>
+
+        <!-- Year Promotion Wizard Form -->
+        <record id="view_year_promotion_wizard_form" model="ir.ui.view">
+            <field name="name">school.year.promotion.wizard.form</field>
+            <field name="model">school.year.promotion.wizard</field>
+            <field name="arch" type="xml">
+                <form string="ترحيل الطلاب للعام الجديد">
+                    <group>
+                        <group>
+                            <field name="source_year_id"
+                                readonly="line_ids"/>
+                            <field name="target_year_id"
+                                readonly="line_ids"/>
+                        </group>
+                        <group>
+                            <field name="line_count" string="عدد الطلاب المحددين"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert"
+                        invisible="line_ids">
+                        اختر العامين ثم اضغط «تحميل الطلاب». يُقترح لكل طالب فصل
+                        الصف التالي في العام الجديد، ويمكنك تعديل الفصل أو استبعاد
+                        أي طالب قبل التنفيذ. الترحيل لا يمس أي سجل مالي أو أكاديمي قديم.
+                    </div>
+                    <field name="line_ids" invisible="not line_ids">
+                        <tree editable="bottom" create="false"
+                            decoration-muted="not include"
+                            decoration-warning="graduating">
+                            <field name="include" widget="boolean_toggle"/>
+                            <field name="student_id" readonly="1"/>
+                            <field name="source_class_id"/>
+                            <field name="target_class_id"
+                                readonly="graduating"/>
+                            <field name="graduating"/>
+                        </tree>
+                    </field>
+                    <footer>
+                        <button name="action_load_students" string="تحميل الطلاب"
+                            type="object" class="btn-primary"
+                            invisible="line_ids"/>
+                        <button name="action_promote" string="تنفيذ الترحيل"
+                            type="object" class="btn-primary"
+                            invisible="not line_ids"
+                            confirm="سيُنشأ سجل التحاق جديد لكل طالب محدد وسيُنقل إلى فصله الجديد. هل أنت متأكد؟"/>
+                        <button name="action_load_students" string="إعادة التحميل"
+                            type="object" invisible="not line_ids"/>
+                        <button string="إلغاء" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Year Promotion Wizard Action -->
+        <record id="action_year_promotion_wizard" model="ir.actions.act_window">
+            <field name="name">ترحيل الطلاب للعام الجديد</field>
+            <field name="res_model">school.year.promotion.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

@@ -131,8 +131,8 @@
                             <group string="Student &amp; Fee">
                                 <field name="student_id"/>
                                 <field name="guardian_id" readonly="1"/>
-                                <field name="class_id" readonly="1"/>
-                                <field name="academic_year_id" readonly="1"/>
+                                <field name="class_id" readonly="state != 'draft'"/>
+                                <field name="academic_year_id" readonly="state != 'draft'"/>
                                 <field name="fee_type_id"/>
                                 <field name="term"/>
                                 <field name="payment_mode" widget="radio"/>
@@ -240,6 +240,9 @@
                     <field name="fee_type_id"/>
                     <field name="class_id"/>
                     <field name="fee_code"/>
+                    <filter string="العام النشط" name="current_year"
+                        domain="[('academic_year_id.current','=',True)]"/>
+                    <separator/>
                     <filter string="Due" name="due" domain="[('state','=','due')]"/>
                     <filter string="Overdue" name="overdue" domain="[('state','=','overdue')]"/>
                     <filter string="Partially Paid" name="partial" domain="[('state','=','partial')]"/>
@@ -270,7 +273,7 @@
             <field name="res_model">school.fee</field>
             <field name="view_mode">tree,form,pivot,graph</field>
             <field name="search_view_id" ref="view_fee_search"/>
-            <field name="context">{'search_default_unpaid': 1}</field>
+            <field name="context">{'search_default_unpaid': 1, 'search_default_current_year': 1}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     No fees created yet
@@ -354,12 +357,36 @@
             </field>
         </record>
 
+        <!-- Payment Search View -->
+        <record id="view_payment_search" model="ir.ui.view">
+            <field name="name">school.fee.payment.search</field>
+            <field name="model">school.fee.payment</field>
+            <field name="arch" type="xml">
+                <search string="Search Payments">
+                    <field name="payment_code"/>
+                    <field name="student_id"/>
+                    <field name="fee_id"/>
+                    <filter string="العام النشط" name="current_year"
+                        domain="[('fee_id.academic_year_id.current','=',True)]"/>
+                    <separator/>
+                    <filter string="Confirmed" name="confirmed" domain="[('state','=','confirmed')]"/>
+                    <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Student" name="group_student" context="{'group_by': 'student_id'}"/>
+                        <filter string="Payment Method" name="group_method" context="{'group_by': 'payment_method'}"/>
+                        <filter string="Payment Date" name="group_date" context="{'group_by': 'payment_date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
         <!-- Payment Action -->
         <record id="action_payment" model="ir.actions.act_window">
             <field name="name">Payments</field>
             <field name="res_model">school.fee.payment</field>
             <field name="view_mode">tree,form</field>
-            <field name="context">{'search_default_confirmed': 1}</field>
+            <field name="search_view_id" ref="view_payment_search"/>
+            <field name="context">{'search_default_confirmed': 1, 'search_default_current_year': 1}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     No payments recorded yet

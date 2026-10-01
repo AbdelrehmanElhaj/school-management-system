@@ -27,6 +27,12 @@
             action="action_student"
             sequence="10"/>
 
+        <menuitem id="menu_student_enrollment"
+            name="سجلات الالتحاق"
+            parent="menu_school_students"
+            action="action_student_enrollment"
+            sequence="15"/>
+
         <menuitem id="menu_guardian_list"
             name="Guardians"
             parent="menu_school_students"
@@ -199,6 +205,13 @@
             parent="menu_school_config"
             action="action_academic_year"
             sequence="10"/>
+
+        <menuitem id="menu_year_promotion"
+            name="ترحيل الطلاب للعام الجديد"
+            parent="menu_school_config"
+            action="action_year_promotion_wizard"
+            sequence="12"
+            groups="group_school_admin"/>
 
         <menuitem id="menu_fee_type"
             name="Fee Types"

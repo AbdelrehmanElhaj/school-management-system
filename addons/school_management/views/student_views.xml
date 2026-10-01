@@ -129,6 +129,20 @@
                                     </tree>
                                 </field>
                             </page>
+                            <page string="سجل الالتحاق" name="enrollment_history">
+                                <field name="enrollment_history_ids" readonly="1">
+                                    <tree decoration-success="state == 'enrolled'"
+                                        decoration-info="state == 'promoted'"
+                                        decoration-danger="state == 'withdrawn'"
+                                        decoration-muted="state == 'graduated'">
+                                        <field name="academic_year_id"/>
+                                        <field name="class_id"/>
+                                        <field name="grade_level"/>
+                                        <field name="enrollment_date"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
                             <page string="Contact &amp; Guardian">
                                 <group>
                                     <group string="Guardian">
@@ -206,6 +220,10 @@
                     <field name="school_id"/>
                     <field name="guardian_id"/>
                     <field name="national_id"/>
+                    <filter string="العام النشط" name="current_year"
+                        domain="['|', ('academic_year_id', '=', False),
+                                 ('academic_year_id.current', '=', True)]"/>
+                    <separator/>
                     <filter string="Active" name="active" domain="[('status','=','active')]"/>
                     <filter string="Paused" name="paused" domain="[('status','=','paused')]"/>
                     <filter string="Withdrawn" name="withdrawn" domain="[('status','=','withdrawn')]"/>
@@ -236,7 +254,7 @@
             <field name="res_model">school.student</field>
             <field name="view_mode">tree,form,kanban</field>
             <field name="search_view_id" ref="view_student_search"/>
-            <field name="context">{'search_default_active': 1}</field>
+            <field name="context">{'search_default_active': 1, 'search_default_current_year': 1}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     Register your first student

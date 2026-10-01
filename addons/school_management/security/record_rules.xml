@@ -135,6 +135,59 @@
             <field name="perm_unlink" eval="False"/>
         </record>
 
+        <!-- Parent sees only own children's enrollment records -->
+        <record id="rule_student_enrollment_parent" model="ir.rule">
+            <field name="name">Enrollment: Parent sees own children</field>
+            <field name="model_id" ref="school_management.model_school_student_enrollment"/>
+            <field name="groups" eval="[(4, ref('school_management.group_school_parent'))]"/>
+            <field name="domain_force">[('student_id.guardian_id.user_id', '=', user.id)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- ══ Archived-year lock: financial records of a closed (done) year
+             are read-only for everyone except the school administrator ══ -->
+        <record id="rule_fee_archived_year_lock" model="ir.rule">
+            <field name="name">Fee: lock records of archived years (non-admin)</field>
+            <field name="model_id" ref="school_management.model_school_fee"/>
+            <field name="groups" eval="[(4, ref('school_management.group_school_accountant')),
+                                        (4, ref('school_management.group_school_principal')),
+                                        (4, ref('school_management.group_school_affairs'))]"/>
+            <field name="domain_force">['|', ('academic_year_id', '=', False), ('academic_year_id.state', '!=', 'done')]</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="rule_payment_archived_year_lock" model="ir.rule">
+            <field name="name">Payment: lock records of archived years (non-admin)</field>
+            <field name="model_id" ref="school_management.model_school_fee_payment"/>
+            <field name="groups" eval="[(4, ref('school_management.group_school_accountant')),
+                                        (4, ref('school_management.group_school_principal')),
+                                        (4, ref('school_management.group_school_affairs'))]"/>
+            <field name="domain_force">['|', ('fee_id.academic_year_id', '=', False), ('fee_id.academic_year_id.state', '!=', 'done')]</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="rule_installment_archived_year_lock" model="ir.rule">
+            <field name="name">Installment: lock records of archived years (non-admin)</field>
+            <field name="model_id" ref="school_management.model_school_fee_installment"/>
+            <field name="groups" eval="[(4, ref('school_management.group_school_accountant')),
+                                        (4, ref('school_management.group_school_principal')),
+                                        (4, ref('school_management.group_school_affairs'))]"/>
+            <field name="domain_force">['|', ('fee_id.academic_year_id', '=', False), ('fee_id.academic_year_id.state', '!=', 'done')]</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
         <!-- Teacher sees only exams for own classes -->
         <record id="rule_exam_teacher" model="ir.rule">
             <field name="name">Exam: Teacher sees own class exams</field>

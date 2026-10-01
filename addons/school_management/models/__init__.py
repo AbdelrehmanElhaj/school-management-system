@@ -8,6 +8,7 @@ from . import attendance
 from . import exam
 from . import grade
 from . import enrollment
+from . import student_enrollment
 from . import fee
 from . import fee_installment
 from . import account_integration

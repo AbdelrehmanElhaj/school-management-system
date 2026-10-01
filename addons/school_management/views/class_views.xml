@@ -119,6 +119,9 @@
                     <field name="teacher_id"/>
                     <field name="academic_year_id"/>
                     <field name="school_id"/>
+                    <filter string="العام النشط" name="current_year"
+                        domain="[('academic_year_id.current','=',True)]"/>
+                    <separator/>
                     <filter string="Open" name="open" domain="[('state','=','open')]"/>
                     <filter string="Closed" name="closed" domain="[('state','=','closed')]"/>
                     <group expand="0" string="Group By">
@@ -137,7 +140,7 @@
             <field name="res_model">school.class</field>
             <field name="view_mode">tree,kanban,form</field>
             <field name="search_view_id" ref="view_class_search"/>
-            <field name="context">{'search_default_open': 1}</field>
+            <field name="context">{'search_default_open': 1, 'search_default_current_year': 1}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     Create your first classroom

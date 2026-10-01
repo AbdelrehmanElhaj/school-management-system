@@ -46,9 +46,11 @@ class Fee(models.Model):
         'school.guardian', string='Guardian',
         related='student_id.guardian_id', store=True
     )
+    # Snapshot fields: filled from the student at creation time and then
+    # frozen, so promoting the student to a new year/class never rewrites
+    # historical financial records (previously related store=True).
     class_id = fields.Many2one(
-        'school.class', string='Class',
-        related='student_id.class_id', store=True
+        'school.class', string='Class', index=True
     )
     school_id = fields.Many2one(
         'school.branch', string='School',
@@ -56,7 +58,8 @@ class Fee(models.Model):
     )
     academic_year_id = fields.Many2one(
         'school.academic.year', string='Academic Year',
-        related='student_id.academic_year_id', store=True
+        required=True, index=True,
+        default=lambda self: self.env['school.academic.year'].get_active_year()
     )
     fee_type_id = fields.Many2one(
         'school.fee.type', string='Fee Type', required=True, tracking=True
@@ -132,7 +135,22 @@ class Fee(models.Model):
             if vals.get('fee_code', _('New')) == _('New'):
                 vals['fee_code'] = self.env['ir.sequence'].next_by_code(
                     'school.fee') or _('New')
+            # Snapshot year/class from the student's current situation when
+            # not given explicitly (covers RPC/import paths with no onchange).
+            if vals.get('student_id'):
+                student = self.env['school.student'].browse(vals['student_id'])
+                if not vals.get('class_id') and student.class_id:
+                    vals['class_id'] = student.class_id.id
+                if not vals.get('academic_year_id') and student.academic_year_id:
+                    vals['academic_year_id'] = student.academic_year_id.id
         return super().create(vals_list)
+
+    @api.onchange('student_id')
+    def _onchange_student_snapshot(self):
+        # Proposed from the student's current class/year, then stays frozen.
+        self.class_id = self.student_id.class_id
+        if self.student_id.academic_year_id:
+            self.academic_year_id = self.student_id.academic_year_id
 
     @api.depends('student_id', 'fee_type_id')
     def _compute_display_name(self):

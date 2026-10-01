@@ -4139,3 +4139,43 @@ msgstr "· تنتهي:"
 #: model_terms:ir.ui.view,arch_db:school_management.portal_announcement_detail
 msgid "← Back to Announcements"
 msgstr "← العودة إلى الإعلانات"
+
+#. module: school_management
+#: model:ir.model.fields,field_description:school_management.field_school_student__enrollment_history_ids
+msgid "Enrollment History"
+msgstr "سجل الالتحاق"
+
+#. module: school_management
+#: model_terms:ir.ui.view,arch_db:school_management.view_student_enrollment_tree
+msgid "Enrollment Records"
+msgstr "سجلات الالتحاق"
+
+#. module: school_management
+#: model:ir.model.fields,field_description:school_management.field_school_student_enrollment__year_state
+msgid "Year Status"
+msgstr "حالة العام"
+
+#. module: school_management
+#: model:ir.model,name:school_management.model_school_student_enrollment
+msgid "Student Yearly Enrollment"
+msgstr "سجل الالتحاق السنوي للطالب"
+
+#. module: school_management
+#: model:ir.model,name:school_management.model_school_year_promotion_wizard
+msgid "Promote Students to New Academic Year"
+msgstr "ترحيل الطلاب إلى العام الدراسي الجديد"
+
+#. module: school_management
+#: model:ir.model,name:school_management.model_school_year_promotion_wizard_line
+msgid "Promotion Wizard Line"
+msgstr "سطر معالج الترحيل"
+
+#. module: school_management
+#: model_terms:ir.ui.view,arch_db:school_management.view_student_enrollment_search
+msgid "Search Enrollments"
+msgstr "بحث في سجلات الالتحاق"
+
+#. module: school_management
+#: model_terms:ir.ui.view,arch_db:school_management.view_payment_search
+msgid "Search Payments"
+msgstr "بحث في المدفوعات"
