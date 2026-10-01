@@ -92,7 +92,8 @@ class FeeScheduleWizard(models.TransientModel):
 
         self.line_ids.unlink()
         count = int(self.installment_count)
-        fee_amount = self.fee_id.amount
+        # Schedule over the net payable (after discounts and credits).
+        fee_amount = self.fee_id.net_payable
         base_amount = round(fee_amount / count, 2)
         # Last installment absorbs rounding remainder
         remainder = round(fee_amount - base_amount * (count - 1), 2)
@@ -131,10 +132,10 @@ class FeeScheduleWizard(models.TransientModel):
             raise UserError(_('الرجاء إنشاء جدول الدفعات أولًا بالضغط على "إنشاء تلقائي".'))
 
         total = sum(self.line_ids.mapped('amount'))
-        if abs(total - self.fee_id.amount) > 0.01:
+        if abs(total - self.fee_id.net_payable) > 0.01:
             raise UserError(
-                _('مجموع الدفعات (%.2f) يجب أن يساوي إجمالي الرسوم (%.2f).') % (
-                    total, self.fee_id.amount
+                _('مجموع الدفعات (%.2f) يجب أن يساوي صافي الرسوم المستحق (%.2f).') % (
+                    total, self.fee_id.net_payable
                 )
             )
 

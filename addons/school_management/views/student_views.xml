@@ -48,9 +48,14 @@
                             invisible="enrollment_state != 'pending_approval'"
                             groups="school_management.group_school_approver"/>
                         <button name="action_reject_enrollment"
-                            string="إعادة الطلب" type="object"
-                            class="btn-warning"
+                            string="رفض الطلب" type="object"
+                            class="btn-danger"
                             invisible="enrollment_state != 'pending_approval'"
+                            groups="school_management.group_school_approver"/>
+                        <button name="action_reset_application"
+                            string="إعادة فتح الطلب" type="object"
+                            class="btn-warning"
+                            invisible="enrollment_state != 'rejected'"
                             groups="school_management.group_school_approver"/>
                         <!-- Enrollment state statusbar (hidden once enrolled) -->
                         <field name="enrollment_state" widget="statusbar"
@@ -72,6 +77,10 @@
                             invisible="enrollment_state != 'active'"/>
                     </header>
                     <sheet>
+                        <div class="alert alert-danger" role="alert"
+                            invisible="enrollment_state != 'rejected'">
+                            طلب مرفوض — السبب: <field name="rejection_reason" readonly="1" class="oe_inline"/>
+                        </div>
                         <field name="photo" widget="image" class="oe_avatar"/>
                         <div class="oe_button_box" name="button_box">
                             <button name="%(school_management.action_report_grade_sheet)d"
@@ -236,6 +245,8 @@
                         domain="[('enrollment_state','in',['new','pending_docs','pending_approval'])]"/>
                     <filter string="بانتظار الموافقة" name="pending_approval"
                         domain="[('enrollment_state','=','pending_approval')]"/>
+                    <filter string="طلبات مرفوضة" name="rejected"
+                        domain="[('enrollment_state','=','rejected')]"/>
                     <separator/>
                     <group expand="0" string="Group By">
                         <filter string="School" name="group_school" context="{'group_by': 'school_id'}"/>
@@ -299,6 +310,8 @@
                             <group string="Personal Information">
                                 <field name="relationship"/>
                                 <field name="national_id"/>
+                                <field name="approved_children_count"/>
+                                <field name="sibling_discount_percent"/>
                             </group>
                             <group string="Contact">
                                 <field name="phone"/>

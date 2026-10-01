@@ -64,6 +64,9 @@
                     <field name="term"/>
                     <field name="amount"/>
                     <field name="discount_amount" optional="hide"/>
+                    <field name="sibling_discount_amount" optional="hide"/>
+                    <field name="registration_credit" optional="hide"/>
+                    <field name="net_payable" optional="show"/>
                     <field name="paid_amount"/>
                     <field name="balance"/>
                     <field name="currency_id" invisible="1"/>
@@ -95,6 +98,17 @@
                         <button name="action_send_reminder" string="Send Reminder"
                             type="object"
                             invisible="state not in ('due','partial','overdue')"/>
+                        <button name="action_request_discount_override"
+                            string="طلب استثناء خصم" type="object"
+                            invisible="state in ('draft','cancelled','paid') or discount_override_state == 'pending'"/>
+                        <button name="action_approve_discount_override"
+                            string="اعتماد الاستثناء" type="object" class="btn-success"
+                            invisible="discount_override_state != 'pending'"
+                            groups="school_management.group_school_approver"/>
+                        <button name="action_refuse_discount_override"
+                            string="رفض الاستثناء" type="object"
+                            invisible="discount_override_state != 'pending'"
+                            groups="school_management.group_school_approver"/>
                         <button name="action_cancel" string="Cancel" type="object"
                             invisible="state in ('paid','cancelled')"/>
                         <button name="action_draft" string="Reset to Draft" type="object"
@@ -140,15 +154,38 @@
                             <group string="Financial">
                                 <field name="currency_id"/>
                                 <field name="amount"/>
-                                <field name="discount_amount"/>
-                                <field name="discount_reason" invisible="not discount_amount"/>
                                 <field name="is_exempt"/>
+                                <field name="net_payable" readonly="1"/>
                                 <field name="paid_amount" readonly="1"/>
-                                <field name="balance" readonly="1"/>
+                                <field name="balance" readonly="1" class="fw-bold"/>
                                 <field name="invoice_date"/>
                                 <field name="due_date"/>
                                 <field name="invoice_id" readonly="1" invisible="not invoice_id"/>
                                 <field name="invoice_amount_residual" readonly="1" invisible="not invoice_id"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="الخصومات">
+                                <field name="sibling_discount_percent" readonly="1"
+                                    invisible="not sibling_discount_percent"/>
+                                <field name="sibling_discount_amount" readonly="1"
+                                    invisible="not sibling_discount_amount"/>
+                                <field name="registration_credit" readonly="1"
+                                    invisible="not registration_credit"/>
+                                <field name="discount_amount"/>
+                                <field name="discount_reason" invisible="not discount_amount"/>
+                            </group>
+                            <group string="استثناء الخصم"
+                                invisible="discount_override_state == 'none' and state == 'draft'">
+                                <field name="discount_override_state" readonly="1"/>
+                                <field name="discount_override_amount"
+                                    readonly="discount_override_state == 'pending'"/>
+                                <field name="discount_override_reason"
+                                    readonly="discount_override_state == 'pending'"/>
+                                <field name="discount_override_user_id" readonly="1"
+                                    invisible="discount_override_state == 'none'"/>
+                                <field name="discount_override_approver_id" readonly="1"
+                                    invisible="discount_override_state not in ('approved','refused')"/>
                             </group>
                         </group>
                         <notebook>
@@ -251,6 +288,10 @@
                         domain="[('state','in',['due','partial','overdue'])]"/>
                     <filter string="Exempt" name="exempt" domain="[('is_exempt','=',True)]"/>
                     <filter string="Discounted" name="discounted" domain="[('discount_amount','>',0)]"/>
+                    <filter string="خصم أشقاء" name="sibling_discounted"
+                        domain="[('sibling_discount_amount','>',0)]"/>
+                    <filter string="استثناءات بانتظار الاعتماد" name="override_pending"
+                        domain="[('discount_override_state','=','pending')]"/>
                     <separator/>
                     <filter string="First Term" name="first" domain="[('term','=','first')]"/>
                     <filter string="Second Term" name="second" domain="[('term','=','second')]"/>

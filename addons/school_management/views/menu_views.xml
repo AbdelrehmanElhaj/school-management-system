@@ -233,6 +233,20 @@
             action="action_fee_type"
             sequence="20"/>
 
+        <menuitem id="menu_fee_structure"
+            name="مصفوفة الرسوم"
+            parent="menu_school_config"
+            action="action_fee_structure"
+            sequence="21"
+            groups="group_school_config"/>
+
+        <menuitem id="menu_sibling_rule"
+            name="قواعد خصم الأشقاء"
+            parent="menu_school_config"
+            action="action_sibling_rule"
+            sequence="22"
+            groups="group_school_config"/>
+
         <menuitem id="menu_school_periods"
             name="School Periods"
             parent="menu_school_config"

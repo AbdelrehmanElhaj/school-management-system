@@ -10,6 +10,7 @@ from . import grade
 from . import enrollment
 from . import student_enrollment
 from . import fee
+from . import fee_structure
 from . import fee_installment
 from . import account_integration
 from . import dashboard

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Form (application) fee type — WP3 -->
+        <record id="fee_type_form" model="school.fee.type">
+            <field name="name">Application Form Fee</field>
+            <field name="code">FORM</field>
+            <field name="description">Application form fee paid when the enrollment request is submitted</field>
+            <field name="default_amount">250</field>
+        </record>
+
+        <!-- Sibling discount ladder (client defaults; editable by the
+             configuration group) -->
+        <record id="sibling_rule_2" model="school.sibling.discount.rule">
+            <field name="min_siblings">2</field>
+            <field name="percent">10</field>
+        </record>
+        <record id="sibling_rule_3" model="school.sibling.discount.rule">
+            <field name="min_siblings">3</field>
+            <field name="percent">15</field>
+        </record>
+        <record id="sibling_rule_4" model="school.sibling.discount.rule">
+            <field name="min_siblings">4</field>
+            <field name="percent">20</field>
+        </record>
+        <record id="sibling_rule_5" model="school.sibling.discount.rule">
+            <field name="min_siblings">5</field>
+            <field name="percent">25</field>
+        </record>
+
+    </data>
+</odoo>

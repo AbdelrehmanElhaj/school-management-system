@@ -4234,3 +4234,53 @@ msgstr "اللون الثانوي"
 #: model:ir.model,name:school_management.model_school_class_copy_wizard
 msgid "Copy Class Structure to a New Year"
 msgstr "نسخ بنية الفصول إلى عام جديد"
+
+#. module: school_management
+#: model:ir.model,name:school_management.model_school_fee_structure
+msgid "Fee Structure (Grade Fee Matrix)"
+msgstr "مصفوفة الرسوم حسب الصف"
+
+#. module: school_management
+#: model:ir.model,name:school_management.model_school_sibling_discount_rule
+msgid "Sibling Discount Rule"
+msgstr "قاعدة خصم الأشقاء"
+
+#. module: school_management
+#: model:ir.model.fields,field_description:school_management.field_school_sibling_discount_rule__min_siblings
+msgid "Minimum Children"
+msgstr "الحد الأدنى لعدد الأبناء"
+
+#. module: school_management
+#: model:ir.model.fields,field_description:school_management.field_school_sibling_discount_rule__percent
+msgid "Discount %"
+msgstr "نسبة الخصم %"
+
+#. module: school_management
+#: model:ir.model,name:school_management.model_school_fee_structure_copy_wizard
+msgid "Copy Fee Structure From a Previous Year"
+msgstr "نسخ مصفوفة الرسوم من عام سابق"
+
+#. module: school_management
+#: model:ir.model,name:school_management.model_school_student_reject_wizard
+msgid "Reject Enrollment Application"
+msgstr "رفض طلب التسجيل"
+
+#. module: school_management
+#: model_terms:ir.ui.view,arch_db:school_management.view_fee_structure_tree
+msgid "Fee Matrix"
+msgstr "مصفوفة الرسوم"
+
+#. module: school_management
+#: model_terms:ir.ui.view,arch_db:school_management.view_sibling_rule_tree
+msgid "Sibling Discount Rules"
+msgstr "قواعد خصم الأشقاء"
+
+#. module: school_management
+#: model_terms:ir.ui.view,arch_db:school_management.view_fee_structure_search
+msgid "Search Fee Matrix"
+msgstr "بحث في مصفوفة الرسوم"
+
+#. module: school_management
+#: model:school.fee.type,name:school_management.fee_type_form
+msgid "Application Form Fee"
+msgstr "رسوم الاستمارة"

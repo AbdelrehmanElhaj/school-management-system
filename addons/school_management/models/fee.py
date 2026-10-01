@@ -128,6 +128,43 @@ class Fee(models.Model):
         help='Student is fully exempted from this fee (معفي).'
     )
 
+    # ── WP3: sibling discount, registration credit, override cycle ──
+    sibling_discount_percent = fields.Float(
+        string='خصم الأشقاء %', readonly=True, tracking=True,
+        help='Set automatically from the sibling discount rules; applied '
+             'on tuition fees only.'
+    )
+    sibling_discount_amount = fields.Monetary(
+        string='مبلغ خصم الأشقاء', currency_field='currency_id',
+        compute='_compute_sibling_discount_amount', store=True
+    )
+    registration_credit = fields.Monetary(
+        string='رصيد رسوم التسجيل', currency_field='currency_id',
+        readonly=True, tracking=True,
+        help='Paid registration fee deducted from this tuition fee '
+             '(per the billing settings).'
+    )
+    net_payable = fields.Monetary(
+        string='الصافي المستحق', currency_field='currency_id',
+        compute='_compute_net_payable', store=True
+    )
+    discount_override_amount = fields.Monetary(
+        string='الخصم المقترح', currency_field='currency_id', tracking=True
+    )
+    discount_override_reason = fields.Char(string='سبب الخصم المقترح')
+    discount_override_state = fields.Selection([
+        ('none', 'بدون'),
+        ('pending', 'بانتظار الاعتماد'),
+        ('approved', 'معتمد'),
+        ('refused', 'مرفوض'),
+    ], string='حالة الاستثناء', default='none', tracking=True)
+    discount_override_user_id = fields.Many2one(
+        'res.users', string='طلبه', readonly=True, copy=False
+    )
+    discount_override_approver_id = fields.Many2one(
+        'res.users', string='اعتمده', readonly=True, copy=False
+    )
+
     _sql_constraints = [
         ('fee_code_unique', 'UNIQUE(fee_code)', 'Fee ID must be unique.'),
     ]
@@ -169,13 +206,30 @@ class Fee(models.Model):
                 p.amount for p in rec.payment_ids if p.state == 'confirmed'
             )
 
-    @api.depends('amount', 'paid_amount', 'discount_amount', 'is_exempt')
+    @api.depends('amount', 'sibling_discount_percent')
+    def _compute_sibling_discount_amount(self):
+        for rec in self:
+            rec.sibling_discount_amount = (
+                rec.amount * rec.sibling_discount_percent / 100.0)
+
+    @api.depends('amount', 'discount_amount', 'sibling_discount_amount',
+                 'registration_credit', 'is_exempt')
+    def _compute_net_payable(self):
+        for rec in self:
+            if rec.is_exempt:
+                rec.net_payable = 0.0
+            else:
+                rec.net_payable = max(0.0, rec.amount - rec.discount_amount
+                                      - rec.sibling_discount_amount
+                                      - rec.registration_credit)
+
+    @api.depends('net_payable', 'paid_amount', 'is_exempt')
     def _compute_balance(self):
         for rec in self:
             if rec.is_exempt:
                 rec.balance = 0.0
             else:
-                rec.balance = rec.amount - rec.paid_amount - rec.discount_amount
+                rec.balance = rec.net_payable - rec.paid_amount
 
     @api.depends('payment_ids')
     def _compute_payment_count(self):
@@ -217,6 +271,68 @@ class Fee(models.Model):
                 rec.state = 'overdue'
             else:
                 rec.state = 'due'
+
+    def write(self, vals):
+        # Manual discount changes on confirmed fees go through the override
+        # cycle; only approvers may touch the applied discount directly.
+        if ('discount_amount' in vals or 'is_exempt' in vals) and \
+                not self.env.su and not self.env.user.has_group(
+                    'school_management.group_school_approver'):
+            non_draft = self.filtered(lambda f: f.state != 'draft')
+            if non_draft:
+                raise UserError(_(
+                    'تعديل الخصم أو الإعفاء على رسم مؤكد يتطلب طلب استثناء '
+                    'يعتمده «معتمِد الطلاب» (زر «طلب استثناء خصم»).'))
+        return super().write(vals)
+
+    # ── Discount override cycle: finance proposes, approver decides ──
+    def action_request_discount_override(self):
+        for rec in self:
+            if rec.discount_override_amount <= 0:
+                raise UserError(_('أدخل مبلغ الخصم المقترح أولًا.'))
+            if not rec.discount_override_reason:
+                raise UserError(_('أدخل سبب الخصم المقترح.'))
+            rec.write({
+                'discount_override_state': 'pending',
+                'discount_override_user_id': self.env.user.id,
+            })
+            rec.message_post(body=_(
+                'طلب استثناء خصم: %(amt).2f — %(reason)s',
+                amt=rec.discount_override_amount,
+                reason=rec.discount_override_reason))
+
+    def _check_override_approver(self):
+        if not self.env.user.has_group(
+                'school_management.group_school_approver'):
+            raise UserError(_(
+                'اعتماد استثناءات الخصم متاح فقط لمجموعة «معتمِد الطلاب».'))
+
+    def action_approve_discount_override(self):
+        self._check_override_approver()
+        for rec in self:
+            if rec.discount_override_state != 'pending':
+                continue
+            rec.write({
+                'discount_amount': rec.discount_override_amount,
+                'discount_reason': rec.discount_override_reason,
+                'discount_override_state': 'approved',
+                'discount_override_approver_id': self.env.user.id,
+            })
+            rec.message_post(body=_(
+                'اعتُمد استثناء الخصم (%(amt).2f) بواسطة %(user)s.',
+                amt=rec.discount_override_amount,
+                user=self.env.user.name))
+            rec._update_state()
+
+    def action_refuse_discount_override(self):
+        self._check_override_approver()
+        for rec in self:
+            if rec.discount_override_state == 'pending':
+                rec.write({
+                    'discount_override_state': 'refused',
+                    'discount_override_approver_id': self.env.user.id,
+                })
+                rec.message_post(body=_('رُفض استثناء الخصم.'))
 
     def action_confirm(self):
         for rec in self:
@@ -414,7 +530,7 @@ class FeePayment(models.Model):
                     p.amount for p in rec.fee_id.payment_ids
                     if p.state == 'confirmed' and p.id != rec.id
                 )
-                payable = rec.fee_id.amount - rec.fee_id.discount_amount
+                payable = rec.fee_id.net_payable
                 if rec.amount + confirmed_others > payable:
                     raise ValidationError(
                         _('Total payments (%.2f) would exceed the payable amount '

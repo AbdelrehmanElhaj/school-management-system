@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Fee structure copy wizard -->
+        <record id="view_fee_structure_copy_wizard_form" model="ir.ui.view">
+            <field name="name">school.fee.structure.copy.wizard.form</field>
+            <field name="model">school.fee.structure.copy.wizard</field>
+            <field name="arch" type="xml">
+                <form string="نسخ مصفوفة الرسوم">
+                    <group>
+                        <field name="source_year_id"/>
+                        <field name="target_year_id"/>
+                    </group>
+                    <footer>
+                        <button name="action_copy" string="نسخ" type="object"
+                            class="btn-primary"/>
+                        <button string="إلغاء" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_fee_structure_copy_wizard" model="ir.actions.act_window">
+            <field name="name">نسخ مصفوفة الرسوم من عام سابق</field>
+            <field name="res_model">school.fee.structure.copy.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Fee Structure editable list -->
+        <record id="view_fee_structure_tree" model="ir.ui.view">
+            <field name="name">school.fee.structure.tree</field>
+            <field name="model">school.fee.structure</field>
+            <field name="arch" type="xml">
+                <tree string="Fee Matrix" editable="bottom" multi_edit="1">
+                    <header>
+                        <button name="%(action_fee_structure_copy_wizard)d"
+                            string="نسخ من عام سابق" type="action"
+                            display="always"/>
+                    </header>
+                    <field name="academic_year_id"/>
+                    <field name="grade_level"/>
+                    <field name="fee_type_id"/>
+                    <field name="term"/>
+                    <field name="amount"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_fee_structure_search" model="ir.ui.view">
+            <field name="name">school.fee.structure.search</field>
+            <field name="model">school.fee.structure</field>
+            <field name="arch" type="xml">
+                <search string="Search Fee Matrix">
+                    <field name="academic_year_id"/>
+                    <field name="fee_type_id"/>
+                    <filter string="العام النشط" name="current_year"
+                        domain="[('academic_year_id.current','=',True)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Academic Year" name="group_year"
+                            context="{'group_by': 'academic_year_id'}"/>
+                        <filter string="Grade" name="group_grade"
+                            context="{'group_by': 'grade_level'}"/>
+                        <filter string="Fee Type" name="group_type"
+                            context="{'group_by': 'fee_type_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_fee_structure" model="ir.actions.act_window">
+            <field name="name">مصفوفة الرسوم</field>
+            <field name="res_model">school.fee.structure</field>
+            <field name="view_mode">tree</field>
+            <field name="search_view_id" ref="view_fee_structure_search"/>
+            <field name="context">{'search_default_group_year': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    عرّف رسوم كل صف لكل عام — تتولد رسوم الطلاب تلقائيًا منها عند الاعتماد
+                </p>
+            </field>
+        </record>
+
+        <!-- Sibling discount rules -->
+        <record id="view_sibling_rule_tree" model="ir.ui.view">
+            <field name="name">school.sibling.discount.rule.tree</field>
+            <field name="model">school.sibling.discount.rule</field>
+            <field name="arch" type="xml">
+                <tree string="Sibling Discount Rules" editable="bottom">
+                    <field name="min_siblings"/>
+                    <field name="percent"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_sibling_rule" model="ir.actions.act_window">
+            <field name="name">قواعد خصم الأشقاء</field>
+            <field name="res_model">school.sibling.discount.rule</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    عرّف سلم خصومات الأشقاء — تُطبق تلقائيًا على رسوم الدراسة عند الاعتماد
+                </p>
+            </field>
+        </record>
+
+        <!-- Student rejection wizard -->
+        <record id="view_student_reject_wizard_form" model="ir.ui.view">
+            <field name="name">school.student.reject.wizard.form</field>
+            <field name="model">school.student.reject.wizard</field>
+            <field name="arch" type="xml">
+                <form string="رفض طلب التسجيل">
+                    <group>
+                        <field name="student_ids" widget="many2many_tags" readonly="1"/>
+                        <field name="reason"/>
+                    </group>
+                    <footer>
+                        <button name="action_reject" string="رفض الطلب"
+                            type="object" class="btn-danger"/>
+                        <button string="إلغاء" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>
