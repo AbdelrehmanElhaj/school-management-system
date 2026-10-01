@@ -45,7 +45,7 @@
                                 </tr>
                                 <tr t-if="fee.sibling_discount_amount">
                                     <td style="padding:7px; border:1px solid #ddd;" colspan="2">
-                                        خصم الأشقاء (<span t-esc="'%.0f%%' % fee.sibling_discount_percent"/>)
+                                        خصم الأشقاء (<span t-esc="'%.0f' % fee.sibling_discount_percent"/>%)
                                     </td>
                                     <td style="padding:7px; border:1px solid #ddd; text-align:left; color:#b23a30;">
                                         −<span t-esc="'%.2f' % fee.sibling_discount_amount"/>

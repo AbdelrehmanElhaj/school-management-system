@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'School Management System',
-    'version': '17.0.13.0.0',
+    'version': '17.0.14.0.0',
     'category': 'Education',
     'summary': 'Comprehensive School Management System for Odoo 17',
     'description': """

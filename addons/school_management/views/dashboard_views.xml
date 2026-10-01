@@ -38,6 +38,124 @@
                                     options="{'no_create': True}"/>
                             </div>
                         </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light">
+                                    <i class="fa fa-calendar me-1"/> العام الدراسي
+                                </span>
+                                <field name="academic_year_id"
+                                    class="form-control"
+                                    options="{'no_create': True}"/>
+                                <span class="input-group-text"
+                                    invisible="year_state != 'active'">
+                                    <span class="badge bg-success">نشط</span>
+                                </span>
+                                <span class="input-group-text"
+                                    invisible="year_state != 'done'">
+                                    <span class="badge bg-secondary">مؤرشف</span>
+                                </span>
+                                <field name="year_state" invisible="1"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── WP6 Row: Enrollment / Registration ────────────── -->
+                    <div class="row mb-3">
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div class="card border-0 shadow-sm h-100" style="border-right: 4px solid #135c49 !important;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-1">الطلاب المعتمدون (العام المحدد)</div>
+                                    <div class="d-flex align-items-baseline gap-2">
+                                        <button name="action_open_enrollments" type="object"
+                                            class="btn btn-link display-6 fw-bold p-0" style="color:#135c49;">
+                                            <field name="students_approved" readonly="1"/>
+                                        </button>
+                                        <span class="text-muted">/ المستهدف
+                                            <field name="students_target" readonly="1" nolabel="1"/>
+                                        </span>
+                                    </div>
+                                    <div class="small text-muted mt-1">
+                                        روضة <field name="students_kg" readonly="1" nolabel="1"/>
+                                        · ابتدائي <field name="students_primary" readonly="1" nolabel="1"/>
+                                        · متوسط <field name="students_middle" readonly="1" nolabel="1"/>
+                                        · ثانوي <field name="students_secondary" readonly="1" nolabel="1"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div class="card border-0 shadow-sm h-100" style="border-right: 4px solid #17a2b8 !important;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-1">طلبات التسجيل</div>
+                                    <div class="d-flex flex-wrap gap-3 small">
+                                        <span>جديدة: <strong><field name="reg_new" readonly="1"/></strong></span>
+                                        <span>بانتظار المستندات: <strong><field name="reg_pending_docs" readonly="1"/></strong></span>
+                                        <span>قيد المراجعة: <strong><field name="reg_pending_approval" readonly="1"/></strong></span>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-3 small mt-2">
+                                        <span class="text-success">معتمدة: <strong><field name="reg_approved" readonly="1"/></strong></span>
+                                        <span class="text-danger">مرفوضة:
+                                            <button name="action_open_rejected" type="object"
+                                                class="btn btn-link p-0 fw-bold text-danger">
+                                                <field name="reg_rejected" readonly="1"/>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div class="card border-0 shadow-sm h-100" style="border-right: 4px solid #875A7B !important;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-1">الخصومات (العام المحدد)</div>
+                                    <div class="fw-bold fs-4" style="color:#875A7B;">
+                                        <field name="disc_total" readonly="1"/>
+                                    </div>
+                                    <div class="small text-muted mt-1">
+                                        أشقاء: <field name="disc_sibling" readonly="1" nolabel="1"/>
+                                        · منح/إعفاءات: <field name="disc_manual" readonly="1" nolabel="1"/>
+                                        · رصيد تسجيل: <field name="disc_reg_credit" readonly="1" nolabel="1"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── WP6 Row: Action required ──────────────────────── -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="card border-0 shadow-sm" style="border-right: 4px solid #dc3545 !important;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">الإجراءات المطلوبة — كل رقم يفتح القائمة مباشرة</div>
+                                    <div class="d-flex flex-wrap gap-4">
+                                        <button name="action_open_pending_approvals" type="object" class="btn btn-link p-0 text-start">
+                                            <span class="fw-bold fs-5 text-danger"><field name="act_pending_approvals" readonly="1"/></span>
+                                            <span class="small text-muted d-block">طلبات تنتظر اعتمادًا</span>
+                                        </button>
+                                        <button name="action_open_pending_overrides" type="object" class="btn btn-link p-0 text-start">
+                                            <span class="fw-bold fs-5 text-warning"><field name="act_pending_overrides" readonly="1"/></span>
+                                            <span class="small text-muted d-block">استثناءات خصم معلقة</span>
+                                        </button>
+                                        <button name="action_open_overdue_fees" type="object" class="btn btn-link p-0 text-start">
+                                            <span class="fw-bold fs-5 text-danger"><field name="act_overdue_fees" readonly="1"/></span>
+                                            <span class="small text-muted d-block">رسوم متأخرة</span>
+                                        </button>
+                                        <button name="action_open_missing_docs" type="object" class="btn btn-link p-0 text-start">
+                                            <span class="fw-bold fs-5 text-warning"><field name="act_missing_docs" readonly="1"/></span>
+                                            <span class="small text-muted d-block">مستندات ناقصة</span>
+                                        </button>
+                                        <button name="action_open_draft_payments" type="object" class="btn btn-link p-0 text-start">
+                                            <span class="fw-bold fs-5 text-info"><field name="act_draft_payments" readonly="1"/></span>
+                                            <span class="small text-muted d-block">دفعات غير مؤكدة</span>
+                                        </button>
+                                        <button name="action_open_budget" type="object" class="btn btn-link p-0 text-start">
+                                            <span class="fw-bold fs-5" style="color:#135c49;"><i class="fa fa-bar-chart"/></span>
+                                            <span class="small text-muted d-block">تقرير الموازنة</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- ── Row 1: Core KPIs ───────────────────────────────── -->
