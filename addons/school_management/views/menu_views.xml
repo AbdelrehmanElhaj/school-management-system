@@ -198,13 +198,27 @@
             name="Configuration"
             parent="menu_school_root"
             sequence="100"
-            groups="group_school_admin"/>
+            groups="group_school_admin,group_school_config"/>
 
         <menuitem id="menu_academic_year"
             name="Academic Years"
             parent="menu_school_config"
             action="action_academic_year"
             sequence="10"/>
+
+        <menuitem id="menu_school_settings"
+            name="إعدادات المدرسة"
+            parent="menu_school_config"
+            action="action_school_config_settings"
+            sequence="1"
+            groups="group_school_config"/>
+
+        <menuitem id="menu_class_copy"
+            name="إنشاء فصول العام الجديد"
+            parent="menu_school_config"
+            action="action_class_copy_wizard"
+            sequence="11"
+            groups="group_school_config"/>
 
         <menuitem id="menu_year_promotion"
             name="ترحيل الطلاب للعام الجديد"

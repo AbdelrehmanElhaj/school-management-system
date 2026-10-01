@@ -4179,3 +4179,58 @@ msgstr "بحث في سجلات الالتحاق"
 #: model_terms:ir.ui.view,arch_db:school_management.view_payment_search
 msgid "Search Payments"
 msgstr "بحث في المدفوعات"
+
+#. module: school_management
+#: model:res.groups,name:school_management.group_school_config
+msgid "System Configuration"
+msgstr "إعداد النظام"
+
+#. module: school_management
+#: model:res.groups,name:school_management.group_school_approver
+msgid "Student Approver"
+msgstr "معتمِد الطلاب"
+
+#. module: school_management
+#: model:ir.model.fields,field_description:school_management.field_res_company__school_name_en
+msgid "School Name (English)"
+msgstr "اسم المدرسة (بالإنجليزية)"
+
+#. module: school_management
+#: model:ir.model.fields,field_description:school_management.field_res_company__school_license_no
+msgid "License / Registry No."
+msgstr "رقم الترخيص / السجل"
+
+#. module: school_management
+#: model:ir.model.fields,field_description:school_management.field_res_company__enrollment_require_docs
+msgid "Require Complete Documents Before Approval"
+msgstr "إلزام اكتمال المستندات قبل الاعتماد"
+
+#. module: school_management
+#: model:ir.model.fields,field_description:school_management.field_res_company__target_student_count
+msgid "Target Student Count"
+msgstr "العدد المستهدف للطلاب"
+
+#. module: school_management
+#: model:ir.model.fields,field_description:school_management.field_res_company__registration_fee_deduction
+msgid "Deduct Registration Fee From Tuition"
+msgstr "خصم رسوم التسجيل من المصروفات الدراسية"
+
+#. module: school_management
+#: model:ir.model.fields,field_description:school_management.field_res_company__receipt_footer_text
+msgid "Receipt / Invoice Footer Text"
+msgstr "نص تذييل الإيصال والفاتورة"
+
+#. module: school_management
+#: model:ir.model.fields,field_description:school_management.field_res_config_settings__company_primary_color
+msgid "Primary Color"
+msgstr "اللون الأساسي"
+
+#. module: school_management
+#: model:ir.model.fields,field_description:school_management.field_res_config_settings__company_secondary_color
+msgid "Secondary Color"
+msgstr "اللون الثانوي"
+
+#. module: school_management
+#: model:ir.model,name:school_management.model_school_class_copy_wizard
+msgid "Copy Class Structure to a New Year"
+msgstr "نسخ بنية الفصول إلى عام جديد"

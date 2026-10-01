@@ -257,6 +257,7 @@
                     <filter string="Annual" name="annual" domain="[('term','=','annual')]"/>
                     <group expand="0" string="Group By">
                         <filter string="Student" name="group_student" context="{'group_by': 'student_id'}"/>
+                        <filter string="المرحلة" name="group_stage" context="{'group_by': 'stage'}"/>
                         <filter string="Class" name="group_class" context="{'group_by': 'class_id'}"/>
                         <filter string="Fee Type" name="group_type" context="{'group_by': 'fee_type_id'}"/>
                         <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>

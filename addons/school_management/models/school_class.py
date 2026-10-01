@@ -30,6 +30,12 @@ class SchoolClass(models.Model):
         ('grade11', 'Grade 11'),
         ('grade12', 'Grade 12'),
     ], string='Grade Level', required=True)
+    stage = fields.Selection([
+        ('kg', 'رياض الأطفال'),
+        ('primary', 'المرحلة الابتدائية'),
+        ('middle', 'المرحلة المتوسطة'),
+        ('secondary', 'المرحلة الثانوية'),
+    ], string='المرحلة', compute='_compute_stage', store=True)
     academic_year_id = fields.Many2one(
         'school.academic.year', string='Academic Year', required=True, tracking=True
     )
@@ -53,6 +59,19 @@ class SchoolClass(models.Model):
         ('closed', 'Closed'),
     ], string='Status', default='open', tracking=True)
     notes = fields.Text(string='Notes')
+
+    @api.depends('grade_level')
+    def _compute_stage(self):
+        stage_map = {
+            'kg1': 'kg', 'kg2': 'kg',
+            'grade1': 'primary', 'grade2': 'primary', 'grade3': 'primary',
+            'grade4': 'primary', 'grade5': 'primary', 'grade6': 'primary',
+            'grade7': 'middle', 'grade8': 'middle', 'grade9': 'middle',
+            'grade10': 'secondary', 'grade11': 'secondary',
+            'grade12': 'secondary',
+        }
+        for rec in self:
+            rec.stage = stage_map.get(rec.grade_level)
 
     @api.depends('grade_level', 'name')
     def _compute_display_name(self):

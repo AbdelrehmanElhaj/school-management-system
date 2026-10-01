@@ -16,6 +16,7 @@
                     <field name="name"/>
                     <field name="gender"/>
                     <field name="class_id"/>
+                    <field name="stage" optional="hide"/>
                     <field name="grade_level"/>
                     <field name="guardian_name"/>
                     <field name="guardian_phone"/>
@@ -45,12 +46,12 @@
                             string="قبول التسجيل" type="object"
                             class="btn-success"
                             invisible="enrollment_state != 'pending_approval'"
-                            groups="school_management.group_school_admin,school_management.group_school_principal"/>
+                            groups="school_management.group_school_approver"/>
                         <button name="action_reject_enrollment"
                             string="إعادة الطلب" type="object"
                             class="btn-warning"
                             invisible="enrollment_state != 'pending_approval'"
-                            groups="school_management.group_school_admin,school_management.group_school_principal"/>
+                            groups="school_management.group_school_approver"/>
                         <!-- Enrollment state statusbar (hidden once enrolled) -->
                         <field name="enrollment_state" widget="statusbar"
                             statusbar_visible="new,pending_docs,pending_approval,active"
@@ -238,6 +239,7 @@
                     <separator/>
                     <group expand="0" string="Group By">
                         <filter string="School" name="group_school" context="{'group_by': 'school_id'}"/>
+                        <filter string="المرحلة" name="group_stage" context="{'group_by': 'stage'}"/>
                         <filter string="Class" name="group_class" context="{'group_by': 'class_id'}"/>
                         <filter string="Grade" name="group_grade" context="{'group_by': 'grade_level'}"/>
                         <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>

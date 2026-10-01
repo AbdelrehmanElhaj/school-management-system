@@ -15,3 +15,5 @@ from . import account_integration
 from . import dashboard
 from . import timetable
 from . import communication
+from . import res_company
+from . import res_config_settings

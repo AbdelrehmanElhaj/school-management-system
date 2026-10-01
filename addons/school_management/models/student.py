@@ -37,6 +37,9 @@ class Student(models.Model):
     grade_level = fields.Selection(
         related='class_id.grade_level', store=True, string='Grade Level'
     )
+    stage = fields.Selection(
+        related='class_id.stage', store=True, string='المرحلة'
+    )
     school_id = fields.Many2one(
         'school.branch', string='School',
         related='class_id.school_id', store=True
@@ -167,8 +170,26 @@ class Student(models.Model):
                 )
             rec.enrollment_state = 'pending_approval'
 
+    def _check_approver_rights(self):
+        """Server-side guard: view-level groups= can be bypassed over RPC."""
+        if not self.env.user.has_group(
+                'school_management.group_school_approver'):
+            raise UserError(_(
+                'اعتماد أو رفض التسجيل متاح فقط لمجموعة «معتمِد الطلاب».'))
+
     def action_approve_enrollment(self):
         """pending_approval → active"""
+        self._check_approver_rights()
+        for rec in self:
+            if (rec.enrollment_state == 'pending_approval'
+                    and rec.company_docs_required()):
+                pending_required = rec.checklist_ids.filtered(
+                    lambda c: c.is_required and c.status == 'pending')
+                if pending_required:
+                    raise UserError(_(
+                        'لا يمكن الاعتماد: مستندات إلزامية ما زالت معلقة (%s). '
+                        'يمكن تعطيل هذا الشرط من إعدادات المدرسة.'
+                    ) % ', '.join(pending_required.mapped('requirement_name')))
         for rec in self:
             if rec.enrollment_state == 'pending_approval':
                 rec.enrollment_state = 'active'
@@ -198,8 +219,13 @@ class Student(models.Model):
             'أُنشئ سجل الالتحاق للعام الدراسي %s.') % year.name)
         return enrollment
 
+    def company_docs_required(self):
+        self.ensure_one()
+        return self.env.company.enrollment_require_docs
+
     def action_reject_enrollment(self):
         """pending_approval → new  (reset to start)"""
+        self._check_approver_rights()
         for rec in self:
             if rec.enrollment_state == 'pending_approval':
                 rec.enrollment_state = 'new'

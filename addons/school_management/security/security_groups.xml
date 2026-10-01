@@ -58,6 +58,26 @@
             <field name="comment">View children's attendance, fees, and notifications.</field>
         </record>
 
+        <!-- WP2: configuration vs. operations separation -->
+        <record id="group_school_config" model="res.groups">
+            <field name="name">System Configuration</field>
+            <field name="category_id" ref="module_category_school"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Sole owner of settings, fee types/matrix, discount rules, finance items, academic structure and years.</field>
+        </record>
+
+        <record id="group_school_approver" model="res.groups">
+            <field name="name">Student Approver</field>
+            <field name="category_id" ref="module_category_school"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">May approve/reject student enrollments and approve manual discount exceptions.</field>
+        </record>
+
+        <!-- School administrators keep both capabilities -->
+        <record id="group_school_admin" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_school_config')), (4, ref('group_school_approver'))]"/>
+        </record>
+
         <!-- Odoo system admins (Settings group) automatically get full school admin access -->
         <record id="base.group_system" model="res.groups">
             <field name="implied_ids" eval="[(4, ref('group_school_admin'))]"/>

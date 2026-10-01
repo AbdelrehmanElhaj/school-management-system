@@ -9,6 +9,7 @@
             <field name="arch" type="xml">
                 <tree string="Classes" decoration-muted="state == 'closed'">
                     <field name="display_name"/>
+                    <field name="stage" optional="show"/>
                     <field name="grade_level"/>
                     <field name="school_id"/>
                     <field name="academic_year_id"/>
@@ -126,6 +127,7 @@
                     <filter string="Closed" name="closed" domain="[('state','=','closed')]"/>
                     <group expand="0" string="Group By">
                         <filter string="School" name="group_school" context="{'group_by': 'school_id'}"/>
+                        <filter string="المرحلة" name="group_stage" context="{'group_by': 'stage'}"/>
                         <filter string="Grade Level" name="group_grade" context="{'group_by': 'grade_level'}"/>
                         <filter string="Academic Year" name="group_year" context="{'group_by': 'academic_year_id'}"/>
                         <filter string="Teacher" name="group_teacher" context="{'group_by': 'teacher_id'}"/>

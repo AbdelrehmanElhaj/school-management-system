@@ -52,6 +52,9 @@ class Fee(models.Model):
     class_id = fields.Many2one(
         'school.class', string='Class', index=True
     )
+    stage = fields.Selection(
+        related='class_id.stage', store=True, string='المرحلة'
+    )
     school_id = fields.Many2one(
         'school.branch', string='School',
         related='student_id.school_id', store=True

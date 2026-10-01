@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- School Settings (standard Odoo settings screen) -->
+        <record id="res_config_settings_view_form_school" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.school</field>
+            <field name="model">res.config.settings</field>
+            <field name="priority" eval="60"/>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="inside">
+                    <app data-string="School Settings" string="إعدادات المدرسة"
+                        name="school_management"
+                        groups="school_management.group_school_config">
+                        <block title="الهوية البصرية" name="school_branding">
+                            <setting string="شعار المدرسة"
+                                help="يظهر في ترويسة كل المطبوعات وصفحة الدخول">
+                                <field name="company_logo" widget="image"
+                                    class="oe_avatar"/>
+                            </setting>
+                            <setting string="الاسم الإنجليزي للمدرسة"
+                                help="يظهر مع الاسم العربي في المستندات ثنائية اللغة">
+                                <field name="school_name_en"/>
+                            </setting>
+                            <setting string="ألوان الهوية"
+                                help="اللون الأساسي والثانوي للمطبوعات والواجهة">
+                                <div class="content-group">
+                                    <div class="row mt8">
+                                        <label for="company_primary_color" class="col-3 o_light_label"/>
+                                        <field name="company_primary_color" widget="color"/>
+                                    </div>
+                                    <div class="row">
+                                        <label for="company_secondary_color" class="col-3 o_light_label"/>
+                                        <field name="company_secondary_color" widget="color"/>
+                                    </div>
+                                </div>
+                            </setting>
+                            <setting string="رقم الترخيص / السجل"
+                                help="يُطبع في ترويسة المستندات الرسمية">
+                                <field name="school_license_no"/>
+                            </setting>
+                        </block>
+                        <block title="إعدادات التسجيل" name="school_registration">
+                            <setting string="إلزام اكتمال المستندات قبل الاعتماد"
+                                help="منع اعتماد الطالب قبل رفع كل المستندات الإلزامية">
+                                <field name="enrollment_require_docs"/>
+                            </setting>
+                            <setting string="العدد المستهدف للطلاب"
+                                help="هدف التسجيل للعام النشط — يظهر في لوحة التحكم">
+                                <field name="target_student_count"/>
+                            </setting>
+                        </block>
+                        <block title="إعدادات الفوترة" name="school_billing">
+                            <setting string="خصم رسوم التسجيل من المصروفات"
+                                help="رسوم التسجيل المدفوعة تُخصم من رسم الدراسة المولَّد عند الاعتماد">
+                                <field name="registration_fee_deduction"/>
+                            </setting>
+                            <setting string="نص تذييل الإيصال والفاتورة">
+                                <field name="receipt_footer_text"
+                                    placeholder="مثال: هذا الإيصال لا يُعد مستندًا نهائيًا إلا بختم الإدارة المالية"/>
+                            </setting>
+                        </block>
+                    </app>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="action_school_config_settings" model="ir.actions.act_window">
+            <field name="name">إعدادات المدرسة</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="context">{'module': 'school_management'}</field>
+        </record>
+
+        <!-- Class structure copy wizard -->
+        <record id="view_class_copy_wizard_form" model="ir.ui.view">
+            <field name="name">school.class.copy.wizard.form</field>
+            <field name="model">school.class.copy.wizard</field>
+            <field name="arch" type="xml">
+                <form string="إنشاء فصول العام الجديد">
+                    <div class="alert alert-info" role="alert">
+                        تُنسخ بنية الفصول (الصف، الشعبة، السعة، المواد) من عام سابق
+                        إلى العام الجديد دفعة واحدة. الفصول الموجودة مسبقًا في عام
+                        الهدف لا تُكرَّر.
+                    </div>
+                    <group>
+                        <field name="source_year_id"/>
+                        <field name="target_year_id"/>
+                        <field name="copy_teachers"/>
+                    </group>
+                    <footer>
+                        <button name="action_copy" string="إنشاء الفصول"
+                            type="object" class="btn-primary"/>
+                        <button string="إلغاء" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_class_copy_wizard" model="ir.actions.act_window">
+            <field name="name">إنشاء فصول العام الجديد</field>
+            <field name="res_model">school.class.copy.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>
