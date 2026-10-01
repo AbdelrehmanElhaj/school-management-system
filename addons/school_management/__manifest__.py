@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'School Management System',
-    'version': '17.0.12.0.0',
+    'version': '17.0.13.0.0',
     'category': 'Education',
     'summary': 'Comprehensive School Management System for Odoo 17',
     'description': """
@@ -43,6 +43,7 @@
         'data/school_branch_data.xml',
         'data/enrollment_requirements_data.xml',
         'data/fee_engine_data.xml',
+        'data/finance_item_data.xml',
         # Report QWeb templates (before views so actions are available)
         'report/school_report_layout.xml',
         'report/report_timetable.xml',
@@ -85,6 +86,8 @@
         'views/res_config_settings_views.xml',
         # Views - Fee matrix, sibling discounts, rejection wizard (WP3)
         'views/fee_structure_views.xml',
+        # Views - Finance items, entries, budget report (WP5)
+        'views/finance_views.xml',
         # Login landing page (overrides web.login_layout)
         'views/login_template.xml',
         # Menus (always last)

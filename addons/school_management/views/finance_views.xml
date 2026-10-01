@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Finance items (config group) -->
+        <record id="view_finance_item_tree" model="ir.ui.view">
+            <field name="name">school.finance.item.tree</field>
+            <field name="model">school.finance.item</field>
+            <field name="arch" type="xml">
+                <tree string="Finance Items" editable="bottom">
+                    <field name="sequence" widget="handle"/>
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="kind"/>
+                    <field name="calc_method"/>
+                    <field name="fee_type_id"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_finance_item_search" model="ir.ui.view">
+            <field name="name">school.finance.item.search</field>
+            <field name="model">school.finance.item</field>
+            <field name="arch" type="xml">
+                <search string="Search Items">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <filter string="إيرادات" name="income" domain="[('kind','=','income')]"/>
+                    <filter string="مصروفات" name="expense" domain="[('kind','=','expense')]"/>
+                    <filter string="موقوفة" name="inactive" domain="[('active','=',False)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="النوع" name="group_kind" context="{'group_by': 'kind'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_finance_item" model="ir.actions.act_window">
+            <field name="name">بنود الإيرادات والمصروفات</field>
+            <field name="res_model">school.finance.item</field>
+            <field name="view_mode">tree</field>
+            <field name="search_view_id" ref="view_finance_item_search"/>
+            <field name="context">{'search_default_group_kind': 1}</field>
+        </record>
+
+        <!-- Finance entries -->
+        <record id="view_finance_entry_tree" model="ir.ui.view">
+            <field name="name">school.finance.entry.tree</field>
+            <field name="model">school.finance.entry</field>
+            <field name="arch" type="xml">
+                <tree string="Finance Entries"
+                    decoration-success="state == 'confirmed'"
+                    decoration-muted="state == 'cancelled'">
+                    <field name="ref"/>
+                    <field name="date"/>
+                    <field name="item_id"/>
+                    <field name="kind"/>
+                    <field name="memo"/>
+                    <field name="amount" sum="الإجمالي"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="academic_year_id" optional="hide"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_finance_entry_form" model="ir.ui.view">
+            <field name="name">school.finance.entry.form</field>
+            <field name="model">school.finance.entry</field>
+            <field name="arch" type="xml">
+                <form string="قيد مالي">
+                    <header>
+                        <button name="action_confirm" string="تأكيد" type="object"
+                            class="btn-primary" invisible="state != 'draft'"
+                            groups="school_management.group_school_admin"/>
+                        <button name="action_cancel" string="إلغاء" type="object"
+                            invisible="state == 'cancelled'"/>
+                        <button name="action_draft" string="إعادة للمسودة" type="object"
+                            invisible="state != 'cancelled'"/>
+                        <field name="state" widget="statusbar"
+                            statusbar_visible="draft,confirmed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h2><field name="ref" readonly="1"/></h2>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="date"/>
+                                <field name="item_id"/>
+                                <field name="kind"/>
+                                <field name="academic_year_id"/>
+                            </group>
+                            <group>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="amount"/>
+                                <field name="memo"/>
+                                <field name="attachment" filename="attachment_filename"/>
+                                <field name="attachment_filename" invisible="1"/>
+                                <field name="confirmed_by" readonly="1"
+                                    invisible="state != 'confirmed'"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_finance_entry_search" model="ir.ui.view">
+            <field name="name">school.finance.entry.search</field>
+            <field name="model">school.finance.entry</field>
+            <field name="arch" type="xml">
+                <search string="Search Entries">
+                    <field name="ref"/>
+                    <field name="memo"/>
+                    <field name="item_id"/>
+                    <filter string="العام النشط" name="current_year"
+                        domain="[('academic_year_id.current','=',True)]"/>
+                    <separator/>
+                    <filter string="مصروفات" name="expense" domain="[('kind','=','expense')]"/>
+                    <filter string="إيرادات أخرى" name="income" domain="[('kind','=','income')]"/>
+                    <filter string="مؤكد" name="confirmed" domain="[('state','=','confirmed')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="البند" name="group_item" context="{'group_by': 'item_id'}"/>
+                        <filter string="الشهر" name="group_month" context="{'group_by': 'date:month'}"/>
+                        <filter string="الحالة" name="group_state" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_finance_entry" model="ir.actions.act_window">
+            <field name="name">قيود المصروفات والإيرادات</field>
+            <field name="res_model">school.finance.entry</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_finance_entry_search"/>
+            <field name="context">{'search_default_current_year': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    سجّل المصروفات اليومية والإيرادات غير الرسمية هنا —
+                    إيرادات الرسوم تتجمع تلقائيًا من المدفوعات المؤكدة
+                </p>
+            </field>
+        </record>
+
+        <!-- Budget report (pivot/graph) -->
+        <record id="view_budget_report_pivot" model="ir.ui.view">
+            <field name="name">school.budget.report.pivot</field>
+            <field name="model">school.budget.report</field>
+            <field name="arch" type="xml">
+                <pivot string="الموازنة">
+                    <field name="kind" type="col"/>
+                    <field name="item_id" type="row"/>
+                    <field name="amount" type="measure"/>
+                    <field name="balance" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <record id="view_budget_report_graph" model="ir.ui.view">
+            <field name="name">school.budget.report.graph</field>
+            <field name="model">school.budget.report</field>
+            <field name="arch" type="xml">
+                <graph string="الموازنة" type="bar" stacked="0">
+                    <field name="date" interval="month"/>
+                    <field name="kind"/>
+                    <field name="amount" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="view_budget_report_search" model="ir.ui.view">
+            <field name="name">school.budget.report.search</field>
+            <field name="model">school.budget.report</field>
+            <field name="arch" type="xml">
+                <search string="الموازنة">
+                    <field name="item_id"/>
+                    <filter string="العام النشط" name="current_year"
+                        domain="[('academic_year_id.current','=',True)]"/>
+                    <filter string="إيرادات" name="income" domain="[('kind','=','income')]"/>
+                    <filter string="مصروفات" name="expense" domain="[('kind','=','expense')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="البند" name="group_item" context="{'group_by': 'item_id'}"/>
+                        <filter string="النوع" name="group_kind" context="{'group_by': 'kind'}"/>
+                        <filter string="الشهر" name="group_month" context="{'group_by': 'date:month'}"/>
+                        <filter string="العام الدراسي" name="group_year" context="{'group_by': 'academic_year_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_budget_report" model="ir.actions.act_window">
+            <field name="name">تقرير الموازنة</field>
+            <field name="res_model">school.budget.report</field>
+            <field name="view_mode">pivot,graph</field>
+            <field name="search_view_id" ref="view_budget_report_search"/>
+            <field name="context">{'search_default_current_year': 1}</field>
+        </record>
+
+    </data>
+</odoo>

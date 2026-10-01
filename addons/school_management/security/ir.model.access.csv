@@ -179,3 +179,14 @@ access_fee_approver,school.fee.approver,model_school_fee,school_management.group
 access_fee_type_approver,school.fee.type.approver,model_school_fee_type,school_management.group_school_approver,1,0,0,0
 access_fee_payment_approver,school.fee.payment.approver,model_school_fee_payment,school_management.group_school_approver,1,0,0,0
 access_fee_installment_approver,school.fee.installment.approver,model_school_fee_installment,school_management.group_school_approver,1,0,0,0
+access_finance_item_admin,school.finance.item.admin,model_school_finance_item,school_management.group_school_admin,1,1,1,1
+access_finance_item_config,school.finance.item.config,model_school_finance_item,school_management.group_school_config,1,1,1,1
+access_finance_item_accountant,school.finance.item.accountant,model_school_finance_item,school_management.group_school_accountant,1,0,0,0
+access_finance_item_principal,school.finance.item.principal,model_school_finance_item,school_management.group_school_principal,1,0,0,0
+access_finance_entry_admin,school.finance.entry.admin,model_school_finance_entry,school_management.group_school_admin,1,1,1,1
+access_finance_entry_accountant,school.finance.entry.accountant,model_school_finance_entry,school_management.group_school_accountant,1,1,1,0
+access_finance_entry_principal,school.finance.entry.principal,model_school_finance_entry,school_management.group_school_principal,1,0,0,0
+access_budget_report_admin,school.budget.report.admin,model_school_budget_report,school_management.group_school_admin,1,0,0,0
+access_budget_report_accountant,school.budget.report.accountant,model_school_budget_report,school_management.group_school_accountant,1,0,0,0
+access_budget_report_principal,school.budget.report.principal,model_school_budget_report,school_management.group_school_principal,1,0,0,0
+access_budget_report_config,school.budget.report.config,model_school_budget_report,school_management.group_school_config,1,0,0,0

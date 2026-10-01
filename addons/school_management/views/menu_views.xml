@@ -119,6 +119,20 @@
             action="action_fee"
             sequence="10"/>
 
+        <menuitem id="menu_finance_entry"
+            name="قيود المصروفات والإيرادات"
+            parent="menu_school_fees"
+            action="action_finance_entry"
+            sequence="30"
+            groups="group_school_accountant,group_school_admin"/>
+
+        <menuitem id="menu_budget_report"
+            name="تقرير الموازنة"
+            parent="menu_school_fees"
+            action="action_budget_report"
+            sequence="40"
+            groups="group_school_accountant,group_school_admin,group_school_principal"/>
+
         <menuitem id="menu_payment_list"
             name="Payments"
             parent="menu_school_fees"
@@ -238,6 +252,13 @@
             parent="menu_school_config"
             action="action_fee_structure"
             sequence="21"
+            groups="group_school_config"/>
+
+        <menuitem id="menu_finance_item"
+            name="بنود الإيرادات والمصروفات"
+            parent="menu_school_config"
+            action="action_finance_item"
+            sequence="23"
             groups="group_school_config"/>
 
         <menuitem id="menu_sibling_rule"

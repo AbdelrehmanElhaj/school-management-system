@@ -11,6 +11,7 @@ from . import enrollment
 from . import student_enrollment
 from . import fee
 from . import fee_structure
+from . import finance
 from . import fee_installment
 from . import account_integration
 from . import dashboard

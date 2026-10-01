@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Sequence for finance entries -->
+        <record id="seq_finance_entry" model="ir.sequence">
+            <field name="name">Finance Entry</field>
+            <field name="code">school.finance.entry</field>
+            <field name="prefix">FIN/%(year)s/</field>
+            <field name="padding">5</field>
+        </record>
+
+        <!-- ══ Income items (21 — as listed in the client requirements) ══ -->
+        <record id="fin_inc_tuition" model="school.finance.item">
+            <field name="name">الرسوم الدراسية</field>
+            <field name="code">INC-TUITION</field>
+            <field name="kind">income</field>
+            <field name="sequence">1</field>
+            <field name="fee_type_id" ref="fee_type_tuition"/>
+        </record>
+        <record id="fin_inc_form" model="school.finance.item">
+            <field name="name">رسوم الاستمارة</field>
+            <field name="code">INC-FORM</field>
+            <field name="kind">income</field>
+            <field name="sequence">2</field>
+            <field name="fee_type_id" ref="fee_type_form"/>
+        </record>
+        <record id="fin_inc_registration" model="school.finance.item">
+            <field name="name">رسوم التسجيل</field>
+            <field name="code">INC-REG</field>
+            <field name="kind">income</field>
+            <field name="sequence">3</field>
+            <field name="fee_type_id" ref="fee_type_registration"/>
+        </record>
+        <record id="fin_inc_admission_test" model="school.finance.item">
+            <field name="name">رسوم اختبارات القبول</field>
+            <field name="code">INC-ADMTEST</field>
+            <field name="kind">income</field>
+            <field name="sequence">4</field>
+        </record>
+        <record id="fin_inc_tests" model="school.finance.item">
+            <field name="name">رسوم الاختبارات</field>
+            <field name="code">INC-TESTS</field>
+            <field name="kind">income</field>
+            <field name="sequence">5</field>
+        </record>
+        <record id="fin_inc_term1_exams" model="school.finance.item">
+            <field name="name">رسوم امتحانات الفترة الأولى</field>
+            <field name="code">INC-EXAM1</field>
+            <field name="kind">income</field>
+            <field name="sequence">6</field>
+        </record>
+        <record id="fin_inc_final_exams" model="school.finance.item">
+            <field name="name">رسوم الامتحانات النهائية</field>
+            <field name="code">INC-EXAMF</field>
+            <field name="kind">income</field>
+            <field name="sequence">7</field>
+            <field name="fee_type_id" ref="fee_type_exam"/>
+        </record>
+        <record id="fin_inc_sport" model="school.finance.item">
+            <field name="name">رسوم الأنشطة الرياضية</field>
+            <field name="code">INC-SPORT</field>
+            <field name="kind">income</field>
+            <field name="sequence">8</field>
+        </record>
+        <record id="fin_inc_activities" model="school.finance.item">
+            <field name="name">رسوم الأنشطة</field>
+            <field name="code">INC-ACT</field>
+            <field name="kind">income</field>
+            <field name="sequence">9</field>
+            <field name="fee_type_id" ref="fee_type_activity"/>
+        </record>
+        <record id="fin_inc_focus" model="school.finance.item">
+            <field name="name">رسوم حصص التركيز</field>
+            <field name="code">INC-FOCUS</field>
+            <field name="kind">income</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="fin_inc_extra" model="school.finance.item">
+            <field name="name">رسوم الحصص الإضافية</field>
+            <field name="code">INC-EXTRA</field>
+            <field name="kind">income</field>
+            <field name="sequence">11</field>
+        </record>
+        <record id="fin_inc_books" model="school.finance.item">
+            <field name="name">رسوم الكتب والمواد</field>
+            <field name="code">INC-BOOKS</field>
+            <field name="kind">income</field>
+            <field name="sequence">12</field>
+            <field name="fee_type_id" ref="fee_type_books"/>
+        </record>
+        <record id="fin_inc_uniform" model="school.finance.item">
+            <field name="name">رسوم الزي المدرسي</field>
+            <field name="code">INC-UNIFORM</field>
+            <field name="kind">income</field>
+            <field name="sequence">13</field>
+        </record>
+        <record id="fin_inc_certificates" model="school.finance.item">
+            <field name="name">رسوم الشهادات</field>
+            <field name="code">INC-CERT</field>
+            <field name="kind">income</field>
+            <field name="sequence">14</field>
+        </record>
+        <record id="fin_inc_transport" model="school.finance.item">
+            <field name="name">رسوم النقل</field>
+            <field name="code">INC-TRANS</field>
+            <field name="kind">income</field>
+            <field name="sequence">15</field>
+            <field name="fee_type_id" ref="fee_type_transport"/>
+        </record>
+        <record id="fin_inc_trips" model="school.finance.item">
+            <field name="name">الرحلات والخدمات</field>
+            <field name="code">INC-TRIPS</field>
+            <field name="kind">income</field>
+            <field name="sequence">16</field>
+        </record>
+        <record id="fin_inc_charity" model="school.finance.item">
+            <field name="name">الدعم من المؤسسات الخيرية</field>
+            <field name="code">INC-CHARITY</field>
+            <field name="kind">income</field>
+            <field name="sequence">17</field>
+        </record>
+        <record id="fin_inc_orgs" model="school.finance.item">
+            <field name="name">الدعم من الجهات والمؤسسات</field>
+            <field name="code">INC-ORGS</field>
+            <field name="kind">income</field>
+            <field name="sequence">18</field>
+        </record>
+        <record id="fin_inc_individuals" model="school.finance.item">
+            <field name="name">مساهمات الأفراد</field>
+            <field name="code">INC-INDIV</field>
+            <field name="kind">income</field>
+            <field name="sequence">19</field>
+        </record>
+        <record id="fin_inc_grants" model="school.finance.item">
+            <field name="name">المنح والدعم التعليمي</field>
+            <field name="code">INC-GRANTS</field>
+            <field name="kind">income</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="fin_inc_other" model="school.finance.item">
+            <field name="name">الإيرادات الأخرى</field>
+            <field name="code">INC-OTHER</field>
+            <field name="kind">income</field>
+            <field name="sequence">21</field>
+        </record>
+
+        <!-- ══ Expense items (18 — as listed in the client requirements) ══ -->
+        <record id="fin_exp_salaries" model="school.finance.item">
+            <field name="name">الرواتب</field>
+            <field name="code">EXP-SALARY</field>
+            <field name="kind">expense</field>
+            <field name="sequence">1</field>
+        </record>
+        <record id="fin_exp_incentives" model="school.finance.item">
+            <field name="name">الحوافز</field>
+            <field name="code">EXP-BONUS</field>
+            <field name="kind">expense</field>
+            <field name="sequence">2</field>
+        </record>
+        <record id="fin_exp_admin" model="school.finance.item">
+            <field name="name">المنصرفات الإدارية اليومية</field>
+            <field name="code">EXP-ADMIN</field>
+            <field name="kind">expense</field>
+            <field name="sequence">3</field>
+        </record>
+        <record id="fin_exp_petty" model="school.finance.item">
+            <field name="name">النثريات</field>
+            <field name="code">EXP-PETTY</field>
+            <field name="kind">expense</field>
+            <field name="sequence">4</field>
+        </record>
+        <record id="fin_exp_rent" model="school.finance.item">
+            <field name="name">الإيجار</field>
+            <field name="code">EXP-RENT</field>
+            <field name="kind">expense</field>
+            <field name="sequence">5</field>
+        </record>
+        <record id="fin_exp_electricity" model="school.finance.item">
+            <field name="name">الكهرباء</field>
+            <field name="code">EXP-ELEC</field>
+            <field name="kind">expense</field>
+            <field name="sequence">6</field>
+        </record>
+        <record id="fin_exp_water" model="school.finance.item">
+            <field name="name">المياه</field>
+            <field name="code">EXP-WATER</field>
+            <field name="kind">expense</field>
+            <field name="sequence">7</field>
+        </record>
+        <record id="fin_exp_internet" model="school.finance.item">
+            <field name="name">الإنترنت والاتصالات</field>
+            <field name="code">EXP-NET</field>
+            <field name="kind">expense</field>
+            <field name="sequence">8</field>
+        </record>
+        <record id="fin_exp_stationery" model="school.finance.item">
+            <field name="name">الأدوات المكتبية</field>
+            <field name="code">EXP-STATION</field>
+            <field name="kind">expense</field>
+            <field name="sequence">9</field>
+        </record>
+        <record id="fin_exp_maintenance" model="school.finance.item">
+            <field name="name">الصيانة</field>
+            <field name="code">EXP-MAINT</field>
+            <field name="kind">expense</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="fin_exp_cleaning" model="school.finance.item">
+            <field name="name">النظافة</field>
+            <field name="code">EXP-CLEAN</field>
+            <field name="kind">expense</field>
+            <field name="sequence">11</field>
+        </record>
+        <record id="fin_exp_security" model="school.finance.item">
+            <field name="name">الأمن</field>
+            <field name="code">EXP-SECURITY</field>
+            <field name="kind">expense</field>
+            <field name="sequence">12</field>
+        </record>
+        <record id="fin_exp_edu_supplies" model="school.finance.item">
+            <field name="name">المستلزمات التعليمية</field>
+            <field name="code">EXP-EDU</field>
+            <field name="kind">expense</field>
+            <field name="sequence">13</field>
+        </record>
+        <record id="fin_exp_marketing" model="school.finance.item">
+            <field name="name">التسويق</field>
+            <field name="code">EXP-MARKET</field>
+            <field name="kind">expense</field>
+            <field name="sequence">14</field>
+        </record>
+        <record id="fin_exp_tech" model="school.finance.item">
+            <field name="name">التكنولوجيا والأنظمة</field>
+            <field name="code">EXP-TECH</field>
+            <field name="kind">expense</field>
+            <field name="sequence">15</field>
+        </record>
+        <record id="fin_exp_transport" model="school.finance.item">
+            <field name="name">النقل</field>
+            <field name="code">EXP-TRANS</field>
+            <field name="kind">expense</field>
+            <field name="sequence">16</field>
+        </record>
+        <record id="fin_exp_licenses" model="school.finance.item">
+            <field name="name">التراخيص والرسوم الحكومية</field>
+            <field name="code">EXP-LICENSE</field>
+            <field name="kind">expense</field>
+            <field name="sequence">17</field>
+        </record>
+        <record id="fin_exp_emergency" model="school.finance.item">
+            <field name="name">المصروفات الطارئة وغير المخططة</field>
+            <field name="code">EXP-EMERG</field>
+            <field name="kind">expense</field>
+            <field name="sequence">18</field>
+        </record>
+
+    </data>
+</odoo>

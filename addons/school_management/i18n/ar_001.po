@@ -4284,3 +4284,28 @@ msgstr "بحث في مصفوفة الرسوم"
 #: model:school.fee.type,name:school_management.fee_type_form
 msgid "Application Form Fee"
 msgstr "رسوم الاستمارة"
+
+#. module: school_management
+#: model:ir.model,name:school_management.model_school_finance_item
+msgid "Finance Item (Income/Expense)"
+msgstr "بند مالي (إيراد/مصروف)"
+
+#. module: school_management
+#: model:ir.model,name:school_management.model_school_finance_entry
+msgid "Finance Entry (Expense / Other Income)"
+msgstr "قيد مالي (مصروف / إيراد آخر)"
+
+#. module: school_management
+#: model:ir.model,name:school_management.model_school_budget_report
+msgid "Budget Report (Income vs Expenses)"
+msgstr "تقرير الموازنة (الإيرادات مقابل المصروفات)"
+
+#. module: school_management
+#: model_terms:ir.ui.view,arch_db:school_management.view_finance_item_tree
+msgid "Finance Items"
+msgstr "البنود المالية"
+
+#. module: school_management
+#: model_terms:ir.ui.view,arch_db:school_management.view_finance_entry_tree
+msgid "Finance Entries"
+msgstr "القيود المالية"
